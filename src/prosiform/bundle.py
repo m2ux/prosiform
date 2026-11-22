@@ -1,118 +1,8 @@
-"""The bundle: one file group for each contributing source.
+"""Construct file groups, rewrite selected source lines, and assemble bundle text.
 
-A group is a source document unless its conversion metadata names the
-merged group that `grouping` assembles. A file group is headed by one
-generated H1. Its visible text is the document's title, where the
-document carries one: its first heading, where that heading is its only
-H1 and sits at the document level. A document carrying no title is
-headed by its normalized path relative to the invocation working
-directory with the Markdown extension removed, in title case: each word
-of the path is capitalized and every separator the path carries is
-kept, so the heading names the document the filesystem holds and
-carries the one convention every generated heading takes. Either text
-is escaped as literal heading text, so punctuation in a title or a
-filename names itself rather than opening a link, an image, emphasis,
-code, raw HTML, an entity or a strikethrough, or closing the heading
-that carries it. Two documents whose file headings coincide are two
-headings of one text, which take distinct destinations as any repeated
-heading does: the renderer's slug, the later one carrying its ordinal.
-A reader tells the two apart only by where each stands, so the run
-warns of them.
-
-A group is assembled from the maximal regions the run selected, in
-source order, each carried as the bytes its source wrote. A whole
-document selects every region it holds; a fragment selects the regions
-of the section it names. A section whose eligible ancestors the run did
-not select is placed in the outline its author gave it by emitting each
-of those ancestors as a heading and nothing else: no body, no unselected
-sibling and no other descendant. The ancestor's title is emitted as
-literal text, so a link, an image or raw HTML inside it is the
-characters its author typed rather than a live construct, and the
-dependencies a run traverses are read from the regions it selected, so
-nothing is required by an ancestor heading. Each ancestor is emitted
-once however many selections stand beneath it, and an ancestor the
-closure goes on to select is a selected region like any other, which is
-the heading and the body that stand there in its place. What lies
-between two
-regions is not source content: a blank line above the first region, the
-blank line a removed reference definition was separated by, and the
-spacing between any two blocks are the bundle's own, and the bundle
-writes one blank line between regions wherever it joins them. A group
-is held as those parts rather than as the text they join into, so the
-line each part opens on is a figure the assembly states and candidate
-validation reads back to prove that no part landed inside the one above
-it. Inside a
-region nothing is touched but the lines a link-reference definition
-occupies and the links the bundle rewrites, so an indented thematic
-break keeps its indent, a delimiter keeps its trailing spaces and a
-code example carries the diagram edits rewrite names. A
-terminator belongs to the line it terminates and is content as the rest
-of the line is, so a region ends with the newline its source spelled on
-the line that ends it, and every heading the bundle generates ends with
-the newline the bundle generates.
-
-Each resolved reference-style use in selected content is published
-inline, and every original definition node is removed, the definitions
-no use names included. A definition a container carries is dropped
-where it sits, with the blank line the container separated it by, and
-a definition at the document level lies between two regions and is
-dropped by the slice that takes them.
-
-The file heading absorbs the document's title, because it carries that
-title's text. A group whose title is absorbed keeps its source heading
-levels; every other group moves each
-emitted heading down one level, the file heading taking the level that
-makes room. A heading a retained container carries is shifted where it
-sits, so the container keeps the structure it had. A shift that would
-place any emitted heading beyond the sixth level is an overflow rather
-than a heading, and the group refuses it.
-
-A shift edits an ATX heading's number signs, which are the level the
-author wrote. A Setext heading writes its level as an underline instead,
-so a shifted group emits it as the ATX heading of the same level,
-carrying the inline source its content lines hold joined into the one
-line an ATX heading is, each line break reading as the space it already
-read as. A group that shifts by nothing has no level to write, so the
-heading stays the Setext heading its source wrote.
-
-Each link in selected content that the bundle compiled is rewritten to
-the destination of the target it resolved to, through the map the
-bundle's own headings produce. A whole-document reference takes the
-destination of that file's heading, except the parent — the first entry
-document — whose whole-document reference takes the destination of the
-heading carrying its title, whether it heads a file group of its own or
-is a member of a merged group. A fragment takes the
-destination of the heading it named, and a fragment-only link resolves
-inside its own source first and then takes that heading's destination. A destination
-is scoped to the whole bundle, so a reference from one group to another
-is spelled as one inside a group is. A deferral's mark goes with the
-rewrite, because a reader of the bundle has no use for authoring
-syntax; a dispatch pointing at a bundle file keeps its mark, because
-the mark tells an agent the file goes to a sub-agent.
-
-Every bundle opens with the run-pf line, ahead of any other content and
-followed by one blank line, so its reader holds the guide's rules before
-it meets any mark or section they govern.
-
-A Mermaid diagram's link destination is a link written inside a code
-example, and the bundle rewrites it as it rewrites any other: the
-destination's characters take the destination its target was given,
-and every other byte of the fence is carried as written. The anchor is
-spelled as the line's form spells it: a quoted destination opens it
-with `#`, and a sequence diagram's menu entry with `#35;`, the entity
-Mermaid renders as `#` where a bare one would open a comment. A diagram
-link destination the bundle compiled nothing for, such as one naming
-a document that declares nothing or no Markdown document at all, keeps
-the text its author wrote.
-
-A destination is the fragment a renderer generates for a bundled
-heading: the heading's slug, carrying the ordinal the renderer appends
-where an earlier heading already took that slug. The ordinal is assigned
-over every heading the bundle emits, in bundle order, a heading a
-retained container carries included: the renderer indexes that heading
-beside the rest and numbers the headings after it from a count that
-holds it, so a map built from the document-level headings alone names
-one heading and resolves to another.
+Each group carries its emitted parts and provenance together. `group` builds
+a file group; `grouping.merged` supplies merged groups. `assemble` joins the
+groups into the candidate that `candidate.validate` checks before publication.
 """
 
 import json
@@ -233,7 +123,7 @@ OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
 TOOLTIP = re.compile(r'"\s+"[^"]*"')
-"""A quoted destination's closing quote and the quoted tooltip after it."""
+"""The tooltip suffix span following a `source.Click` destination."""
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
 
@@ -248,15 +138,10 @@ class Overflow(Exception):
 
 
 class Unplaced(Exception):
-    """A dispatch or composition directive in a heading emitted as text alone.
+    """A heading directive that cannot be placed, with its source location.
 
-    A composition directive's destination section stands one level below
-    the section writing it, and a dispatch is a link the bundle publishes.
-    A title the file heading absorbs is emitted as that heading rather
-    than as a section of its own, so a directive the title carries has
-    no section to stand beneath and a dispatch it carries is no link in
-    the bundle: the run states the dispatch, or places the composition,
-    nowhere.
+    `path` and `line` locate the heading; `destination` and `opening` identify
+    its link, and `composing` distinguishes composition from dispatch.
     """
 
     def __init__(
@@ -312,28 +197,11 @@ def joined(parts: Sequence[str]) -> str:
 
 @dataclass(frozen=True)
 class Group:
-    """One file group: the Markdown it emits, and the record of where it came from.
+    """Emitted group data and its provenance.
 
-    The group is held as the parts it emits — its file heading, then one
-    part for each selected source region — rather than as the Markdown
-    those parts join into, because the separation between two of them is
-    the bundle's own and the bundle states it in one place. A group the
-    parent's own title opens has no file heading ahead of those regions,
-    and a group the run-pf line precedes carries its file heading as
-    a part after that line.
-    The text the group publishes is those parts with one blank line
-    between each.
-
-    The headings the group emits and the source fragment each answers to
-    are read from that record, so the group states them once. The first
-    is the file heading, which answers to the whole document and so to
-    no fragment of it. A file heading that absorbed a source heading
-    answers to that heading's fragment as well, which is held apart
-    because the heading itself is not emitted.
-
-    The level is the one its opening heading takes: H1 for a group at
-    the top level of the bundle, and one level deeper for each division
-    enclosing a nested group.
+    `parts` holds the Markdown parts; `record` holds their source and heading
+    records. `wrapped` identifies a group with a generated opening, and `level`
+    is the opening heading's level.
     """
 
     parts: tuple[str, ...]
@@ -351,7 +219,7 @@ class Group:
 
     @property
     def text(self) -> str:
-        """The Markdown the group publishes: its parts, one blank line apart."""
+        """The group's Markdown, with the separation `joined` supplies."""
         return joined(self.parts)
 
     @property
@@ -366,16 +234,10 @@ class Group:
 
 
 def heading_text(path: str) -> str:
-    """One untitled source's file heading: its path in title case, the suffix gone.
+    """A path-derived file heading without its Markdown suffix.
 
-    The path is the one the run read the source by, relative to the
-    invocation working directory.
-
-    The suffix is classified case-insensitively, as the profile
-    classifies one, and the path the heading spells is the path the
-    filesystem holds with each of its words capitalized, so one
-    convention covers this heading and every other the bundle
-    generates.
+    `path` is relative to the invocation working directory. Suffix recognition
+    uses `profile.SUFFIXES`; spelling follows `heading.title_cased`.
     """
     spelled = PurePosixPath(path)
     if spelled.suffix.lower() in SUFFIXES:
@@ -452,11 +314,11 @@ def sole_set(
     *,
     conversions: Mapping[str, Conversion],
 ) -> bool:
-    """Whether the `⫽` links a heading's own section writes name one distinct target.
+    """Whether a heading's own section names one distinct parallel target.
 
-    The section's own content runs from its heading to the next
-    document-level heading. A set of one target publishes as a dispatch,
-    so the heading carrying one of its links shows the dispatch mark.
+    Only content before the next document-level heading belongs to that set.
+    Target resolution uses `closure.withholding_target`; effective identity
+    follows `closure.bundle_selection`.
     """
     targets: set[BundleSelection] = set()
     counting = False
@@ -492,10 +354,9 @@ def sole_set(
 
 
 def briefs(target: Reference, conversions: Mapping[str, Conversion] | None) -> bool:
-    """Whether a dispatch of one read target carries a brief, as `briefing` names it.
+    """Whether the target's presets select a brief through `closure.briefing`.
 
-    Presets naming two briefs, or a brief naming no fragment, carry none
-    here: the traversal refuses them.
+    An invalid brief selection returns false here; traversal reports its error.
     """
     if conversions is None or target.path not in conversions:
         return False
@@ -514,34 +375,15 @@ def emitted_visible(
     alone: bool = False,
     conversions: Mapping[str, Conversion] | None = None,
 ) -> str:
-    """The text one inline token shows once the bundle has rewritten its links.
+    """The visible text one inline token publishes after link rewriting.
 
-    A heading can carry a link, and one the run withholds a compilation
-    of publishes without its deferral mark, and without its dispatch
-    mark unless the link points at a bundle file; a composition directive
-    publishes without its composition mark. What the heading shows
-    is therefore what the renderer slugs, so the destination the heading
-    takes names the heading a reader finds.
+    For each resolved use, apply `closure.published_text` and the model suffix
+    from `started_on`. `pointing` determines whether a dispatch names a file,
+    using `sole_set` or the supplied dispatch map. `briefs` supplies the brief
+    classification when conversions are available.
 
-    A `⫽` link points at a bundle file where its set holds one target,
-    which the dispatch map states for the region carrying it. Without a
-    map, `alone` states whether its set holds one target, and the
-    conversions read decide whether a dispatch carries a brief, as
-    `briefs` states.
-
-    A link the bundle took no destination for shows the text its author
-    wrote. That covers a markup or resource reference and a reference
-    naming a document that declares nothing.
-
-    Reading what a heading shows compiles nothing, and a heading is read
-    whether or not the run selected it, so the lookup records no
-    substitution: a pair is used by a reference the bundle composes from
-    selected content, where the link's position is known.
-
-    A dispatch pointing at a bundle file is followed by the model
-    `started_on` writes. A link the run publishes no dispatch for, as
-    in a heading outside the selection, is read with none, since the
-    run refuses every level a published dispatch leaves unresolved.
+    The lookup uses unrecorded substitutions because it can inspect unselected
+    headings; selected reference rewriting records uses at their positions.
     """
     substitution = substitution.unrecorded()
     children = inline.children or []
@@ -601,11 +443,9 @@ def shown_text(
     *,
     conversions: Mapping[str, Conversion],
 ) -> dict[int, str]:
-    """The visible text of each heading token, keyed by the token's identity.
+    """Each heading's `emitted_visible` text, keyed by its token identity.
 
-    The text is the one the bundle emits for that heading, which is the
-    text its author wrote with a withholding mark taken off, so the
-    destination the heading takes names what a reader finds.
+    `sole_set` supplies the section-local parallel selection for each heading.
     """
     return {
         id(opening): emitted_visible(
@@ -628,14 +468,10 @@ def shown_text(
 
 
 def source_fragments(tokens: Sequence[Token]) -> dict[int, str]:
-    """The source fragment each heading token answers to, keyed by its identity.
+    """Each heading's authored `source.slug`, keyed by its token identity.
 
-    A source fragment is the slug of the text the author wrote, which is
-    what a reference into that document resolved against. It is read
-    from the authored text and not from the published one, because a
-    reference naming this heading carries the fragment the author's text
-    produces: a heading whose withholding mark is dropped on emission is
-    still reached by the fragment its source spelling slugs to.
+    The authored text is required here because `emitted_visible` can change the
+    text the bundle publishes without changing the source target's identity.
     """
     return {id(opening): slug(visible(inline)) for opening, inline in headings(tokens)}
 
@@ -657,46 +493,18 @@ def rewrite(
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> list[str]:
-    """The source's physical lines, as the bundle publishes the selected content.
+    """The source's physical lines after rewriting selected references.
 
-    A rewrite edits the lines one inline token occupies and reports one
-    entry for each of them, so the lines the group then slices are the
-    lines the source wrote, one for one, and a token map taken from the
-    parse names the same content after the rewrite as before it. A
-    definition the author spelled across more than one line is published
-    with the line feeds it carries, and the entry for the line that
-    gained one holds it.
+    Inline edits use `rewrite.rewritten`; diagram uses follow `source.Click`,
+    with destination edits from `clicked` and label edits from `diagram_labels`.
+    Unselected content is left alone. Each result entry corresponds to its
+    original physical line, including when the replacement contains line feeds.
 
-    Content the run did not select is left alone: no reference in it was
-    resolved, so no destination was assigned to one, and a definition it
-    names is removed with the rest rather than published around it.
-
-    A source declaring no definition carries no reference-style use, so
-    a token holding no link and standing as no command block is the text
-    its source wrote.
-
-    Diagram labels follow diagram_labels; a link destination is replaced
-    on its own line, so the line count holds there too. Several destinations
-    on one line are replaced in written order.
-
-    A dispatched link takes the destination its region carries for its
-    target, which the dispatch map holds by the region's first line and
-    the placing of the copy being rewritten: a bundle file, or a dispatch
-    sub-section. A dispatch the
-    map holds none for is refused, and the line the refusal names is the
-    line of the file the source was read from, which the first line of its
-    content states.
-
-    A composition directive takes the destination of the contribution
-    it places, which the composition map holds by the link's own
-    position, so every directive stands for its own contribution. A
-    heading's directive naming a bundled section that the map holds no
-    contribution for is in a title its file heading or its subsection
-    absorbs, which is no section to compose beneath, and is refused.
-
-    A deferral's title gains the run's names its target's settings
-    carry, a diagram link's tooltip among them, and its destination is
-    the path `rebased` publishes from `folder`, the bundle's folder.
+    Dispatch destinations come from the region's dispatch map; a missing entry
+    raises `Unplaced`. Composition destinations come from the link-position map,
+    and `unplaced` checks an emitted heading whose contribution is absent.
+    Deferred destinations use `closure.rebased` and titles use
+    `closure.deferred_title`.
     """
     written = list(physical)
     served = {} if dispatching is None else dispatching
@@ -802,8 +610,10 @@ def diagram_labels(
 ) -> tuple[list[str], dict[int, list[tuple[int, str, str]]]]:
     """Unmark diagram labels whose nodes navigate to local dispatch sections.
 
-    Each edit names its original content-line offset, original spelling
-    and replacement. Metadata label values use a quoted JSON scalar,
+    Labels come from `source.element_texts`; `source.Click` owns diagram-use
+    interpretation. `source.label_span` supplies each edit's original offset
+    and spelling, and `closure.unmarked` supplies its text. Metadata label
+    values use a quoted JSON scalar,
     which YAML reads as the same string. Other source bytes and content
     line counts are preserved, so click offsets shift by edits before them.
     """
@@ -834,12 +644,11 @@ def unplaced(
     first_line: int,
     substitution: Substitution,
 ) -> None:
-    """Refuse a heading's directive that composes nowhere.
+    """Reject a heading directive that has no recorded contribution.
 
-    The composition pass composes each directive, deferred or not, naming
-    a declaring section in every heading the bundle emits as a section, so
-    one it placed no contribution for sits in a heading emitted as text
-    alone.
+    Identify directives through `closure.directive` and link positions
+    through `provenance.link_at`. Reject a target accepted by
+    `closure.resolvable` when its position has no contribution.
     """
     position = 0
     for children, at, child in events(inline.children or []):
@@ -860,11 +669,10 @@ def unplaced(
 
 
 def model_comment(node: str, model: str) -> str:
-    """The Mermaid comment naming the model a diagram's dispatch starts on.
+    """A Mermaid comment naming the node and its dispatch model.
 
-    A diagram link's line holds a node, a destination and a tooltip
-    alone, so the model stands on a comment line of its own beneath it,
-    naming the node, which a renderer draws nothing for.
+    The model occupies its own comment line because `source.Click` has no
+    model field in the diagram-link syntax.
     """
     return f"{MODEL_COMMENT} {node} {MODEL_LEAD} {model}"
 
@@ -877,19 +685,12 @@ def names_model(line: str, click: Click) -> bool:
 def clicked(
     physical: str, held: str, click: Click, given: str | Titled | Followed
 ) -> str:
-    """One physical line with one diagram link destination replaced.
+    """One physical source line with a `source.Click` destination replaced.
 
-    The fence holds the line without the container markers and indent
-    the document line opens with, so the line the fence holds is the
-    trailing text of the physical one. The destination is located from
-    the end of the line, which both carry alike, its terminator aside:
-    a CRLF the document wrote reaches the fence as a line feed.
-
-    A titled destination is a deferring click's: the names its `source.Click`
-    title gains are written before the tooltip's closing quote, after the
-    title's tags, or as a tooltip of their own after the destination
-    where the click carries none. A followed destination is a dispatch's
-    naming a model, which `model_comment` writes on the line beneath.
+    Locate the destination from the line's end: the parsed fence omits
+    container markers and normalizes its line endings. For `rewrite.Titled`,
+    extend the existing tooltip with `rewrite.gained`, or append a new tooltip.
+    For `rewrite.Followed`, append the line `model_comment` supplies beneath it.
     """
     after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
@@ -930,34 +731,15 @@ def target(
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> str | Titled | Followed | None:
-    """The destination the bundle gave one link, or nothing where it gave none.
+    """The published destination for a source use, or none for an uncompiled use.
 
-    A link the bundle compiled resolves to an identity the map holds,
-    because the closure selected what the link named and the group
-    emitting it recorded the target it answers to. Its destination is
-    that heading's slug behind the anchor spelling the link's form
-    writes, `#` wherever the link is not a sequence diagram's menu entry.
-
-    A deferred link naming a declaring document takes the path
-    `rebased` publishes for its target from `folder`, the folder the
-    bundle is written into. A
-    dispatched one takes the destination its section carries for its
-    target, a bundle file or a dispatch-set sub-section, and a
-    dispatch the map holds none for is refused rather than published:
-    the link states a handoff the bundle does not state. Neither is
-    rewritten to the destination of the target's own heading, even where
-    another reference carried its target into the bundle: what one
-    author withheld cannot be changed by another author's reference.
-
-    A link naming a document that declares nothing, and one naming no
-    Markdown document, is text the bundle carries and takes no
-    destination, whether or not its author marked it.
-
-    A deferral's destination is titled with the run's names its
-    target's settings carry beyond those its title states, so the run
-    compiling it selects its target's stubs of those names. A dispatch to
-    a bundle file is followed by the model `model_of` gives its target,
-    where it gives one.
+    Resolve the use through `closure.bundled` or `closure.withholding_target`.
+    A selected target takes its
+    assigned anchor; diagram anchor spelling comes from `source.Click`.
+    Deferred paths and title extensions use `closure.rebased` and
+    `closure.deferred_title`. Dispatch destinations come from the region's
+    dispatch map, with `closure.model_of` supplying their model suffix.
+    A resolved dispatch missing from that map raises `Unplaced`.
     """
     found = bundled(path, destination, opening, declarations, substitution)
     if found is not None:
@@ -1021,11 +803,9 @@ def file_heading(
     *,
     conversions: Mapping[str, Conversion],
 ) -> str:
-    """The text one document's file group is headed by.
+    """The file heading from `document_title`, or `heading_text` when absent.
 
-    It is the document's title where the document carries one, as the
-    group shows it on one line, and the path the run read the document
-    by where it carries none.
+    An authored title uses `emitted_visible` and `single_line` for publication.
     """
     titled = document_title(tokens)
     if titled is None:
@@ -1040,9 +820,8 @@ def file_heading(
 def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
     """The document's title, where it slugs to what a name slugs to.
 
-    Both sides are slugged, so the capitalization and spacing a
-    filesystem carries decide nothing and a document at `My Note.md`
-    titled `My Note` is named by `my-note` as one at `my-note.md` is.
+    Recognize the title through `document_title` and compare its
+    `source.slug` with the supplied name's slug.
     """
     opening = document_title(tokens)
     if opening is None:
@@ -1084,16 +863,10 @@ def literal_closing(text: str) -> str:
 
 
 def converted(carried: Sequence[str], depth: int) -> str:
-    """One Setext heading as the ATX heading of the same level and text.
+    """One Setext heading emitted at the supplied ATX depth.
 
-    A Setext heading writes its level as an underline rather than as a
-    prefix, so it is rewritten rather than edited. Its content lines
-    carry the inline source the author wrote, and they join into the
-    one line an ATX heading is, separated by the space a reader already
-    reads in place of each line break. The rewritten line opens with
-    the markers the heading opened with, so the container that holds
-    the heading holds it still, and a number-sign run ending its text
-    is escaped, because an ATX heading ends at one.
+    Join its content lines with spaces, preserve the opening container markers,
+    and protect its closing text with `literal_closing`.
     """
     written = [
         bare(line)[len(opening_markers(line)) :].strip() for line in carried[:-1]
@@ -1108,19 +881,10 @@ def line_of(token: Token, first_line: int = 1) -> int:
 
 
 def placing_in(tokens: Sequence[Token], token: Token) -> tuple[str, str, bool] | None:
-    """The dispatch or composition directive one heading carries.
+    """A heading's dispatch or composition link, with its classification.
 
-    Where the heading is emitted as text alone, a composition directive
-    in it has no section to stand beneath and a dispatch in it is no link
-    to publish. An ancestor heading the run did not select is emitted as
-    its title and nothing else, and a title is flattened to the one line
-    an ATX heading is. Its link is therefore no link in the bundle:
-    nothing places a section for it, and the target it names is compiled
-    by no run. The
-    heading's inline tokens are read rather than the copied line, because
-    the copy is what the run publishes, while the link is what the
-    author wrote. The link arrives with its destination, its opening and
-    whether it is a directive.
+    Read the authored inline tokens because a literal heading copy has no live
+    link. Operator recognition uses `closure.dispatched` and `closure.directive`.
     """
     if token.type != HEADING_OPEN:
         return None
@@ -1292,52 +1056,20 @@ def group(
     conversions: Mapping[str, Conversion],
     folder: BundleFolder = WORKING_FOLDER,
 ) -> Group:
-    """One file group: its generated heading, then the regions the run selected.
+    """Build one file group and its provenance from a source selection.
 
-    The parent keeps its H1 and the content above its first H2 at the
-    levels the author wrote, and a whole-document reference to it
-    resolves to the heading carrying its title, or to its first H1
-    where it carries no title.
+    `selected=None` contributes every document-level region. `file_heading`
+    names the group; an emitted `document_title` is absorbed when it supplies
+    that heading. The parent's situated title opens its own content directly.
+    Other content shifts down one level, with overflow reported as `Overflow`.
 
-    A selection of None is the whole document. A selection of sections
-    emits the regions it names and nothing else.
-
-    The file heading carries the document's title where the document
-    has one, and the path the run read it by where it has none. A title
-    is absorbed only where the group emits it, because the absorption is
-    the file heading standing in for a heading the group carries. A
-    group that emits none therefore shifts, and a reference to an
-    absorbed title resolves to the file heading's own destination. The
-    file heading names that title either way, so a selection
-    beneath an unemitted one is placed by the file heading and the
-    title is no structural ancestor: a second heading carrying the
-    document's own name is one a reader cannot tell from the first.
-
-    A destination map rewrites each link the selected content carries
-    that the bundle compiled. The map is built from the headings every
-    group emits, so it is known only once every group exists: a group
-    built without one reports the headings that produce it, and the
-    same group built with it carries the links pointing at them. The
-    headings a group reports are the same either way, because the
-    rewrite edits a destination and a mark and nothing a heading is
-    slugged from.
-
-    An eligible ancestor of a selected region that the run did not
-    select is emitted above it as a heading alone, carrying the title
-    its author wrote as literal text and nothing else. The ancestors
-    and the selected regions are emitted in one walk of the document,
-    so both stand in the source order their author wrote, and an
-    ancestor shared by two selections is emitted once.
-
-    The first line of the source's content is the line of the file it
-    stands on, which a refusal about a link names.
-
-    The definition environment is this source's own, which is what its
-    reference-style uses resolve against and which no other source
-    reaches. Every line a definition occupies is dropped from the
-    content the group emits, the lines of a definition no use names
-    included, so the bundle carries the uses and none of the
-    declarations behind them.
+    `required` identifies unselected ancestor headings. Emit those as literal
+    headings alongside selected regions, walking the source once to preserve
+    order. `region` supplies each selected part, with reference-definition lines
+    from `rewrite.definitions` excluded. `rewrite` supplies link edits when the
+    destination map is available; heading records supply the targets needed to
+    build that map. `first_line` locates errors in the original file. A title
+    emitted literally has no live directive destination and raises `Unplaced`.
     """
     situate = situate and carries_title(tokens) and selected is None
     text = shown_text(path, tokens, declarations, substitution, conversions=conversions)
@@ -1362,10 +1094,6 @@ def group(
         else None
     )
     if absorbing is None and not situate and titled is not None:
-        # The title stands above the selection, so the file heading carries
-        # its text as literal heading text. A dispatch or a directive it
-        # writes is then no link at all: nothing places a section for it
-        # and no run compiles its target.
         held = placing_in(tokens, titled)
         if held is not None:
             raise Unplaced(path, line_of(titled, first_line), *held)
@@ -1505,14 +1233,7 @@ def instruction_group(next_heading: str | None = None) -> Group:
 
 
 def assemble(groups: Sequence[Group]) -> str:
-    """The document: the instruction heading, then every group's parts in order.
-
-    One blank line between two maximal emitted regions is the separation
-    the contract requires, and it is written here and nowhere else, so
-    the geometry `openings` reads back is the geometry this writes. Each
-    part ends with the newline that ends its own last line, so the
-    document closes with the one its final part carries.
-    """
+    """Join every group's parts using `joined` for their separation."""
     return joined([part for one in groups for part in one.parts])
 
 
@@ -1526,13 +1247,9 @@ fragment it takes.
 
 
 def opened(groups: Sequence[Group]) -> list[Group]:
-    """The groups with the `§ Instructions` group ahead of them.
+    """Prepend the group `instruction_group` supplies to the content groups.
 
-    The heading and the run-pf line are the run's own structure, ahead of
-    every document a bundle carries, so the line needs no placement against
-    a document's own headings and the bundle opens the same way whatever
-    the documents hold. The line names the first heading the bundle carries,
-    so its reader has somewhere to go once it has run `pf`.
+    Pass the first published heading to that constructor as the next destination.
     """
     next_heading = None
     for one in groups:
@@ -1546,11 +1263,7 @@ def opened(groups: Sequence[Group]) -> list[Group]:
 
 
 def openings(groups: Sequence[Group]) -> list[int]:
-    """The line of the document each emitted part opens on, in order.
-
-    The first part opens the document, and every later part opens one
-    blank line below the last line of the part above it.
-    """
+    """The opening line of each emitted part under `joined` separation."""
     at = 0
     found: list[int] = []
     for one in groups:

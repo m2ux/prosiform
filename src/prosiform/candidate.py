@@ -1,65 +1,8 @@
-"""Candidate validation: the completed bundle held to the provenance that built it.
+"""Validate a completed bundle against its source and construction records.
 
-The candidate is reparsed under the same declared grammar in a policy
-context of its own. That context accepts what the bundle generates —
-filename headings, shifted headings and the structural ancestors a later
-epic adds — and it does not pass the candidate back through frontmatter
-stripping or dependency discovery: the two are separate policies over
-one grammar rather than one policy disagreeing with itself.
-
-What the reparse supplies is the published bytes read as a reader reads
-them. What the provenance supplies is the claim those bytes are held to:
-which source region each part of the bundle carries, and which source
-heading each emitted heading answers to. Every check below compares one
-against the other, so an agreement means the candidate says what its
-construction recorded rather than that it is internally consistent.
-
-The invariants checked here are block boundary safety, target
-integrity, one member per destination, exactly-once coverage within each group,
-absence of new links, absence of surviving definitions, reference
-preservation, outline preservation, depth safety, group isolation, one
-intended destination per rewritten link, and the two
-sides of region accounting: a candidate holding fewer regions than the
-provenance claims has omitted one, and a candidate holding more carries
-content no source range accounts for.
-
-Block boundary safety is the first of them, because an absorbed region
-is also a missing one: a candidate whose unterminated code example
-swallowed the group written after it holds fewer regions than the
-provenance claims, and reporting that as an omission would name the
-count rather than the boundary that lost it. The check reads the line
-each emitted part opens on from the assembly, and requires the reparse
-to open a region of its own there. A part the reparse places inside the
-one above it is a boundary the run refuses, and it is refused rather
-than repaired: no fence is closed and no code example is rewritten on
-the author's behalf, because a document the tool silently completed is
-no longer the document the author wrote.
-
-One invariant the contract names is not checked here, and is absent
-rather than weakened. **Destination stability** is a property of the
-construction rather than of the candidate. A reference is rewritten to
-the destination its target was given, read from the map `cli` builds
-over every group from the identity each emitted heading answers to, and
-neither the position a link sits in nor the region a run consolidated it
-into is part of that identity. A check comparing a link's destination
-before and after consolidation would therefore compare one lookup of a
-target with another lookup of the same target, and a check that cannot
-fail reports a guarantee nobody has.
-
-A command block is the one region content the bundle publishes in
-another form, and its comparisons read both forms as a reader of the
-bundle reads them. The source's block is recognised by its wrapper,
-and the block the candidate publishes is the inline content standing in
-its place among the region's. Its lines are lines the bundle edits, so
-it is held to what it shows and to the uses it carries: a raw `<name>`
-a decoded reference leaves is read as the text it spells, a line break
-inside either wrapper tag is not read, and a backslash ending a source
-line reads as the line break the published backslash makes.
-
-An unsafe boundary raises `Unsafe`, which names the source regions
-either side of it and the container that absorbed one into the other.
-Every other failure raises `Invalid`, which names the invariant and
-what disagreed. Nothing is published while a check fails.
+`validate` checks provenance and reparses the candidate through
+`profile.parse`. A failed boundary check raises `Unsafe`; other invariant
+failures raise `Invalid`. The module publishes no output.
 """
 
 import re
@@ -173,7 +116,7 @@ CODE_BLOCKS = ("fence", "code_block")
 LINK = "link"
 CLICK = "click"
 TOOLTIP = re.compile(r'"\s+"([^"]*)"')
-"""A quoted destination's closing quote and the quoted tooltip after it."""
+"""The tooltip suffix span following a `source.Click` destination."""
 
 UNSAFE_BUNDLE_BOUNDARY = "E_UNSAFE_BUNDLE_BOUNDARY"
 
@@ -220,15 +163,11 @@ class Invalid(Exception):
 
 
 class Unsafe(Exception):
-    """A bundle boundary placing one emitted part inside a container of the part above.
+    """An unsafe emitted boundary, with the source path and adjacent parts.
 
-    The two parts are named as the source regions they carry, because a
-    boundary is a defect of the documents being bundled together rather
-    than of a position in the output, and the container is named as the
-    construct a reader of the bundle would find the later part inside.
-    The path carried is the source whose region opens the container,
-    which is the document an author closes the construct in, rather
-    than the source of the content that landed inside it.
+    `container` names the construct absorbing the later part. `path` identifies
+    the source whose earlier part opens it. `carried` and `absorbed` name the
+    parts, and `at` locates the boundary in the candidate.
     """
 
     def __init__(
@@ -251,16 +190,11 @@ class Unsafe(Exception):
 
 
 class Use:
-    """One link, image or diagram link use, as the parts of it the bundle carries.
+    """The comparable fields of a link, image or diagram use.
 
-    The destination is the one the parser resolved, so a reference-style
-    use in a source and the inline use the bundle publishes for it arrive
-    in the same shape and are compared as the same thing. A diagram's
-    link destination is the one its line names, which a sequence diagram's
-    menu entry writes with an entity for its `#`, so a destination the
-    bundle rewrote reads as `#<slug>` whatever form wrote it. Its text
-    and title are its `source.Click` opening and title, so either one the bundle
-    changed is a use it did not preserve.
+    `kind` classifies the use, `text` holds its opening text, `title` holds its
+    title, and `destination` holds its normalized destination. Diagram field
+    interpretation follows `source.Click`.
     """
 
     def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
@@ -333,14 +267,10 @@ def alternative(image: Token, compacted: bool = False) -> str:
 def uses(
     inline: Token, compacted: bool = False
 ) -> Iterator[tuple[Sequence[Token], int, Use]]:
-    """Every link and image use one inline token carries, with its position.
+    """Inline uses with their containing event run and position.
 
-    Each use arrives with the run that carries it and its position in
-    that run, which is where a mark is read from, so a use written
-    inside an image's alternative content is compared on the run it
-    was written in. Both sides of every comparison read the run the
-    same way, and a command block's compacted form reads a raw tag as
-    the text it spells.
+    Traversal follows `source.events`. A compacted command block's content
+    uses `read` for text interpretation.
     """
     for children, at, child in events(inline.children or []):
         if child.type == LINK_OPEN:
@@ -370,12 +300,10 @@ def uses(
 def carried(
     tokens: Sequence[Token], span: Token, compacted: Collection[int] = ()
 ) -> Iterator[tuple[Sequence[Token], int, Use]]:
-    """Every use one region carries, in source order, with its position.
+    """Every comparable use in one region, in source order.
 
-    An inline token's uses arrive as `uses` reads them. A diagram's link
-    destinations arrive in the order its fence writes them, each on no
-    run of inline events, opening with its `source.Click` opening. The
-    compacted inline tokens are named by identity.
+    Inline uses come from `uses`; diagram uses follow `source.Click` and the
+    order `source.clicks` supplies. `compacted` names inline tokens by identity.
     """
     for token in within(tokens, [span]):
         if token.type == INLINE:
@@ -394,11 +322,8 @@ def positions(
 ) -> Iterator[Located | None]:
     """Where each use one region carries is written, in the order `carried` reads them.
 
-    A link is located by its inline block's first line, the table column
-    that block stands in, and its position among the links that block
-    writes, which is how a composing link's
-    contribution is held, and a diagram link by the line and offset of
-    its destination. An image composes nothing.
+    Inline identities use `provenance.link_at`; diagram identities use
+    `provenance.click_at` on `source.Click`. Images have no composing identity.
     """
     for token in within(tokens, [span]):
         if token.type == INLINE:
@@ -427,44 +352,14 @@ def intended(
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> Use:
-    """The use the bundle must publish for one use its source wrote.
+    """Compute the expected published fields of one source use.
 
-    A link the bundle compiled carries the destination it assigned the
-    target that link resolved to, and shows the text its author wrote.
-    Every other use is published as its author wrote it, a
-    reference-style use at the inline form the definition it names
-    gives it.
-
-    A deferred link naming a declaring document points at the
-    destination `rebased` publishes from `folder`, the folder the
-    bundle is written into, and its title gains the run's
-    names its target's settings carry. A dispatched link points at the
-    bundle file or dispatch-set sub-section its region carries for its
-    target. A link
-    resolving nowhere the bundle is responsible for is published as
-    authored like any other mention.
-
-    What a withheld link shows is its author's text with its mark taken
-    off, except a dispatch pointing at a bundle file, which shows the
-    dispatch mark: the destination states the withholding, so any other
-    mark is authoring syntax. A reference the bundle gave no
-    destination keeps its text whole.
-
-    Whether the bundle compiled the link is read from the text the
-    link's content opens with, as discovery and emission read it, so a
-    withheld link the parser places inside a formatting event is the
-    same withholding to all three.
-
-    The run passed in is the one that carries the use, which is an
-    image's alternative content where the use was written there, so
-    the opening is read from the event the author wrote it on.
-
-    A diagram link's opening follows diagram_labels for local dispatches;
-    its other text follows its source.Click opening. A deferral's tooltip
-    follows deferred_title. The anchor it takes is the one the bundle writes
-    in the line, which no parser normalizes, read as the destination it
-    names:
-    `#<slug>`, whichever spelling the line's form writes.
+    Resolve its target through `closure.bundled` or `closure.withholding_target`,
+    applying the supplied maps. Deferred destinations use `closure.rebased`
+    and `closure.deferred_title`. Visible text uses `closure.published_text`;
+    diagram fields follow `source.Click`, with local label edits from
+    `bundle.diagram_labels`. The supplied event run is the use's own, including
+    uses inside image alternative content.
     """
     if one.kind == IMAGE:
         return one
@@ -533,10 +428,9 @@ def intended(
 
 
 def withdrawn(one: Use, destination: str) -> Use:
-    """One use pointing where the bundle gave it, its marks taken off its text.
+    """One use with a supplied destination and `closure.unmarked` label.
 
-    A diagram link's tooltip is carried as written and its destination
-    as the bundle writes it in the line, which no parser normalizes.
+    Its kind and title are carried into the result.
     """
     if one.kind == CLICK:
         return Use(one.kind, one.text, one.title, destination)
@@ -546,16 +440,11 @@ def withdrawn(one: Use, destination: str) -> Use:
 def carrying(
     tokens: Sequence[Token], span: Token, compacted: Collection[int] = ()
 ) -> set[int]:
-    """Each line one region's uses and command blocks occupy.
+    """The source lines excluded from the untouched-byte comparison.
 
-    A line the bundle edits is a heading's line, a line of an inline
-    token carrying a link or an image or standing as a command block,
-    or a line a diagram's link destination or element label is written on,
-    with the comment beneath a link naming its dispatch's model:
-    reference-use conversion, destination rewriting and command block
-    compaction reach nowhere else. Every other line of a selected region
-    is bytes the bundle carries as its source wrote them, which is what
-    the preservation comparison holds it to.
+    Collect inline-reference and command-block lines, and the
+    diagram lines subject to `bundle.clicked` or `bundle.diagram_labels`.
+    Include a following `bundle.names_model` line with its diagram use.
     """
     held: set[int] = set()
     for inline in inlines(tokens, [span]):
@@ -597,14 +486,10 @@ def body(
     removed: Collection[int] = (),
     compacted: Collection[int] = (),
 ) -> list[str]:
-    """One region's untouched non-heading lines, in order and without blanks.
+    """Untouched non-heading content lines of one region, in order.
 
-    A blank line is the bundle's own wherever it joins what it emits —
-    above a region, where a removed definition stood, and at a region's
-    end — so the comparison runs over the lines that carry content, and
-    a line carrying nothing but the markers its container opens it with
-    is one of those blanks. The bytes of each line compared are the
-    bytes its source wrote, trailing spaces and indentation included.
+    Exclude the supplied removed lines, `carrying` lines and `bundle.blank`
+    lines. Keep each remaining line's indentation and trailing spaces.
     """
     start, end = span.map or (0, 0)
     skipped = headed(tokens, span) | carrying(tokens, span, compacted) | set(removed)
@@ -620,12 +505,10 @@ def code(
     span: Token,
     local: Mapping[int, Collection[str]] | None = None,
 ) -> list[tuple[str, str, str]]:
-    """Each code example one region holds, as the parser read it.
+    """Comparable code examples in one region.
 
-    A code block's content carries the blank lines inside it, which the
-    line comparison passes over, so the example is compared whole. A
-    diagram's labels follow diagram_labels for the supplied local nodes;
-    undestined sets aside the destinations its use comparison holds.
+    For diagrams, apply `bundle.diagram_labels` for the supplied local nodes,
+    then `undestined` to isolate the code checked here from its link fields.
     """
     start, end = span.map or (0, 0)
     examples = []
@@ -645,14 +528,11 @@ def code(
 
 
 def undestined(example: Token) -> str:
-    """One code example's content with each diagram link destination taken out.
+    """A code example with the diagram fields checked by `references` excluded.
 
-    A line can name several destinations, so they are taken out from the
-    last back, and each offset still names the characters it was read at.
-    A tooltip is taken out with its destination, since a deferral's title
-    gains the run's names, as a tooltip of its own where it carries none,
-    and the use comparison holds the tooltip. The comment `names_model`
-    reads beneath a link's line is taken out with it.
+    `source.Click` supplies each destination offset and written extent;
+    `TOOLTIP` locates a following tooltip. Remove spans last to first so
+    offsets remain valid, and omit `bundle.names_model` lines.
     """
     held = lines(example.content)
     first = 0 if example.map is None else example.map[0] + 2
@@ -670,11 +550,9 @@ def undestined(example: Token) -> str:
 
 
 def prose(tokens: Sequence[Token], span: Token) -> list[Token]:
-    """Each inline token one region carries outside a heading, in source order.
+    """Inline tokens outside headings in a region, in source order.
 
-    A heading's inline content is compared where the outline is, because
-    a converted Setext heading carries on one line what its source wrote
-    on several and the line break reads as the space it already read as.
+    Heading text is checked by `outline`.
     """
     occupied = headed(tokens, span)
     return [
@@ -685,17 +563,10 @@ def prose(tokens: Sequence[Token], span: Token) -> list[Token]:
 
 
 def parts(groups: Sequence[Group]) -> list[tuple[str, str]]:
-    """What each emitted part of the bundle carries, in bundle order.
+    """Descriptions of emitted parts for a boundary error.
 
-    A group writes its own heading and then one part for each part the
-    provenance records, so a part after the first is named by that
-    record: a selected range names the document and the lines it was
-    taken from, a structural ancestor names the heading it emits, and a
-    generated heading names what the arrangement produced it as. A
-    boundary then names two pieces of source rather than two offsets
-    into the output. A part the provenance records nothing for is named
-    by its position, because the count is the structural pairing's to
-    report and a boundary still has to say which part it concerns.
+    Name each part from its `provenance.Record`; use its position when that
+    record has no corresponding entry. `structure` checks the pairing itself.
     """
     named: list[tuple[str, str]] = []
     for one in groups:
@@ -747,19 +618,10 @@ def container(spans: Sequence[Token], at: int) -> Token | None:
 def boundaries(
     physical: Sequence[str], spans: Sequence[Token], groups: Sequence[Group]
 ) -> None:
-    """Hold each emitted part to opening a region of the candidate's own.
+    """Require every emitted part to open its own candidate region.
 
-    The assembly writes one blank line between parts, and a blank line
-    separates most blocks. It does not end an unterminated code
-    example, and it does not separate two lists that share a marker or
-    a list from an indented block below it, so a part can land inside
-    the part above it without producing invalid Markdown. The reparse
-    is what reveals it: a part whose opening line begins no
-    document-level region of the candidate was absorbed by the part
-    that holds it.
-
-    A part the candidate has no line for at all is an omission rather
-    than a boundary, and the structural pairing names it as one.
+    Use `bundle.openings` to locate each part in the reparse. An opening inside
+    another block raises `Unsafe`; `structure` handles parts absent entirely.
     """
     named = parts(groups)
     started = {token.map[0] for token in spans if token.map is not None}
@@ -780,19 +642,11 @@ def boundaries(
 def structure(
     spans: Sequence[Token], groups: Sequence[Group]
 ) -> list[tuple[Record, Part, Token]]:
-    """Pair each region the candidate holds with the provenance that claims it.
+    """Pair parsed candidate regions with each group's provenance parts.
 
-    The bundle is, for each group, the filename heading and one region
-    for each part the group records: a selected
-    source range, or a structural ancestor. A group the parent's title
-    opens records that title among its parts and has no filename heading
-    ahead of them. A candidate holding fewer
-    regions than the provenance claims has dropped one; a candidate
-    holding more carries content no part accounts for. The filename
-    wrapper is paired separately from the parts, so it cannot stand in
-    for a missing selected region, and an ancestor is paired as the
-    ancestor it is, so a heading-only part cannot stand in for a
-    selected one either.
+    Check the wrapper separately and pair every remaining part in emission
+    order. Raise `Invalid` for missing, extra or mismatched region kinds, so a
+    heading-only ancestor cannot account for a selected region.
     """
     expected = sum((1 if one.wrapped else 0) + len(one.record.parts) for one in groups)
     if len(spans) != expected:
@@ -858,13 +712,10 @@ def above(tokens: Sequence[Token]) -> dict[int, tuple[int, ...]]:
 
 
 def absorbing(record: Record, path: str, tokens: Sequence[Token]) -> set[int]:
-    """The source line of the heading the group names in one source's place.
+    """The source-title line represented by a group's wrapper or member heading.
 
-    A file group's heading names the document's title, and a merged
-    group's member subsection names its member's, whether the group
-    emitted that title's section or not: a section beneath it is placed
-    by that heading and the title is no structural ancestor. The line
-    is what the outline check reads it as emitted at.
+    Title recognition uses `bundle.document_title`; merged member-title
+    matching uses `bundle.absorbed` against the path stem.
     """
     found = (
         document_title(tokens)
@@ -886,30 +737,12 @@ def sourced(one: Part) -> str | None:
 
 
 def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
-    """Hold one group's parts to the outline their source gave them.
+    """Check each recorded part against its source's ancestor chain.
 
-    Each part the group emits is placed by the chain of eligible
-    ancestor headings the source wrote above it, and every heading of
-    that chain is emitted before it: as the heading that absorbed the
-    source's title, as a selected region of its own, or as a structural
-    ancestor. A chain member the group emits nowhere is an outline the
-    candidate reconstructs differently from the one its author wrote.
-
-    A merged group arranges its members by their conversion settings rather
-    than by any one source's order, and a heading several documents
-    contribute one text to is emitted once for all of them, so the
-    chain is read against every source line the group's headings
-    answer to rather than against the parts emitted before each one.
-    A file group emits its parts in its source's own order, so the
-    chain there is held to what stands above the part as well.
-
-    A composed range stands in the outline its contribution gives it
-    rather than its source's, so it is placed by no source chain.
-
-    The converse is held here as well. A structural ancestor is the
-    only unselected source-derived content a group emits, so each of
-    them places a part that follows it; one placing nothing is content
-    the group emitted for no outline.
+    For a file group, each required ancestor must precede the part it places.
+    For merged groups, match against the complete set of recorded origins.
+    Composed ranges are excluded from source-chain placement. Each structural
+    ancestor must place a later part; otherwise raise `Invalid`.
     """
     answered: dict[str, set[int | None]] = {}
     for each in record.placed():
@@ -957,14 +790,9 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
 def structural(
     record: Record, one: Ancestor, span: Token, tokens: Sequence[Token]
 ) -> None:
-    """Hold one structural ancestor's emitted part to carrying nothing live.
+    """Reject live links and images in a structural ancestor's inline content.
 
-    The part is one region of the candidate, so a body, a sibling or a
-    descendant emitted with it would be a region of its own and the
-    structural pairing reports it, as it reports a part that is no
-    heading. What is left to read is the title: it carries no live link
-    and no live image, because the group emitted it as the literal text
-    its author typed.
+    `structure` checks the region's kind and any additional regions.
     """
     found = [use for inline in inlines(tokens, [span]) for _, _at, use in uses(inline)]
     if found:
@@ -976,20 +804,10 @@ def structural(
 
 
 def coverage(groups: Sequence[Group]) -> None:
-    """Hold each selected source region to being carried once within each group.
+    """Require each selected source range to occur once within its group.
 
-    A region is named by the lines of its source's content it occupies,
-    which two regions carrying the same prose do not share, so repeated
-    identical prose in different source regions is not duplication and
-    counting occurrences of a string decides nothing here.
-
-    The ranges are read by source within each group, because a declared
-    group arranges one document's regions among another's and two
-    regions of one source overlap wherever the group emits them. A
-    document two links place in different groups is carried once in
-    each, since each group is a separate division of the bundle. A
-    composed range is a copy every directive naming its section carries,
-    so it stands outside the count.
+    Compare source coordinates, rather than prose strings, and reject
+    overlapping ranges. Exclude composed ranges from this count.
     """
     carried: dict[tuple[int, str], list[tuple[int, int]]] = {}
     for at, one in enumerate(groups):
@@ -1020,21 +838,9 @@ def emitted(groups: Sequence[Group]) -> list[tuple[Record, Emitted]]:
 
 
 def outline(tokens: Sequence[Token], groups: Sequence[Group]) -> None:
-    """Hold the candidate's headings to the provenance of each one.
+    """Require candidate heading count, visible text and level to match records.
 
-    A carried heading sits at the level its author wrote plus its
-    group's shift, and the carried headings of one group follow their
-    source's own order, so the chain above each of them is the chain
-    its source gave it. A heading the shift would place beyond the
-    sixth level is an overflow the group refuses, and the record is
-    held to that here as well, so a group that stopped refusing one is
-    caught by the provenance rather than by the parse that would read
-    the result as text.
-
-    What this reads is the candidate against the record. The chain a
-    structural ancestor supplies is read from the source outline
-    instead, by `placement`, because the record alone cannot say which
-    ancestors a source gave a heading.
+    `placement` checks source ancestry; `levels` checks recorded source levels.
     """
     found = list(headings(tokens))
     expected = emitted(groups)
@@ -1060,28 +866,13 @@ def outline(tokens: Sequence[Token], groups: Sequence[Group]) -> None:
 
 
 def levels(record: Record) -> None:
-    """Hold one group's placed headings to their source levels and source order.
+    """Check recorded heading levels, depth, group isolation and source order.
 
-    A structural ancestor is placed by the level its author wrote under
-    the shift its arrangement gives it, as a carried heading is, so both
-    are held here: an ancestor emitted at another level would
-    reconstruct an outline its source never wrote.
-
-    A file group emits its headings in its source's order, so that
-    order is held here too. A merged group's order is the grouping
-    rules', which place one document's name beside another's, and the
-    outline each part keeps is held by `placement` instead. A composed
-    heading stands in its contribution's order rather than its source's.
-
-    The record is held to the levels and the order its sources wrote
-    before the candidate is read, because a level beyond the sixth is
-    no heading to a parser: a candidate the record claims an H7 of
-    carries a paragraph there, and reading the candidate first would
-    report the missing heading rather than the depth that lost it.
-
-    A heading the group places sits below the heading opening the group,
-    at whatever level that opening stands, so a nested group's own
-    headings stay beneath it rather than at the level of its division.
+    Each recorded level must equal its origin's level plus shift, stay within
+    `bundle.MAX_LEVEL`, and sit below its generated group opening. Check source
+    order for file groups; merged and composed headings use `placement` for
+    their arrangement. Validate these records before parsing the candidate,
+    because excess heading depth parses as text.
     """
     opening = next(
         (
@@ -1129,12 +920,10 @@ def levels(record: Record) -> None:
 def named(
     tokens: Sequence[Token], groups: Sequence[Group], assigned: Sequence[str]
 ) -> dict[str, tuple[Record, Emitted]]:
-    """The heading each destination reaches, as the renderer reading the bundle does.
+    """Map assigned fragments to the emitted headings they actually reach.
 
-    The fragment the declared renderer generates for each heading of the
-    candidate is derived from the candidate itself, so a destination the
-    map assigned reaches the heading a reader following it reaches, or
-    the bundle is not published.
+    Recompute candidate fragments through `source.fragments` and reject a
+    sequence differing from the assigned fragment sequence.
     """
     generated = fragments([visible(inline) for _, inline in headings(tokens)])
     if generated != list(assigned):
@@ -1179,14 +968,9 @@ def integrity(
 def one_member(groups: Sequence[Group]) -> None:
     """Hold each merged group's emitted heading to answering one member.
 
-    A merged group's members are the documents it merges, and a heading
-    records the targets it answers, each held in one document. A heading
-    answering targets of two documents is where a reference to either
-    member lands, so the two members reach one destination and a link
-    meant for one opens the other's content. A merged heading answers a
-    target only where one document contributes it, a variant heading
-    answers its own document and a member subsection answers that
-    member, so no heading of a correctly built group fails here.
+    Reject a heading whose target answers name more than one source path.
+    `grouping.contributed` and `grouping.overview` assign whole-document
+    targets during construction.
     """
     for group in groups:
         record = group.record
@@ -1205,10 +989,9 @@ def one_member(groups: Sequence[Group]) -> None:
 def leakage(environment: Mapping[str, Any]) -> None:
     """Hold the candidate to carrying no surviving link-reference definition.
 
-    A definition node that survived emission would resolve a label the
-    bundle carries as literal text, so the candidate's own definition
-    environment is empty. A literal example of a definition is inside a
-    code block and declares nothing, which is why it is unchanged.
+    Inspect the `profile.REFERENCES` environment from the candidate parse
+    and reject any declared label. `bundle.group` excludes definition
+    source lines during construction.
     """
     declared = environment.get(REFERENCES, {})
     if declared:
@@ -1221,11 +1004,11 @@ def leakage(environment: Mapping[str, Any]) -> None:
 
 @dataclass(frozen=True)
 class Side:
-    """One side of a region comparison: its region's tokens, its lines, the region.
+    """One side of a region comparison.
 
-    The compacted tokens are the inline tokens standing as command
-    blocks, named by identity: the source's wrapped blocks on its side,
-    and the forms the candidate publishes for them on the other.
+    `tokens` holds the parsed source, `physical` its source lines, and `span`
+    the region being compared. `compacted` holds command-block inline token
+    identities for this side.
     """
 
     tokens: Sequence[Token]
@@ -1235,13 +1018,11 @@ class Side:
 
 
 def compaction(source: Side, published: Side) -> tuple[Side, Side]:
-    """Both sides of one region, each naming the command blocks it carries.
+    """Pair command-block tokens on both sides of a region comparison.
 
-    The bundle publishes a command block without its wrapper, so the
-    candidate's block is the inline content standing where the source's
-    stands among the region's inline content outside headings. A count
-    that differs pairs nothing reliably, and the preservation comparison
-    reports it.
+    Recognize source blocks through `profile.command_block`, then mark their
+    corresponding published inline tokens by position. `preserved` checks the
+    inline counts before comparing their content.
     """
     pairs = [
         (one, each)
@@ -1294,18 +1075,11 @@ def references(
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> None:
-    """Hold one region's uses, diagram links among them, to those its source wrote.
+    """Compare a region's published uses with their expected source uses.
 
-    A use count that differs is text the author wrote as literal
-    brackets read as a reference, or a diagram link the bundle added or
-    dropped, and a use that differs in what it shows, in its title or
-    in where it points is a reference the bundle did not preserve. A
-    diagram's link destinations are the characters of a code example
-    preservation sets aside, so this is where each is held.
-
-    A composing link shows the text its author wrote, its deferral mark
-    taken off, and points at the
-    contribution heading the composition map holds for its position.
+    `intended` supplies expected link fields; `withdrawn` supplies composing
+    uses whose destinations come from the composition map. Reject differences
+    in count or any compared field. Diagram fields follow `source.Click`.
     """
     contributing = {} if composing is None else composing
     expected: list[Use] = []
@@ -1363,14 +1137,12 @@ def preserved(
     dispatched_to: Mapping[Served, str] | None = None,
     conversions: Mapping[str, Conversion] | None = None,
 ) -> None:
-    """Hold one region's untouched bytes and code examples to its source.
+    """Compare a region's untouched lines, code examples and visible prose.
 
-    The lines the bundle does not edit are compared as the bytes they
-    are, the code examples as the parser read them, and the text each
-    inline token shows as a reader reads it, the withholding mark the
-    emission drops taken off the source side where the link carrying it
-    is one the bundle rebased a destination for. Together they are the
-    content of the region: nothing in it is reformatted or repaired.
+    `body` and `code` supply the byte and example comparisons. For inline
+    content, compare `bundle.emitted_visible` with the candidate's `read` text,
+    using `content` for compacted command blocks. Raise `Invalid` on a
+    difference in counts or content.
     """
     wrote = body(source.physical, source.tokens, source.span, removed, source.compacted)
     carries = body(
@@ -1450,16 +1222,11 @@ def dispatches(
     bundle_file: Callable[[Reference], str],
     conversions: Mapping[str, Conversion],
 ) -> None:
-    """Hold each dispatched link's destination to a bundle file or its sub-section.
+    """Check dispatch destinations against their recorded heading or file kind.
 
-    A dispatch-set, dispatch-pick or dispatch-brief sub-section answers
-    to no source target, so what a set's link, a `⇉` link carrying the
-    pick token, or a link whose target's presets in force name a brief,
-    is held to is the kind of heading it reaches; a `⫽` link carrying a
-    brief reaches its set's sub-section, or the one a set of one is
-    lifted into.
-    A destination that is no fragment of the bundle names a file beside
-    it, which no heading stands for.
+    Local destinations must reach the generated dispatch kind selected by
+    the supplied dispatch and conversion context. File destinations are
+    classified by `closure.filed`.
     """
     for (path, _line, _placing), served in dispatching.items():
         for (target, tags, together), destination in served.items():
@@ -1511,16 +1278,11 @@ def parallel_sets(
     read: Mapping[str, Source],
     paired: Sequence[tuple[Record, Part, Token]],
 ) -> None:
-    """Each generated dispatch sub-section lists exactly its effective selection files.
+    """Require each generated dispatch section to list its recorded files.
 
-    A set's sub-section lists its members' files, a dispatch-pick
-    sub-section the file of each alternative its target declares, and a
-    sub-section a dispatch carrying a brief is lifted into its target's
-    file. What a sub-section lists is the dispatch lines the bundle
-    writes beneath it, up to the next heading at its level or above,
-    outside every dispatch sub-section nested in it: a brief it carries is
-    source content, and lists nothing. A set lists the lines of each
-    member sub-section lifted one level below it as well.
+    Read the section's own dispatch lines through its closing heading, passing
+    over nested dispatch sections and including lifted member subsections.
+    Compare the resulting sequence with the supplied dispatch records.
     """
     lines = {
         id(span)
@@ -1628,12 +1390,11 @@ def activation(
     tokens: Sequence[Token],
     folder: BundleFolder = WORKING_FOLDER,
 ) -> None:
-    """Hold a deferred directive's line to the one target a later run composes.
+    """Check the sole link of a deferred contribution against its record.
 
-    The line is the bundle's own text and writes one link, whose
-    destination is the path `rebased` publishes for the target from
-    `folder`, the folder the bundle is written into, the fragment naming
-    its section and its requested presets.
+    Read its target through `closure.resolve` and `closure.BundleFolder.rooted`,
+    and its requested tags through `tags.read`, then compare with
+    `provenance.Instruction.activates`.
     """
     found = [use for inline in inlines(tokens, [span]) for _c, _a, use in uses(inline)]
     resolved = [resolve(use.destination) for use in found]
@@ -1666,27 +1427,18 @@ def validate(
     within: Mapping[Chain, Mapping[tuple[str, str | None], str]] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> None:
-    """Hold the completed candidate to the provenance its construction recorded.
+    """Validate provenance and the completed candidate against their sources.
 
-    A composed range's links to its own section's subsections are held to
-    the headings its copy carries, which `within` holds by its placing,
-    and every link it writes resolves under its copy's pairs, which
-    `Range.selecting` names.
-
-    The record is held to itself first — each selected region carried
-    once, each heading at the level and in the order its source wrote —
-    and the candidate is then reparsed in candidate mode and held to
-    the record, the boundaries between its parts first. A failure
-    raises before anything is published, so a candidate that disagrees
-    with its source provenance publishes nothing.
-
-    `folder` is the folder the bundle is written into, which its
-    deferrals' destinations are published from.
+    Run the record checks first, then reparse through `profile.parse` in
+    candidate mode and run the boundary, structure, reference and preservation
+    checks. `within` supplies each composition copy's target map and
+    `closure.Substitution.composed` its substitutions. `folder` is the
+    publication folder used by `closure.rebased`. A failure raises before the
+    caller can publish the candidate.
     """
     coverage(groups)
     for one in groups:
         if one.record.path not in read:
-            # The `§ Instructions` group answers to no source document.
             continue
         levels(one.record)
         placement(one.record, parsed)
