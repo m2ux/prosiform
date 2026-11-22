@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-1. [Investigate](#⇉-investigate)
+1. [Investigate](#investigate)
 
-### ⇉ Investigate
+### Investigate
 
 Write the case number to the case file, then [Tests](#rules).
 
@@ -26,9 +26,9 @@ The case number is on the ticket.
 
 ### Review
 
-1. [Look again](#⇉-look-again)
+1. [Look again](#look-again)
 
-#### ⇉ Look again
+#### Look again
 
 Write the case number to the case file, then [Tests](#rules-1).
 

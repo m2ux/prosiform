@@ -6,10 +6,10 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## One
 
-1. [X](#⇉-x)
-2. [Y](#⇉-y)
+1. [X](#x)
+2. [Y](#y)
 
-### ⇉ X
+### X
 
 See [the detail](#detail).
 
@@ -19,13 +19,13 @@ See [the detail](#detail).
 
 Detail text.
 
-### ⇉ Y
+### Y
 
-Then [X](#⇉-x-1).
+Then [X](#x-1).
 
 [⇉ Y](y.bundle.md)
 
-#### ⇉ X
+#### X
 
 See [the detail](#detail-1).
 
@@ -37,10 +37,10 @@ Detail text.
 
 ## Two
 
-1. [X](#⇉-x-2)
-2. [Y](#⇉-y-1)
+1. [X](#x-2)
+2. [Y](#y-1)
 
-### ⇉ X
+### X
 
 See [the detail](#detail-2).
 
@@ -50,13 +50,13 @@ See [the detail](#detail-2).
 
 Detail text.
 
-### ⇉ Y
+### Y
 
-Then [X](#⇉-x-3).
+Then [X](#x-3).
 
 [⇉ Y](y.bundle.md)
 
-#### ⇉ X
+#### X
 
 See [the detail](#detail-3).
 

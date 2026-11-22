@@ -4,11 +4,11 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 # Guide
 
-## Plan [Investigate](#⇉-investigate)
+## Plan [Investigate](#investigate)
 
 Do it.
 
-### ⇉ Investigate
+### Investigate
 
 Write the case number to the case file.
 

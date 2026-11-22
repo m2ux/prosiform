@@ -8,10 +8,10 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Look first, then hand it over.
 
-1. [Investigate](#⇉-investigate)
+1. [Investigate](#investigate)
 2. Finish.
 
-### ⇉ Investigate
+### Investigate
 
 Write the case number to the case file before you dispatch.
 

@@ -6,10 +6,10 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-1. [Investigate](#⇉-investigate)
+1. [Investigate](#investigate)
 2. Finish.
 
-### ⇉ Investigate
+### Investigate
 
 Write the case number to the case file, then [Tests](#rules).
 

@@ -13,12 +13,12 @@ Start both.
 
 ### ⫽ Dispatch Set
 
-#### ⇉ Investigate
+#### Investigate
 
 Write the case number to the case file before you dispatch.
 
 [⇉ Investigate](investigate.bundle.md)
 
-#### ⇉ Review
+#### Review
 
 [⇉ Review](review.bundle.md)

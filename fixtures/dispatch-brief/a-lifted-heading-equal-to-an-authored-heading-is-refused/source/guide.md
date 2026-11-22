@@ -7,6 +7,6 @@ prosiform: {}
 
 1. [⇉ Investigate](investigate.md)
 
-### ⇉ Investigate
+### Investigate
 
 An authored section.

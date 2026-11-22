@@ -1,4 +1,4 @@
-description = "A dispatch carrying a brief is lifted into a sub-section headed by its mark and link text, and the section writing it carries an authored heading of that text, which would give two sections one name; the run fails with E_HEADING_COLLISION naming the authored heading and publishes nothing."
+description = "A dispatch carrying a brief is lifted into a sub-section headed by its link text, and the section writing it carries an authored heading of that text, which would give two sections one name; the run fails with E_HEADING_COLLISION naming the authored heading and publishes nothing."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",

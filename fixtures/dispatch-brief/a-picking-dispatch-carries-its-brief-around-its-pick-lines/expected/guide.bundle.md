@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-1. [Stage](#⇉-dispatch-pick "?")
+1. [Stage](#dispatch-pick "?")
 
-### ⇉ Dispatch Pick
+### Dispatch Pick
 
 Name the work before you dispatch.
 

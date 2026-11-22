@@ -119,6 +119,16 @@ from itertools import pairwise
 from markdown_it.token import Token
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
+from ruamel.yaml.nodes import MappingNode
+from ruamel.yaml.tokens import (
+    AliasToken,
+    FlowMappingEndToken,
+    FlowMappingStartToken,
+    FlowSequenceEndToken,
+    FlowSequenceStartToken,
+    ScalarToken,
+    ValueToken,
+)
 
 from prosiform.limits import FILE_BYTES, NESTING
 from prosiform.metadata import (
@@ -814,6 +824,21 @@ class Click:
 
 
 @dataclass(frozen=True)
+class ElementText:
+    """One diagram element's text and its source span within a statement.
+
+    A scalar span holds a metadata mapping; label_span locates its label
+    value. Other spans hold the visible text inside its shape or quotes.
+    """
+
+    node: str
+    text: str
+    offset: int
+    written: str
+    scalar: bool = False
+
+
+@dataclass(frozen=True)
 class Unfollowed:
     """One link Mermaid renders from a form the diagram link reader does not follow.
 
@@ -960,6 +985,8 @@ def read_diagram(fence: Token) -> Diagram:
     destination without `href`, draws no chart: it is read as unparsed
     rather than as a click.
 
+    A node takes the last label element_texts yields for it.
+
     A click or class `link` naming an element an earlier one names is
     read as repeated, beside the earlier one, and is still a click.
     """
@@ -968,7 +995,7 @@ def read_diagram(fence: Token) -> Diagram:
     form = diagram_type(fence.content)
     base = ticket_base(fence.content) if form == KANBAN else None
     anchors = draws_anchors(fence.content)
-    texts = element_texts(fence.content, form)
+    texts = {one.node: one.text for _, one in element_texts(fence.content, form)}
     first = fence.map[0] + 2
     found: list[Click] = []
     broken: list[int] = []
@@ -1023,47 +1050,50 @@ def read_diagram(fence: Token) -> Diagram:
     )
 
 
-def element_texts(content: str, form: str) -> dict[str, str]:
-    """The text one diagram draws for each element a diagram link line can name.
+def element_texts(content: str, form: str) -> Iterator[tuple[int, ElementText]]:
+    """Each flowchart or class label, its content line and its source span.
 
-    A flowchart node's text is what its shape writes, between the
-    shape's opening and closing brackets or as the `label` of its `@{…}`
-    metadata, a quoted text read without its quotes and a Markdown
-    string without its backticks. Mermaid keeps the last text it reads
-    for a node, so a later shape's text replaces an earlier one's. A
-    class's text is the quoted label its `class` statement declares. An
-    element with no such text is drawn with its name, which an author
-    writes as an identifier and not as text, and every other diagram's
-    elements are read for none, so neither is held here.
+    Labels are yielded in written order. Shape text is read by shape_text;
+    class declarations expose the text inside their label quotes.
     """
-    if form == CLASS_DIAGRAM:
-        return {
-            found.group("node"): found.group("label")
-            for physical in lines(content)
-            for statement, _start in statements(bare(physical))
-            if (found := CLASS_LABEL.match(statement)) is not None
-        }
-    if not diagram_opening(content).startswith(FLOWCHARTS):
-        return {}
-    held: dict[str, str] = {}
-    for physical in lines(content):
-        line = bare(physical)
-        if COMMENT_LINE.match(line):
+    if form != CLASS_DIAGRAM and not diagram_opening(content).startswith(FLOWCHARTS):
+        return
+    for line, physical in enumerate(lines(content)):
+        if COMMENT_LINE.match(physical):
             continue
-        for statement, _start in statements(line):
-            if CLICK_STATEMENT.match(statement):
-                continue
-            held.update(shaped(statement))
-    return held
+        for statement, start in statements(bare(physical)):
+            if form == CLASS_DIAGRAM:
+                found = CLASS_LABEL.match(statement)
+                if found is not None:
+                    text = found.group("label")
+                    yield (
+                        line,
+                        ElementText(
+                            found.group("node"),
+                            text,
+                            start + found.start("label"),
+                            text,
+                        ),
+                    )
+            elif not CLICK_STATEMENT.match(statement):
+                for one in shaped(statement):
+                    yield (
+                        line,
+                        ElementText(
+                            one.node,
+                            one.text,
+                            start + one.offset,
+                            one.written,
+                            one.scalar,
+                        ),
+                    )
 
 
-def shaped(statement: str) -> Iterator[tuple[str, str]]:
-    """Each node one flowchart statement writes a shape for, with the shape's text.
+def shaped(statement: str) -> Iterator[ElementText]:
+    """Each flowchart shape's node, text and source span within one statement.
 
-    A quoted string and an edge's `|…|` text outside a shape are text
-    no node is named in, so the scan passes over them. An edge ending in
-    a circle or a cross, written against the node it reaches as in
-    `A---oB[Text]`, ends at `B`, as Mermaid's lexer reads it.
+    Quoted strings and edge text outside shapes carry no node. An edge
+    ending in a circle or cross addresses the following node name.
     """
     at = 0
     while at < len(statement):
@@ -1081,7 +1111,42 @@ def shaped(statement: str) -> Iterator[tuple[str, str]]:
             node = node[1:]
         text, at = shape_text(statement, found.end(), found.group("open"))
         if text is not None:
-            yield node, text
+            scalar = found.group("open") == METADATA_SHAPE
+            offset = (
+                found.end() - 1 if scalar else statement.index(text, found.end(), at)
+            )
+            written = statement[offset:at] if scalar else text
+            yield ElementText(node, text, offset, written, scalar)
+
+
+def label_span(label: ElementText) -> tuple[int, str]:
+    """The label value's offset and spelling inside one element's statement.
+
+    Metadata keys are resolved by YAML composition. The corresponding
+    top-level value token locates the scalar or alias as it is written,
+    excluding an anchor or tag that belongs to that value.
+    """
+    if not label.scalar:
+        return label.offset, label.written
+    parser = YAML(typ="safe", pure=True)
+    mapping = parser.compose(label.written)
+    assert isinstance(mapping, MappingNode)
+    entry = next(i for i, (key, _) in enumerate(mapping.value) if key.value == LABEL)
+    depth, value = 0, -1
+    taking = False
+    for token in parser.scan(label.written):
+        if isinstance(token, (FlowMappingStartToken, FlowSequenceStartToken)):
+            depth += 1
+        elif isinstance(token, (FlowMappingEndToken, FlowSequenceEndToken)):
+            depth -= 1
+        elif depth == 1 and isinstance(token, ValueToken):
+            value += 1
+            taking = value == entry
+        elif taking and isinstance(token, (ScalarToken, AliasToken)):
+            assert token.start_mark is not None and token.end_mark is not None
+            start, end = token.start_mark.index, token.end_mark.index
+            return label.offset + start, label.written[start:end]
+    raise AssertionError("a metadata label has a scalar or alias value token")
 
 
 def shape_text(statement: str, start: int, opener: str) -> tuple[str | None, int]:

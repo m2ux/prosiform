@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-- [Investigate](#⇉-investigate)
+- [Investigate](#investigate)
 
-### ⇉ Investigate
+### Investigate
 
 Write the case number to the case file before you dispatch.
 

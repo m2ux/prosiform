@@ -45,7 +45,7 @@ it. Inside a
 region nothing is touched but the lines a link-reference definition
 occupies and the links the bundle rewrites, so an indented thematic
 break keeps its indent, a delimiter keeps its trailing spaces and a
-code example keeps every byte but a diagram's link destinations. A
+code example carries the diagram edits rewrite names. A
 terminator belongs to the line it terminates and is content as the rest
 of the line is, so a region ends with the newline its source spelled on
 the line that ends it, and every heading the bundle generates ends with
@@ -115,6 +115,7 @@ holds it, so a map built from the document-level headings alone names
 one heading and resolves to another.
 """
 
+import json
 import re
 from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass, replace
@@ -187,9 +188,12 @@ from prosiform.source import (
     Selection,
     bare,
     clicks,
+    diagram_type,
+    element_texts,
     events,
     headings,
     inlines,
+    label_span,
     level,
     lines,
     opening_markers,
@@ -671,8 +675,8 @@ def rewrite(
     a token holding no link and standing as no command block is the text
     its source wrote.
 
-    A diagram's link destination is replaced in the one line it is
-    written on, so the line count holds there too. Several destinations
+    Diagram labels follow diagram_labels; a link destination is replaced
+    on its own line, so the line count holds there too. Several destinations
     on one line are replaced in written order.
 
     A dispatched link takes the destination its region carries for its
@@ -743,6 +747,8 @@ def rewrite(
                 continue
             held = lines(fence.content)
             first = 0 if fence.map is None else fence.map[0] + 1
+            prepared: list[tuple[Click, str | Titled | Followed]] = []
+            local: set[str] = set()
             for click in clicks(fence):
                 located = click_at(path, click)
                 given = (
@@ -764,9 +770,59 @@ def rewrite(
                     )
                 )
                 if given is not None:
-                    at = click.line - 1
-                    written[at] = clicked(written[at], held[at - first], click, given)
+                    prepared.append((click, given))
+                    if (
+                        dispatched(click.opening)
+                        and isinstance(given, str)
+                        and not filed(given)
+                    ):
+                        local.add(click.node)
+            changed, edits = diagram_labels(fence, local)
+            for line in edits:
+                physical = written[first + line]
+                prefix = physical[: len(bare(physical)) - len(bare(held[line]))]
+                written[first + line] = (
+                    prefix + bare(changed[line]) + terminator(physical)
+                )
+            held = changed
+            for click, given in prepared:
+                at = click.line - 1
+                shift = sum(
+                    len(replacement) - len(original)
+                    for offset, original, replacement in edits.get(at - first, [])
+                    if offset + len(original) <= click.offset
+                )
+                adjusted = replace(click, offset=click.offset + shift)
+                written[at] = clicked(written[at], held[at - first], adjusted, given)
     return written
+
+
+def diagram_labels(
+    fence: Token, local: Collection[str]
+) -> tuple[list[str], dict[int, list[tuple[int, str, str]]]]:
+    """Unmark diagram labels whose nodes navigate to local dispatch sections.
+
+    Each edit names its original content-line offset, original spelling
+    and replacement. Metadata label values use a quoted JSON scalar,
+    which YAML reads as the same string. Other source bytes and content
+    line counts are preserved, so click offsets shift by edits before them.
+    """
+    held = lines(fence.content)
+    edits: dict[int, list[tuple[int, str, str]]] = {}
+    for line, label in element_texts(fence.content, diagram_type(fence.content)):
+        if label.node not in local or not dispatched(label.text):
+            continue
+        offset, original = label_span(label)
+        text = unmarked(label.text)
+        replacement = json.dumps(text, ensure_ascii=False) if label.scalar else text
+        edits.setdefault(line, []).append((offset, original, replacement))
+    for line, changes in edits.items():
+        text = bare(held[line])
+        for offset, original, replacement in sorted(changes, reverse=True):
+            assert text[offset : offset + len(original)] == original
+            text = text[:offset] + replacement + text[offset + len(original) :]
+        held[line] = text + terminator(held[line])
+    return held, edits
 
 
 def unplaced(
