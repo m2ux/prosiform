@@ -23,5 +23,10 @@
     "confirmed_date": "2026-11-22",
     "answer": "Disabled"
   },
-  "closure": "pending fresh Development gate and tracker readback"
+  "closure": {
+    "state": "closed",
+    "reason": "completed",
+    "board_status": "Done",
+    "receipt": "completion.json"
+  }
 }

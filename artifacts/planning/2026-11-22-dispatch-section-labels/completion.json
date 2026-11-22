@@ -1,0 +1,39 @@
+{
+  "issue": "https://github.com/m2ux/prosiform/issues/839",
+  "issue_state": "closed",
+  "state_reason": "completed",
+  "closed_at": "2026-11-22T10:02:53Z",
+  "pull_request": "https://github.com/m2ux/prosiform/pull/841",
+  "merge": "e2dde5e569800e5584797bb194bb989f8fb2843b",
+  "verified_criteria": [
+    "AC1",
+    "AC2",
+    "AC3",
+    "AC4",
+    "AC5",
+    "AC6",
+    "AC7",
+    "AC8"
+  ],
+  "body_exact_readback": true,
+  "body_sha256": "d3c39017c9c63f6e46622513e565e605675a5349bfdbd675eab915e151d473f0",
+  "board": "users/m2ux/projectsV2/18",
+  "item_id": 313932203,
+  "status": "Done",
+  "development": {
+    "repository": "m2ux/prosiform",
+    "issues": {
+      "839": [
+        {
+          "repo": "m2ux/prosiform",
+          "number": 841,
+          "state": "MERGED"
+        }
+      ]
+    }
+  },
+  "closure_gate": "passed immediately before closure",
+  "closure_audit": "0 unsupported, 0 unevaluable, 0 not planned",
+  "instrument": "make check at the exact merge revision",
+  "instrument_exit": 0
+}
