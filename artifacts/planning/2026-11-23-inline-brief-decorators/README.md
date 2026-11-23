@@ -17,12 +17,13 @@ The goal is consistent authoring without manual Contract copies or wrapper prose
 | [Released behavior specimen](specimen/result.json) | Actual outputs from five local pf 0.34.0 comparisons |
 | [Specimen method](specimen-method.py) | Exact local comparison program |
 | [Format check](format-check.txt) | Work Planner hotfix-body validation |
+| [Publication](publication.json) | Saved issue equality, format result and Ready board readback |
 
 ## Progress
 
 - [x] Confirm inline, dispatch and plain-link behavior with the user.
 - [x] Verify released behavior and current compiler ownership.
-- [ ] Publish the validated issue and planning record.
+- [x] Publish the validated issue and planning record; F36 is Ready on Project 18.
 - [ ] Implement the planned compiler change after explicit continuation.
 
 ## Links
@@ -31,3 +32,4 @@ The goal is consistent authoring without manual Contract copies or wrapper prose
 | --- | --- |
 | Source baseline | [pf 0.34.0 main](https://github.com/m2ux/prosiform/commit/61ddc5aa1) |
 | Theme board | [Prosiform Python, Project 18](https://github.com/users/m2ux/projects/18) |
+| Planned hotfix | [F36: Inline Briefs](https://github.com/m2ux/prosiform/issues/845) |

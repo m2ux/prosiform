@@ -1,0 +1,15 @@
+{
+  "issue": "https://github.com/m2ux/prosiform/issues/845",
+  "title": "[F36] Inline Briefs: Decorate Local Calls Like Dispatches",
+  "issue_state": "open",
+  "board": "https://github.com/users/m2ux/projects/18",
+  "item_id": 314853844,
+  "status": "Ready",
+  "saved_body_matches_draft": true,
+  "saved_body_sha256": "87a362d09cbda240bddfb43838e33fb6d650d625b56a93873aae9cbce5724b13",
+  "implementation_started": false,
+  "format_check": "#845 hot-fix (open): 0 fixed, 0 to apply, 0 to decide",
+  "planning_commit": "5f71a30d4",
+  "compiler_baseline": "61ddc5aa1",
+  "specimen_compiler": "pf 0.34.0 (prosiform-markdown)"
+}
