@@ -1,5 +1,7 @@
 # Inline Brief Plan
 
+**Cancelled.** The user retains existing inline behavior. This archived proposal authorizes no compiler implementation. See [cancellation](cancellation.json).
+
 ## Confirmed Goal
 
 The user requests the same brief decorator and bundling strategy for inline and dispatch, with the execution destination as their distinguishing boundary. Inline points to a local section; dispatch points to a separate bundle. A plain reference does not acquire the decorator.
@@ -60,4 +62,4 @@ For delivery, compile the paired fixtures with the exact candidate compiler, ins
 
 ## Current State
 
-Planned. No implementation branch, code changes, PR, release or classifier adoption has started.
+Cancelled. F36 is closed as not planned and removed from Project 18. No implementation branch, code changes, PR, release or classifier adoption has started.

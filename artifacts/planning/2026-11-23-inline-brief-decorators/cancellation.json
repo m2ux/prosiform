@@ -1,0 +1,14 @@
+{
+  "recorded_at_utc": "2026-11-23T08:32:09.155625+00:00",
+  "issue": "https://github.com/m2ux/prosiform/issues/845",
+  "issue_state": "closed",
+  "state_reason": "not_planned",
+  "decision": "The user withdraws the inline brief change and keeps current inline behavior.",
+  "user_instruction": "i changed my mind on inline. keep it as is for now. no pf change",
+  "board": "https://github.com/users/m2ux/projects/18",
+  "removed_item": 314853844,
+  "board_removal_verified": true,
+  "implementation_started": false,
+  "compiler_changes": false,
+  "criteria_completed": false
+}
