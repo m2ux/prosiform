@@ -1,0 +1,1 @@
+{"severity": "error", "message": "the directive 'click Call' names 'call.md', a whole document rather than a section of it, so no section answers its composition", "code": "E_UNSUPPORTED_CONSTRUCT", "reference": "call.md", "source": "inline-document.md:11", "chain": ["inline-document.md", "call.md"], "remedy": "name a section of the document"}

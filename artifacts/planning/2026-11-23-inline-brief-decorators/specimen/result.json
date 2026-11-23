@@ -1,0 +1,84 @@
+{
+  "compiler": "pf 0.34.0 (prosiform-markdown)",
+  "passed": true,
+  "cases": [
+    {
+      "case": "dispatch",
+      "exit": 0,
+      "bundle_count": 2,
+      "parent_contract": true,
+      "parent_implementation": false,
+      "parent_headings": [
+        "# \u00a7 Instructions",
+        "# Caller",
+        "## Graph",
+        "### Call",
+        "#### Given",
+        "#### Leaves",
+        "#### Answers"
+      ],
+      "parent_bundle": "dispatch/dispatch.bundles/dispatch.bundle.md"
+    },
+    {
+      "case": "inline-section",
+      "exit": 0,
+      "bundle_count": 1,
+      "parent_contract": false,
+      "parent_implementation": true,
+      "parent_headings": [
+        "# \u00a7 Instructions",
+        "# Caller",
+        "## Graph",
+        "### Implementation",
+        "#### Call"
+      ],
+      "parent_bundle": "inline-section/inline-section.bundles/inline-section.bundle.md"
+    },
+    {
+      "case": "inline-contract",
+      "exit": 0,
+      "bundle_count": 1,
+      "parent_contract": true,
+      "parent_implementation": false,
+      "parent_headings": [
+        "# \u00a7 Instructions",
+        "# Caller",
+        "## Graph",
+        "### Contract",
+        "#### Call",
+        "##### Given",
+        "##### Leaves",
+        "##### Answers"
+      ],
+      "parent_bundle": "inline-contract/inline-contract.bundles/inline-contract.bundle.md"
+    },
+    {
+      "case": "inline-document",
+      "exit": 1,
+      "bundle_count": 0,
+      "parent_contract": false,
+      "parent_implementation": false,
+      "parent_headings": [],
+      "parent_bundle": null
+    },
+    {
+      "case": "ordinary-document",
+      "exit": 0,
+      "bundle_count": 1,
+      "parent_contract": true,
+      "parent_implementation": true,
+      "parent_headings": [
+        "# \u00a7 Instructions",
+        "# Caller",
+        "## Graph",
+        "# Call",
+        "## Contract",
+        "### Given",
+        "### Leaves",
+        "### Answers",
+        "## Implementation"
+      ],
+      "parent_bundle": "ordinary-document/ordinary-document.bundles/ordinary-document.bundle.md"
+    }
+  ]
+}
