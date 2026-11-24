@@ -4,22 +4,26 @@
   "source": "a5a98d94faccc5dc3b4e0ea480bd0a8c3682025f",
   "target": "main",
   "base": "61ddc5aa1a89ddf3f83a5d78a450ccec428aaabf",
-  "draft": true,
+  "draft": false,
   "criteria_verified": [
     "AC1",
     "AC2",
     "AC3",
     "AC4"
   ],
-  "issue_open": true,
+  "issue_open": false,
   "board": {
     "owner": "m2ux",
     "number": 18,
     "item": 316286504,
-    "status": "In Progress"
+    "status": "Done"
   },
   "development_link_verified_both_ends": true,
   "auto_close_setting": "Disabled, previously confirmed by the operator",
   "publication_scope": "Generic compiler code, synthetic fixtures and verification only",
-  "merge": "User review; draft publication requested"
+  "merge": "Confirmed user merge by m2ux",
+  "issue_state": "closed as completed",
+  "merge_commit": "9145c6e670ce6be071eff8c2495259d1e7bbb79e",
+  "merged_at": "2026-11-24T10:07:42Z",
+  "closure_gate": "All four verified criteria ticked; sole Development-linked PR847 merged; repeated fresh closure gate passed."
 }

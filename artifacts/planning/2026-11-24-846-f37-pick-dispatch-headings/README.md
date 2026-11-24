@@ -27,3 +27,7 @@ Implementation and verification precede tracker registration. The hot-fix record
 - [Candidate](https://github.com/m2ux/prosiform/commit/a5a98d94faccc5dc3b4e0ea480bd0a8c3682025f)
 
 - [Draft PR #847](https://github.com/m2ux/prosiform/pull/847)
+
+## Delivery
+
+PR847 is merged by m2ux at 9145c6e670ce6be071eff8c2495259d1e7bbb79e. All four verified criteria and the complete Development relation pass the closure gate. Issue846 is closed as completed and board18 reads Done. [Merge readback](merge-readback.json) retains the confirmed identities; [publication snapshot](delivery-publication.json) retains the requested draft handoff.

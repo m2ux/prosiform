@@ -1,0 +1,25 @@
+{
+  "issue": "https://github.com/m2ux/prosiform/issues/846",
+  "pull_request": "https://github.com/m2ux/prosiform/pull/847",
+  "source": "a5a98d94faccc5dc3b4e0ea480bd0a8c3682025f",
+  "target": "main",
+  "base": "61ddc5aa1a89ddf3f83a5d78a450ccec428aaabf",
+  "draft": true,
+  "criteria_verified": [
+    "AC1",
+    "AC2",
+    "AC3",
+    "AC4"
+  ],
+  "issue_open": true,
+  "board": {
+    "owner": "m2ux",
+    "number": 18,
+    "item": 316286504,
+    "status": "In Progress"
+  },
+  "development_link_verified_both_ends": true,
+  "auto_close_setting": "Disabled, previously confirmed by the operator",
+  "publication_scope": "Generic compiler code, synthetic fixtures and verification only",
+  "merge": "User review; draft publication requested"
+}
