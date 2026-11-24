@@ -17,7 +17,7 @@ exit_status = 1
 severity = "error"
 code = "E_HEADING_COLLISION"
 reference = "investigate.md"
-message_contains = ["carries a brief under the heading"]
+message_contains = ["uses the heading 'Investigate'"]
 
 [expected.diagnostics.location]
 file = "guide.md"

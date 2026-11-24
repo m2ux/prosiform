@@ -98,9 +98,6 @@ CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 PARALLEL = "\u2afd Dispatch Set"
 """The heading of a parallel dispatch set's subsection."""
 
-PICKING = "Dispatch Pick"
-"""The heading of a dispatch-pick subsection."""
-
 CHOICE_SEPARATOR = "—"
 """What stands between a picking dispatch's line and its choice line."""
 
@@ -122,7 +119,7 @@ SELF_REMEDY = (
 CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching it"
 LEVEL_REMEDY = "move the dispatch to a shallower section"
 COLLISION_REMEDY = "retitle the authored heading"
-LIFT_REMEDY = (
+NAMED_REMEDY = (
     "write one of the two dispatches with other link text, or compose the "
     "section writing it under presets routing it alike"
 )
@@ -598,8 +595,8 @@ class Placing:
         self.inner_level = 0
         self.briefer = briefer
         self.briefs: dict[Served, Reference | None] = {}
-        self.lifts: dict[str, str] = {}
-        """The bundle file each lifted sub-section's heading names."""
+        self.named_files: dict[str, tuple[str, ...]] = {}
+        """The selected bundle files each named dispatch subsection addresses."""
         self.first: dict[tuple[str, int, tuple[Served, ...]], Region] = {}
         """The copy of each composed region whose dispatches its later copies share.
 
@@ -782,29 +779,37 @@ class Placing:
             )
         )
 
-    def lifted(self, link: Link, file: str, depth: int, outer: Chain) -> int:
-        """Emit a briefed dispatch's subsection and return its heading position.
+    def named(self, link: Link, files: tuple[str, ...]) -> str:
+        """Reserve a dispatch's link text for its selected bundle files.
 
-        The link's text supplies the heading, which must name one bundle file
-        throughout the run and differ from `PICKING`. `looping` checks its
-        brief chain, `fits` its depth, and `briefed` places its contents.
+        One heading names one effective selection throughout the bundle;
+        a different selection using that heading raises `HEADING_COLLISION`.
         """
         text = link.text
-        earlier = self.lifts.get(text)
-        if text == PICKING or (earlier is not None and earlier != file):
+        earlier = self.named_files.get(text)
+        if earlier is not None and earlier != files:
             raise Refused(
                 Diagnostic(
                     ERROR,
-                    f"the dispatch {link.written!r} carries a brief under the "
+                    f"the dispatch {link.written!r} uses the "
                     f"heading {text!r}, which pf emits in the same bundle for "
                     f"another dispatch",
                     code=HEADING_COLLISION,
                     reference=link.written,
-                    remedy=LIFT_REMEDY,
+                    remedy=NAMED_REMEDY,
                     location=link.location,
                 )
             )
-        self.lifts[text] = file
+        self.named_files[text] = files
+        return text
+
+    def lifted(self, link: Link, file: str, depth: int, outer: Chain) -> int:
+        """Emit a briefed dispatch's subsection and return its heading position.
+
+        `named` reserves its heading, `looping` checks its brief chain,
+        `fits` its depth, and `briefed` places its contents.
+        """
+        text = self.named(link, (file,))
         self.looping(link)
         fits(depth, link)
         at = self.heading(text, depth, BRIEF_SECTION)
@@ -919,23 +924,26 @@ class Placing:
     def picked(self, link: Link, depth: int, outer: Chain) -> int:
         """Emit one dispatch-pick subsection and return its heading position.
 
-        `closure.alternatives_of` supplies the choices, `choices` renders
-        them, and `briefed` places the brief around their lines. `looping`
-        checks the brief chain and `fits` the heading depth.
+        `closure.alternatives_of` supplies the choices, `named` reserves
+        their heading, and `choices` renders them. `briefed` places the
+        brief around their lines, `looping` checks its chain, and `fits`
+        checks the heading depth.
         """
         self.looping(link)
         fits(depth, link)
         conversion = self.read[link.reference.path].conversion
-        at = self.heading(PICKING, depth, PICK_SECTION)
+        alternatives = list(alternatives_of(link.reference, conversion))
+        files = tuple(self.bundle_file(one) for one, _ in alternatives)
+        at = self.heading(self.named(link, files), depth, PICK_SECTION)
         listed = choices(
             [
                 (
-                    self.bundle_file(one),
+                    file,
                     link.text,
                     alternative.choice or "",
                     model_of(one, conversion),
                 )
-                for one, alternative in alternatives_of(link.reference, conversion)
+                for file, (one, alternative) in zip(files, alternatives, strict=True)
             ]
         )
         self.briefed(link, depth, [Instruction(listed)], outer)
