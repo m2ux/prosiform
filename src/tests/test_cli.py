@@ -2421,8 +2421,8 @@ def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
     assert "# Epic-Body" in run.bundles[epic]
     assert "# Task-Body" in run.bundles[task]
     assert (
-        f'Populate [the body](#dispatch-pick "{title}").\n\n'
-        f"### Dispatch Pick\n\n"
+        f'Populate [the body](#the-body "{title}").\n\n'
+        f"### the body\n\n"
         f"[⇉ the body]({epic}) — Lists its tasks.\n"
         f"[⇉ the body]({task}) — One pull request.\n"
     ) in run.bundle
@@ -3603,14 +3603,14 @@ def test_an_authored_heading_equal_to_the_dispatch_pick_is_refused(
         kinds,
         "guide.md",
         DECLARED + '# Guide\n\nRun [⇉ the body](work-kind.md "?").\n\n'
-        "## Dispatch Pick\n\nText.\n",
+        "## the body\n\nText.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=kinds)
     assert run.status == INPUT_FAILURE
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_COLLISION
-    assert "Dispatch Pick" in diagnostic["message"]
+    assert "the body" in diagnostic["message"]
 
 
 def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
@@ -5404,7 +5404,7 @@ def test_a_dispatching_click_carrying_the_pick_token_points_at_its_pick(
         bundle_file(BundleSelection("kinds.md", None, frozenset({kind})))
         for kind in ("epic", "task")
     )
-    assert '    click Kind "#dispatch-pick" "?"\n' in run.bundle
+    assert '    click Kind "#kind" "?"\n' in run.bundle
     assert f"[⇉ Kind]({epic}) — An epic.\n[⇉ Kind]({task}) — A task.\n" in run.bundle
 
 

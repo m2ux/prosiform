@@ -18,7 +18,7 @@ exit_status = 1
 severity = "error"
 code = "E_HEADING_COLLISION"
 reference = "run.md"
-message_contains = ["carries a brief under the heading 'Run'"]
+message_contains = ["uses the heading 'Run'"]
 
 [expected.diagnostics.location]
 file = "stage.md"

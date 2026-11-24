@@ -122,11 +122,56 @@ def test_a_picking_dispatch_has_a_plain_heading_and_local_graph_label(
     )
     run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert "### Dispatch Pick\n" in run.bundle
-    assert "### ⇉ Dispatch Pick" not in run.bundle
+    assert "### Inspect\n" in run.bundle
+    assert "### ⇉ Inspect" not in run.bundle
     assert "Read(Inspect)" in run.bundle
-    assert 'click Read href "#dispatch-pick" "?"' in run.bundle
+    assert 'click Read href "#inspect" "?"' in run.bundle
     assert run.bundle.count("[⇉ Inspect](") == 2
+
+
+@pytest.mark.parametrize("brief", [False, True])
+def test_distinct_pick_dispatches_keep_their_names_and_choices(
+    tmp_path: Path, brief: bool
+) -> None:
+    settings = '  default:\n    brief: "#contract"\n' if brief else ""
+    written(
+        tmp_path,
+        "read.md",
+        "---\nprosiform:\n" + settings + "  fast:\n    choice: Fast read.\n"
+        "  deep:\n    choice: Deep read.\n"
+        "  taped:\n    choice: Taped read.\n---\n# Read\n\n"
+        "## Inspect Code\n\nRead code.\n\n"
+        "## Inspect Tests\n\nRead tests.\n\n"
+        "## Inspect Configuration\n\nRead configuration.\n\n"
+        "## Contract\n\nThe supplied input is available.\n",
+    )
+    targets = [
+        ("Code", "Inspect Code", "inspect-code"),
+        ("Tests", "Inspect Tests", "inspect-tests"),
+        ("Configuration", "Inspect Configuration", "inspect-configuration"),
+    ]
+    graph = "\n".join(
+        f'{node}(⇉ {name})\nclick {node} href "read.md#{slug}" "?"'
+        for node, name, slug in targets
+    )
+    source = (
+        DECLARED
+        + "# Guide\n\n## Work\n\n```mermaid\nflowchart TD\n"
+        + graph
+        + "\n```\n"
+    )
+    written(tmp_path, "guide.md", source)
+    run = invoke("guide.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "### Dispatch Pick\n" not in run.bundle
+    for node, name, slug in targets:
+        assert run.bundle.count(f"### {name}\n") == 1
+        assert f'click {node} href "#{slug}" "?"' in run.bundle
+        section = run.bundle.split(f"### {name}\n", 1)[1].split("\n### ", 1)[0]
+        assert section.count(f"[⇉ {name}](") == 3
+        for choice in ("Fast read.", "Deep read.", "Taped read."):
+            assert choice in section
+    assert (tmp_path / "guide.md").read_text() == source
 
 
 def test_a_plain_lifted_heading_colliding_with_authored_text_is_refused(
@@ -144,9 +189,45 @@ def test_a_plain_lifted_heading_colliding_with_authored_text_is_refused(
     assert "E_HEADING_COLLISION" in run.stderr
 
 
-def test_plain_dispatch_pick_is_reserved_for_generated_picks(tmp_path: Path) -> None:
+def test_a_lift_can_use_dispatch_pick_as_its_authored_name(tmp_path: Path) -> None:
     written(tmp_path, "read.md", BRIEF)
     written(tmp_path, "guide.md", DECLARED + "# Guide\n\n[⇉ Dispatch Pick](read.md)\n")
     run = invoke("guide.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "## Dispatch Pick\n" in run.bundle
+
+
+@pytest.mark.parametrize("picking_first", [False, True])
+def test_a_pick_and_lift_cannot_name_distinct_selections_with_one_heading(
+    tmp_path: Path, picking_first: bool
+) -> None:
+    written(tmp_path, "read.md", BRIEF)
+    written(
+        tmp_path,
+        "pick.md",
+        "---\nprosiform:\n  fast:\n    choice: Fast read.\n"
+        "  deep:\n    choice: Deep read.\n---\n# Pick\n",
+    )
+    links = ['[⇉ Inspect](pick.md "?")', "[⇉ Inspect](read.md)"]
+    if not picking_first:
+        links.reverse()
+    written(tmp_path, "guide.md", DECLARED + "# Guide\n\n" + "\n\n".join(links))
+    run = invoke("-d", "json", "guide.md", cwd=tmp_path)
     assert run.status == 1
-    assert "E_HEADING_COLLISION" in run.stderr
+    assert run.bundles == {}
+    assert run.diagnostics()[0]["code"] == "E_HEADING_COLLISION"
+
+
+def test_distinct_pick_selections_cannot_share_one_heading(tmp_path: Path) -> None:
+    source = "---\nprosiform:\n  fast:\n    choice: Fast read.\n---\n# Read\n"
+    written(tmp_path, "one.md", source)
+    written(tmp_path, "two.md", source)
+    written(
+        tmp_path,
+        "guide.md",
+        DECLARED + '# Guide\n\n[⇉ Inspect](one.md "?")\n\n[⇉ Inspect](two.md "?")\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=tmp_path)
+    assert run.status == 1
+    assert run.bundles == {}
+    assert run.diagnostics()[0]["code"] == "E_HEADING_COLLISION"
