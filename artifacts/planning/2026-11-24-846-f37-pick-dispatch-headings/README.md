@@ -16,6 +16,7 @@ Implementation and verification precede tracker registration. The hot-fix record
 | --- | --- |
 | [Issue](issue.md) | Hot-fix scope and acceptance criteria |
 | [Pull Request Body](pull-request.md) | Delivering change and validation links |
+| [Delivery Readback](delivery.json) | Verified issue, draft pull request, Development relation and board status |
 | [Test Results](test-results.md) | Reproduction, compiler, packaging, corpus and source checks |
 | [Corpus Output](corpus.log) | Actual final 708-fixture result |
 | [Packaging Output](packaging.log) | Actual recovered thirteen-test packaging result |
@@ -24,3 +25,5 @@ Implementation and verification precede tracker registration. The hot-fix record
 
 - [F37 #846](https://github.com/m2ux/prosiform/issues/846)
 - [Candidate](https://github.com/m2ux/prosiform/commit/a5a98d94faccc5dc3b4e0ea480bd0a8c3682025f)
+
+- [Draft PR #847](https://github.com/m2ux/prosiform/pull/847)

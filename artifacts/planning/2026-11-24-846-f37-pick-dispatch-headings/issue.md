@@ -18,10 +18,10 @@ Target: `main`
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** Three distinct picks with three choices each produce their three named sections and matching local graph targets, with and without briefs, as the compiler regression observes.
-- [ ] **AC2.** Alternative order, choice descriptions, model annotations and bundle destinations retain their declared values, as the fixture corpus verifies.
-- [ ] **AC3.** Conflicting authored headings and distinct pick or brief selections sharing one name are refused without publication, as collision tests verify.
-- [ ] **AC4.** The documented output and fixture expectations describe named pick sections, with compiler tests, corpus, lint, types and changed-document links passing.
+- [x] **AC1.** Three distinct picks with three choices each produce their three named sections and matching local graph targets, with and without briefs, as the compiler regression observes.
+- [x] **AC2.** Alternative order, choice descriptions, model annotations and bundle destinations retain their declared values, as the fixture corpus verifies.
+- [x] **AC3.** Conflicting authored headings and distinct pick or brief selections sharing one name are refused without publication, as collision tests verify.
+- [x] **AC4.** The documented output and fixture expectations describe named pick sections, with compiler tests, corpus, lint, types and changed-document links passing.
 
 ## References
 
