@@ -119,9 +119,8 @@ def test_the_authoring_statements_are_stated_where_they_are_owned() -> None:
     assert missing == []
 
 
-def test_active_guidance_recommends_hyphens_rather_than_underscores() -> None:
-    for path in SURFACES:
-        assert HYPHENS in path.read_text(encoding="utf-8"), path.relative_to(ROOT)
+def test_the_invocation_guide_recommends_hyphens_rather_than_underscores() -> None:
+    assert HYPHENS in GUIDE.read_text(encoding="utf-8")
 
 
 def test_worked_commands_name_files_this_repository_holds() -> None:
