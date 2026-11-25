@@ -128,8 +128,6 @@ which its agent CLI reads rather than `pf`, may declare nothing; every
 other document declares.
 """
 
-import hashlib
-import json
 import os
 import re
 import shlex
@@ -143,7 +141,8 @@ from urllib.parse import quote, unquote
 
 from markdown_it import MarkdownIt
 
-from prosiform.closure import matching_presets
+from prosiform.cli import RUN_FOLDER_SUFFIX, bundle_file, selection_name
+from prosiform.closure import BundleSelection, matching_presets
 from prosiform.source import declaration
 from prosiform.tags import PICK, picks
 from prosiform.tags import read as read_tags
@@ -1035,20 +1034,12 @@ def read_sections(form_directory: Path, form: str) -> dict[str, Section]:
 def entry_bundle(entry: str, presets: frozenset[str] = frozenset()) -> Path:
     """The entry's bundle under an output folder, by the name `pf` derives.
 
-    A selection's name is its path without the Markdown suffix, each
-    separator written as `_`, and a section adds `__` and its fragment. The
-    run's folder takes that name with `.bundles`, and the entry's bundle with
-    `.bundle.md`. Matching declared named presets add `--p-` and the full
-    lowercase SHA256 of their sorted distinct names as compact UTF8 JSON.
+    `presets` are the entry's matching declared names. The run's folder and
+    the entry's bundle take the build's own `prosiform.cli.selection_name`.
     """
     document, _, fragment = entry.partition("#")
-    name = Path(document).with_suffix("").as_posix().replace("/", "_")
-    if fragment:
-        name = f"{name}__{fragment}"
-    if presets:
-        encoded = json.dumps(sorted(presets), ensure_ascii=False, separators=(",", ":"))
-        name += "--p-" + hashlib.sha256(encoded.encode()).hexdigest()
-    return Path(f"{name}.bundles", f"{name}.bundle.md")
+    selection = BundleSelection(document, fragment or None, presets)
+    return Path(selection_name(selection) + RUN_FOLDER_SUFFIX, bundle_file(selection))
 
 
 def read_entry(path: Path) -> str:
