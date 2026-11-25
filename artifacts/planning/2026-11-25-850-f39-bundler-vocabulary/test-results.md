@@ -34,7 +34,9 @@ On `main` at 684437c06 the harness fails `test_active_guidance_recommends_hyphen
 
 ## Eval Harness
 
-`make eval-harness`, at 20bd14715, which the last commit leaves untouched: 819 passed, 39 failed. `main` at 684437c06 gives 819 passed, 39 failed, and the failing tests are the same 39 once their names are read in the new vocabulary. No paid agent session ran.
+`make eval-harness`, at 20bd14715, which the last commit leaves untouched: 819 passed, 39 failed. `main` at 684437c06 gives 819 passed, 39 failed, and the failing tests are the same 39 once their names are read in the new vocabulary. [Issue #852](https://github.com/m2ux/prosiform/issues/852) holds those failures. No paid agent session ran.
+
+A search of `evals/` finds the form `bundle-set` and the classes `missed_run`, `unstated_run` and `misordered_run` in `workflow.py`, `score.py`, the seven `scenarios.toml` files stating a run and the README, and no name from the earlier vocabulary.
 
 ## Recorded Figures
 

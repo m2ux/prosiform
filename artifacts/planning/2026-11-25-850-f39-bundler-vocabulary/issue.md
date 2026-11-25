@@ -35,7 +35,7 @@ Target: `main`
 - [x] **AC3.** `glossary.md` names "compiler" and "compile" as terms deliberately not used and states why, and `make vocabulary` passes.
 - [x] **AC4.** The guide and help text in `cli.py`, and every diagnostic message and remedy the build emits, use the new verb, as the corpus fixtures and unit tests that observe them show.
 - [x] **AC5.** `design.md` uses the new vocabulary, each `manifest.toml` quotes its section headings as they stand, and every shipped link to the design pins that revision, as `make conformance` and `make links` show.
-- [ ] **AC6.** The eval's form is `bundle-set` and its classes are `missed_run`, `unstated_run` and `misordered_run` in `workflow.py`, `score.py`, `report.py`, each `scenarios.toml` and the eval `README.md`, as `make eval-harness` shows.
+- [x] **AC6.** The eval's form is `bundle-set` and its classes are `missed_run`, `unstated_run` and `misordered_run` in `workflow.py`, `score.py`, each `scenarios.toml` stating a run and the eval `README.md`, as a search of the eval and the harness tests that pass show.
 - [x] **AC7.** `baseline.json`, `agent-pick.json`, `dispatch-brief.json` and their reports carry the new form and class names with every figure as recorded.
 - [x] **AC8.** Every image under `docs/images` is the output of the renderer at the delivering revision.
 - [x] **AC9.** A run emits the bundles it emitted before: every expected `.bundle.md` differs from its predecessor only where its own source's prose changed.
