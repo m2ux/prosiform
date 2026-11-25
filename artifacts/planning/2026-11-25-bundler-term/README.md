@@ -4,7 +4,7 @@
 
 Prosiform is a bundler and a run bundles: one word names the tool, the act and the output across the product description, the guide and diagnostics `pf` emits, the documentation, the fixtures, the eval and the contract design. The glossary records "compiler" and "compile" as terms deliberately not used.
 
-The feature is proposed and not yet registered. It is delivered on one branch, `f38-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as one pull request to `main` with one commit per layer. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. The number F38 follows F37, issue #846, and holds until the issue is raised.
+The feature is proposed and not yet registered. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as one pull request to `main` with one commit per layer. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
 
 ## Decisions
 
@@ -71,21 +71,21 @@ Each layer is one commit that passes `make check`, in this order.
 
 ## Tasks
 
-- [ ] Register F38 from [issue.md](issue.md) on board 18.
+- [ ] Register F39 from [issue.md](issue.md) on board 18.
 - [ ] Revise the design on `engineering` and record the revision to pin.
-- [ ] Cut `f38-bundler-vocabulary` from `main` in a worktree.
+- [ ] Cut `f39-bundler-vocabulary` from `main` in a worktree.
 - [ ] Land the noun layer.
 - [ ] Land the build and corpus layer.
 - [ ] Land the documentation and tools layer.
 - [ ] Land the eval layer.
 - [ ] Run the search of AC1, the previous contract tag's corpus against the build, `make eval-harness` and `make check`, and record the results here.
-- [ ] Open the pull request to `main`, link it to F38 through Development, and verify each criterion at the merge revision.
+- [ ] Open the pull request to `main`, link it to F39 through Development, and verify each criterion at the merge revision.
 
 ## Artifacts
 
 | Artifact | Purpose |
 | --- | --- |
-| [issue.md](issue.md) | Proposed body of F38, with its acceptance criteria. |
+| [issue.md](issue.md) | Proposed body of F39, with its acceptance criteria. |
 
 ## Links
 
