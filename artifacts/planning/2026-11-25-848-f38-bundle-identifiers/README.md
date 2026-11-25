@@ -21,7 +21,7 @@ Target: main. Reviewed head: [552230b962](https://github.com/m2ux/prosiform/comm
 | [Pull request](pull-request.md) | Review overview and observing checks |
 | [Verification](test-results.md) | Method, results, source pins and limits |
 | [Agent review](agent-review.json) | Exact-head review and criterion evidence |
-| [Checklist](todo.md) | Delivery steps |
+| [Checklist](todo.md) and [final readback](delivery-readback.json) | Completed delivery steps and confirmed In Review state |
 | [Final complete check](named-final-check.log) | Source, harness, corpus, wheel and repository checks |
 | [Fixture audit](named-fixture-audit.json) and [audit script](fixture-diff-audit.py) | Exact naming-only transformation review |
 | [Reviewed source diff](reviewed-source.diff) | Implementation, tests and specification changes |

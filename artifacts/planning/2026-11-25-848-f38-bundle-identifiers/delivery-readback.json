@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-11-25T08:45:34.193076+00:00",
+  "issue": "https://github.com/m2ux/prosiform/issues/848",
+  "criteria": {
+    "AC1": true,
+    "AC2": true,
+    "AC3": true,
+    "AC4": true
+  },
+  "pull_request": "https://github.com/m2ux/prosiform/pull/849",
+  "head": "552230b96269ed26511a9652d16571d8aae07655",
+  "base_ref": "main",
+  "draft": false,
+  "merged": false,
+  "ci": "SUCCESS",
+  "ci_run": "https://github.com/m2ux/prosiform/actions/runs/45578186008",
+  "board": 18,
+  "item": 317498778,
+  "status": "In Review"
+}
