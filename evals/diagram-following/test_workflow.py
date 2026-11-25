@@ -89,6 +89,7 @@ from workflow import (
     read_run,
     read_workflow,
     reported,
+    rooted,
     run_faults,
     section_body,
     slug,
@@ -510,10 +511,14 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
 
 
 def bundle_text(workflow: Workflow, output: Path) -> str:
-    """The entry bundle `pf` bundles from a workflow's diagram form."""
+    """The entry bundle `pf` bundles from a workflow's diagram form.
+
+    The bundle's `↳` lines are read from the form's root, as `rooted` states.
+    """
     run = bundle(workflow, DIAGRAM, output)
     assert run.returncode == 0, run.stderr.decode()
-    return (output / workflow.entry_bundle).read_text()
+    opened = output / workflow.entry_bundle
+    return rooted(opened.read_text(), opened.parent, workflow.form(DIAGRAM))
 
 
 def bundle_path_faults(
@@ -592,9 +597,8 @@ def sub_agent_faults(
         root = workflow.form(form)
         made = bundle_reference(root, request, folder)
         assert made.returncode == 0, made.stderr.decode()
-        return (
-            folder / entry_bundle(reference, effective_presets(root, request))
-        ).read_text()
+        written = folder / entry_bundle(reference, effective_presets(root, request))
+        return rooted(written.read_text(), written.parent, root)
 
     for entry in scenario.trace:
         # `pf` writes every target's bundle beside the entry that dispatches
@@ -605,7 +609,7 @@ def sub_agent_faults(
         if not written:
             faults.append(f"no run writes the bundle {entry.section} follows")
             continue
-        text = written[0].read_text()
+        text = rooted(written[0].read_text(), written[0].parent, workflow.form(form))
         followed[wanted] = written[0].resolve()
         if not opens_with_run_pf(text):
             faults.append(f"{entry.section}'s bundle opens with no run-pf line")
@@ -1471,9 +1475,8 @@ def test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action(
     workflow = next(item for item in CORPUS if item.name == "subagent-first-run")
     first = next(item for item in workflow.scenarios if item.name == "first-hop-run")
     bundled_entry(workflow, tmp_path)
-    ledger = (
-        tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
-    ).read_text()
+    opened = tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
+    ledger = rooted(opened.read_text(), opened.parent, workflow.form(BUNDLE_SET_FORM))
     assert opens_with_run_pf(ledger)
     assert [(link.label, link.destination) for link in inline_lines(ledger)] == [
         ("Close", "steps/closing.md#close")
@@ -1529,10 +1532,15 @@ def test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault(
 
 
 def bundled_entry(workflow: Workflow, output: Path) -> tuple[str, bytes]:
-    """The entry bundle `pf` bundles from the bundle-set form, and its stderr."""
+    """The entry bundle `pf` bundles from the bundle-set form, and its stderr.
+
+    The bundle's `↳` lines are read from the form's root, as `rooted` states.
+    """
     run = bundle(workflow, BUNDLE_SET_FORM, output)
     assert run.returncode == 0, run.stderr.decode()
-    return (output / workflow.entry_bundle).read_text(), run.stderr
+    opened = output / workflow.entry_bundle
+    root = workflow.form(BUNDLE_SET_FORM)
+    return rooted(opened.read_text(), opened.parent, root), run.stderr
 
 
 def test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds(
