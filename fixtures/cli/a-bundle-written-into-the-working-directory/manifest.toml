@@ -3,7 +3,7 @@ description = "A run naming no output folder writes its bundle into the invocati
 clauses = [
   "CLI contract — -o DIR, the invocation working directory when absent",
   "Automatic output names, a selection is named by its path",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
 ]
 
 [invocation]

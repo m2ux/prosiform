@@ -3,7 +3,7 @@ description = "A group an intermediate file declares stands inside the division 
 clauses = [
   "Grouping — Nested groups",
   "Grouping — Composition from the leaves up",
-  "Post-compilation invariants — Group isolation",
+  "Post-bundling invariants — Group isolation",
 ]
 
 [invocation]

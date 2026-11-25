@@ -3,7 +3,7 @@ description = "The code listing prints every error and warning code the build ca
 clauses = [
   "CLI contract — -C, --codes, print every error and warning code the build can report",
   "Metadata failures",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
 ]
 
 [invocation]

@@ -3,8 +3,8 @@ description = "The link that promotes a heading-only structural ancestor is reac
 clauses = [
   "Heading-only structural ancestors — Targets",
   "Heading-only structural ancestors — Deduplication",
-  "Compile before publishing — step 4, expand included source coverage to a fixed point",
-  "Compile before publishing — step 5, derive required heading-only ancestors",
+  "Bundle before publishing — step 4, expand included source coverage to a fixed point",
+  "Bundle before publishing — step 5, derive required heading-only ancestors",
   "Adversarial acceptance fixtures — Partial outlines, ancestor promotion after dependency expansion",
 ]
 

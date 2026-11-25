@@ -3,7 +3,7 @@ description = "A validation-only run naming an output folder validates the run a
 clauses = [
   "CLI contract — -c, accepts -o DIR and writes nothing into that folder",
   "CLI contract — -o DIR, the folder each bundle is written to",
-  "Compile before publishing, no success output is published until the complete candidate has been constructed and validated",
+  "Bundle before publishing, no success output is published until the complete candidate has been constructed and validated",
 ]
 
 [invocation]

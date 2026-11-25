@@ -1,4 +1,4 @@
-description = "rules.md's default pair {steps.md: draft-steps.md} is in force for the link index.md reaches it by, and guide.md's link from ## Checks, read a round later, selects the Checks preset, whose {steps.md: checked-steps.md} holds over default's for that key. rules.md's link to steps.md compiles checked-steps.md, draft-steps.md is never bundled, and the Checks pair is a route rules.md's link names, so the run raises nothing."
+description = "rules.md's default pair {steps.md: draft-steps.md} is in force for the link index.md reaches it by, and guide.md's link from ## Checks, read a round later, selects the Checks preset, whose {steps.md: checked-steps.md} holds over default's for that key. rules.md's link to steps.md bundles checked-steps.md, draft-steps.md is never bundled, and the Checks pair is a route rules.md's link names, so the run raises nothing."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

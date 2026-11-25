@@ -2,7 +2,7 @@ description = "The same link, with its section consolidated into the ancestor it
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Link position",
-  "Post-compilation invariants — Destination stability",
+  "Post-bundling invariants — Destination stability",
 ]
 
 [invocation]

@@ -2,7 +2,7 @@ description = "A selection whose source outline skips a level keeps the gap: the
 
 clauses = [
   "Heading-only structural ancestors — Depth",
-  "Post-compilation invariants — Outline preservation",
+  "Post-bundling invariants — Outline preservation",
   "Adversarial acceptance fixtures — Partial outlines, original skipped heading levels",
 ]
 

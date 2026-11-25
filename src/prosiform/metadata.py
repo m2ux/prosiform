@@ -533,7 +533,7 @@ def _preset(preset: str, mapping: _Node) -> Preset:
             raise _fail(
                 INVALID_CONVERSION_METADATA,
                 f"{name} is refused: {DEFAULT} is in force wherever its document "
-                "is compiled, so it is no alternative a reference picks; write "
+                "is bundled, so it is no alternative a reference picks; write "
                 "the choice within a named preset",
                 key.location,
             )
@@ -548,7 +548,7 @@ def _preset(preset: str, mapping: _Node) -> Preset:
             raise _fail(
                 INVALID_CONVERSION_METADATA,
                 f"{name} is refused: {DEFAULT} is in force wherever its document "
-                "is compiled, so it is no stub a run selects; write the stub "
+                "is bundled, so it is no stub a run selects; write the stub "
                 "within a named preset",
                 key.location,
             )

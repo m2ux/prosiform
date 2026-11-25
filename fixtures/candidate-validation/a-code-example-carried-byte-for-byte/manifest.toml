@@ -2,7 +2,7 @@ description = "A code example keeps its indentation, its runs of spaces, its tra
 
 clauses = [
   "Validation and failure contract — Preservation, untouched non-heading bytes and code examples are not reformatted or repaired",
-  "Post-compilation invariants — Reference preservation",
+  "Post-bundling invariants — Reference preservation",
 ]
 
 [invocation]

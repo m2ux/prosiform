@@ -150,7 +150,7 @@ from prosiform.source import (
 )
 
 DECLARED = "---\nprosiform: {}\n---\n"
-"""The frontmatter block that makes a document a link's compiled target."""
+"""The frontmatter block that makes a document a link's bundled target."""
 
 
 RUN_PF = "Run `pf`, then follow the guidance it prints."
@@ -860,7 +860,7 @@ def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> N
     assert run.diagnostics()[0]["chain"] == ["guide.md#nowhere"]
 
 
-def test_an_entry_is_compiled_as_named_whatever_its_presets_state(root: Path) -> None:
+def test_an_entry_is_bundled_as_named_whatever_its_presets_state(root: Path) -> None:
     """No document writes an entry reference, so no `subst` pair redirects it."""
     written(
         root,
@@ -1678,12 +1678,12 @@ def test_a_preset_no_tag_selects_warns_and_the_run_publishes(root: Path) -> None
         (
             "rules.md",
             "the preset 'Draft' of 'rules.md' is selected by no reference the run "
-            "compiled, so it governs nothing",
+            "bundled, so it governs nothing",
         ),
         (
             "rules.md",
             "the preset 'Checks' of 'rules.md' is selected by no reference the run "
-            "compiled, so it governs nothing",
+            "bundled, so it governs nothing",
         ),
     ]
     [warning] = run.diagnostics()[:1]
@@ -1736,7 +1736,7 @@ def test_a_preset_one_reference_selects_is_used_though_another_leaves_it(
 
 
 def test_a_preset_a_dispatched_bundle_selects_is_used(root: Path) -> None:
-    """The run weighs every bundle it compiles, a dispatched target's among them."""
+    """The run weighs every bundle it writes, a dispatched target's among them."""
     written(
         root,
         "guide.md",
@@ -1777,7 +1777,7 @@ def test_a_preset_on_a_deferred_only_document_warns_nothing(root: Path) -> None:
     assert run.diagnostics() == []
 
 
-def test_a_document_both_deferred_and_compiled_is_weighed(root: Path) -> None:
+def test_a_document_both_deferred_and_bundled_is_weighed(root: Path) -> None:
     """A document a bundle carries is weighed whatever else reaches it."""
     written(
         root,
@@ -1856,7 +1856,7 @@ def test_an_entry_carrying_no_pick_token_is_refused_with_a_remedy_the_run_accept
     """The remedy names the alternative in the links reaching the document.
 
     `--pick` beside such an entry is invalid usage, so the remedy does
-    not name it, and the run compiles once the links name the alternative.
+    not name it, and the run bundles once the links name the alternative.
     """
     written(
         kinds,
@@ -1888,7 +1888,7 @@ ROUTED_BRIEF = (
     "## Notes\n\nSee [the body](body.md#body).\n"
 )
 BRIEF_REMEDY = (
-    "write the brief 'stage.md#given' so it compiles with no alternative in "
+    "write the brief 'stage.md#given' so it bundles with no alternative in "
     "force, since the picking dispatch carrying it leaves the pick to its agent"
 )
 COPY_REMEDY = (
@@ -1919,7 +1919,7 @@ def test_a_copy_an_alternative_routes_is_remedied_at_the_link_placing_it(
 ) -> None:
     """The failure names a link whose own copy is routed, a picking brief first.
 
-    A picking dispatch's brief compiles under no pick, so its remedy names
+    A picking dispatch's brief bundles under no pick, so its remedy names
     the brief; any other copy's names the alternative in its link's title.
     """
     written(tmp_path, "stage.md", ROUTED_BRIEF)
@@ -1981,7 +1981,7 @@ def test_a_default_pair_an_alternative_agrees_with_routes_in_a_copy(
     assert run.diagnostics() == []
 
 
-def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:
+def test_an_entry_picking_one_alternative_bundles_its_route(kinds: Path) -> None:
     run = invoke("-d", "json", '[Body](work-kind.md "task")', cwd=kinds)
     assert run.status == SUCCESS, run.stderr
     assert "# Task-Body" in run.bundle
@@ -1989,7 +1989,7 @@ def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> Non
         (
             "work-kind.md",
             "the preset 'Checks' of 'work-kind.md' is selected by no reference "
-            "the run compiled, so it governs nothing",
+            "the run bundled, so it governs nothing",
         )
     ]
 
@@ -2015,7 +2015,7 @@ LINK_GUIDE = (
         'link Plan "guide.md#plan" "checks"',
     ],
 )
-def test_a_link_entry_compiles_its_destination_whatever_marks_open_it(
+def test_a_link_entry_bundles_its_destination_whatever_marks_open_it(
     root: Path, link: str
 ) -> None:
     """Operator marks direct the agent, so the entry reads none of them."""
@@ -2030,7 +2030,7 @@ def test_a_link_entry_compiles_its_destination_whatever_marks_open_it(
 
 
 @pytest.mark.parametrize("indent", ["    ", "\t"])
-def test_an_indented_link_entry_compiles_as_its_link(root: Path, indent: str) -> None:
+def test_an_indented_link_entry_bundles_as_its_link(root: Path, indent: str) -> None:
     """Whitespace around an entry is no Markdown code block."""
     written(root, "guide.md", LINK_GUIDE)
     plain = invoke('[Plan](guide.md#plan "checks")', cwd=root)
@@ -2115,7 +2115,7 @@ def test_a_link_entry_whose_title_states_operator_marks_is_invalid_usage(
         ('link Body "work-kind.md" "? , checks"', "Task-Body"),
     ],
 )
-def test_a_first_run_pick_compiles_the_named_alternative(
+def test_a_first_run_pick_bundles_the_named_alternative(
     kinds: Path, link: str, body: str
 ) -> None:
     run = invoke(link, "--pick", "Task", cwd=kinds)
@@ -2137,8 +2137,8 @@ def test_a_pick_naming_no_alternative_is_refused_with_a_rerun_remedy(
     assert run.status == SUCCESS, run.stderr
 
 
-def test_a_pick_after_the_listing_compiles_the_named_alternative(kinds: Path) -> None:
-    """The listing names --pick, and the rerun on the same link compiles."""
+def test_a_pick_after_the_listing_bundles_the_named_alternative(kinds: Path) -> None:
+    """The listing names --pick, and the rerun on the same link bundles."""
     link = '[¬ Body](work-kind.md "?")'
     diagnostic = unresolved_of(invoke("-d", "json", link, cwd=kinds))
     assert diagnostic["remedy"] == (
@@ -2239,7 +2239,7 @@ def test_a_dispatched_bundle_counts_the_references_within_it(kinds: Path) -> Non
     assert len(run.bundles) == 2
     assert [name for _, name in unused_presets_of(run)] == [
         "the preset 'Checks' of 'work-kind.md' is selected by no reference "
-        "the run compiled, so it governs nothing"
+        "the run bundled, so it governs nothing"
     ]
 
 
@@ -2281,7 +2281,7 @@ def test_a_deferral_publishes_its_pick_token_as_authored(
 
 
 @pytest.mark.parametrize("link", ["the body", "↳ the body", "⫽ the body"])
-def test_a_compiled_link_carrying_the_pick_token_is_refused(
+def test_a_bundled_link_carrying_the_pick_token_is_refused(
     kinds: Path, link: str
 ) -> None:
     written(kinds, "work-kind.md", WORK_KIND + POPULATE)
@@ -2299,7 +2299,7 @@ def test_a_compiled_link_carrying_the_pick_token_is_refused(
 def test_a_link_to_a_silent_document_keeps_the_pick_token_as_text(
     root: Path,
 ) -> None:
-    """A citation compiles nothing, so its title is the author's text."""
+    """A citation bundles nothing, so its title is the author's text."""
     written(root, "notes.md", "# Notes\n\nText.\n")
     written(root, "guide.md", DECLARED + '# Guide\n\nSee [the notes](notes.md "?").\n')
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -3285,7 +3285,7 @@ def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
     assert run.bundle == ""
 
 
-def test_a_marked_reference_under_the_root_is_not_compiled(root: Path) -> None:
+def test_a_marked_reference_under_the_root_is_not_bundled(root: Path) -> None:
     written(
         root, "guide.md", DECLARED + "# Guide\n\nSee [\u00ac the rules](rules.md).\n"
     )
@@ -3424,7 +3424,7 @@ def test_a_deferral_stands_where_another_reference_carried_its_target(
     assert "It requires [the rules](#rules)" in run.bundle
 
 
-def test_a_dispatched_reference_under_the_root_is_not_compiled(root: Path) -> None:
+def test_a_dispatched_reference_under_the_root_is_not_bundled(root: Path) -> None:
     written(
         root, "guide.md", DECLARED + "# Guide\n\nSee [\u21c9 the rules](rules.md).\n"
     )
@@ -3723,7 +3723,7 @@ def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
 
 
 def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> None:
-    """A title no group emits carries its link as text, so nothing compiles it."""
+    """A title no group emits carries its link as text, so nothing bundles it."""
     written(root, "guide.md", DECLARED + "# Guide\n\nRead [the part](note.md#part).\n")
     written(
         root, "note.md", DECLARED + "# Top [\u21c9 Plan](plan.md)\n\n## Part\n\nBody.\n"
@@ -3998,7 +3998,7 @@ def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
     assert "One rule." not in run.bundle
 
 
-def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> None:
+def test_a_deferred_fragment_of_its_own_document_is_not_bundled(root: Path) -> None:
     written(
         root,
         "guide.md",
@@ -4687,7 +4687,7 @@ def test_a_deferred_link_in_a_dispatched_closure_is_no_hop(root: Path) -> None:
     assert run.diagnostics() == []
 
 
-def test_a_dispatch_a_compiled_dependency_carries_is_a_hop(root: Path) -> None:
+def test_a_dispatch_a_bundled_dependency_carries_is_a_hop(root: Path) -> None:
     dispatching(root, ["guide.md", "a.md", "b.md", "c.md"])
     written(root, "c.md", DECLARED + "# c.md\n\n1. See [shared](shared.md).\n")
     written(root, "shared.md", DECLARED + "# Shared\n\nRun [⇉ d](d.md).\n")
@@ -4819,7 +4819,7 @@ def test_a_dispatched_bundle_carrying_a_deferral_opens_with_the_run_pf_line(
     assert run.bundles["guide.bundle.md"].startswith(f"{opening('Guide')}# Guide\n")
 
 
-def test_a_dispatched_target_whose_compilation_fails_publishes_nothing(
+def test_a_dispatched_target_whose_bundling_fails_publishes_nothing(
     root: Path,
 ) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\nRun [⇉ a](a.md).\n")
@@ -4867,7 +4867,7 @@ def test_a_dispatch_warning_reads_as_text(root: Path) -> None:
     assert "  related: c.md:6:1: dispatches 'd.md'" in run.stderr
 
 
-def test_a_link_opening_with_a_guillemet_is_compiled(root: Path) -> None:
+def test_a_link_opening_with_a_guillemet_is_bundled(root: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\nSee [» the rules](rules.md).\n")
     written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)

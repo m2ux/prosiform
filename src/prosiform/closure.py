@@ -122,7 +122,7 @@ def matching_presets(
     Tags hold normalized complete names. An unmatched name adds nothing,
     and the reserved default token supplies no named selection. A stub
     the run's own names select matches whatever the tags name, since
-    the run selects its entry's stubs wherever it compiles the entry.
+    the run selects its entry's stubs wherever it bundles the entry.
     """
     return tuple(
         preset
@@ -311,7 +311,7 @@ class Substitution:
     def unrecorded(self) -> "Substitution":
         """This mapping, recording what it serves apart from the run's record.
 
-        A caller reading what a link shows rather than compiling it asks
+        A caller reading what a link shows rather than bundling it asks
         through this, so what it resolves serves no key and states no
         substitution the run performed.
         """
@@ -537,11 +537,11 @@ def conflicting(opening: str) -> bool:
 
 
 def deferred(opening: str) -> bool:
-    """Whether a link states that a later run compiles its material."""
+    """Whether a link states that a later run bundles its material."""
     return DEFERRAL_MARK in operators(opening)
 
 
-def compiled_pick(opening: str, tags: frozenset[str]) -> bool:
+def bundled_pick(opening: str, tags: frozenset[str]) -> bool:
     """Whether `tags.picks` applies outside `deferred` and `picking` links."""
     return picks(tags) and not deferred(opening) and not picking(opening, tags)
 
@@ -1052,7 +1052,7 @@ def deferred_title(title: str | None, names: Sequence[str]) -> str | None:
     """The title a deferral publishes: its author's, then the run's names it carries.
 
     The names join the authored tags as further comma-separated names,
-    so the run compiling the deferral reads both from one title.
+    so the run bundling the deferral reads both from one title.
     """
     if not names:
         return title

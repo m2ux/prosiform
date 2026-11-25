@@ -2,7 +2,7 @@ description = "The definition a use names is removed from the bundle while the e
 
 clauses = [
   "Source and candidate validation modes — Candidate mode",
-  "Post-compilation invariants — No definition leakage",
+  "Post-bundling invariants — No definition leakage",
   "Validation and failure contract — Preservation, untouched non-heading bytes and code examples are not reformatted or repaired",
 ]
 

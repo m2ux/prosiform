@@ -1,4 +1,4 @@
-description = "A link naming an identity a subst key names compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry."
+description = "A link naming an identity a subst key names bundles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

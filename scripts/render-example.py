@@ -136,7 +136,7 @@ def tree_of(paths: list[str], root: str) -> str:
 
 
 def arrow(x: int, y: int) -> str:
-    """The compile arrow between the two columns."""
+    """The bundle arrow between the two columns."""
     return (
         f'<path d="M{x} {y} H{x + 18} V{y - 12} L{x + 46} {y + 16} '
         f'L{x + 18} {y + 44} V{y + 32} H{x}Z" fill="{LINK}"/>'
@@ -324,7 +324,7 @@ def draw_overview(root: Path, sources: list[str], bundle: str) -> str:
     blocks.extend(
         [
             arrow(1078, middle),
-            txt(1058, middle + 80, "compile", 21, MUTED),
+            txt(1058, middle + 80, "bundle", 21, MUTED),
         ]
     )
     footer = max(source_bottom, 194 + output_height) + 52
@@ -345,9 +345,9 @@ def draw_overview(root: Path, sources: list[str], bundle: str) -> str:
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">'
-        '<title id="title">Linked Markdown compiles into one complete context</title>'
+        '<title id="title">Linked Markdown bundles into one complete context</title>'
         '<desc id="desc">SKILL.md selects Review Mode. Its two Rules links reach '
-        "one Tests section. The compiled bundle contains the source content once, "
+        "one Tests section. The bundle contains the source content once, "
         "with arrows tracing each link to its heading inside the bundle.</desc>"
         f'<rect width="{width}" height="{height}" fill="{BG}"/>'
         '<g font-family="monospace" xml:space="preserve">'
@@ -394,7 +394,7 @@ def draw(
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" '
         f'viewBox="0 0 {WIDTH} {height}" role="img" aria-labelledby="title desc">'
-        '<title id="title">Authored sources and compiled bundles</title>'
+        '<title id="title">Authored sources and their bundles</title>'
         f'<desc id="desc">The files a run read, beside the bundles it wrote.</desc>'
         f'<rect width="{WIDTH}" height="{height}" fill="{BG}"/>'
         f'<g font-family="{FONT}" xml:space="preserve">'

@@ -1,4 +1,4 @@
-description = "A link naming a document the tree does not hold, whose text opens with the dispatch operator, fails with E_TARGET_NOT_FOUND at the link and publishes nothing, because an operator states that an agent compiles a target that cannot be read."
+description = "A link naming a document the tree does not hold, whose text opens with the dispatch operator, fails with E_TARGET_NOT_FOUND at the link and publishes nothing, because an operator states that an agent bundles a target that cannot be read."
 
 clauses = [
   "Link classification and resource handling — A target that resolves to nothing",

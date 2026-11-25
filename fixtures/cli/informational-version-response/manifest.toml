@@ -3,7 +3,7 @@ description = "The version response reports the tool and the profile identifier,
 clauses = [
   "CLI contract — -v, --version, report tool version and profile identifier",
   "Markdown and source-heading profile, prosiform-markdown",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
 ]
 
 [invocation]

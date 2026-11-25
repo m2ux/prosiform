@@ -1,4 +1,4 @@
-description = "A subst pair redirects only the links its declaring document writes: guide.md's {rules.md: stub.md} compiles stub.md for the guide's own link, while the index linking the guide, the notes the guide links and the substitute stub.md each keep the real rules.md, stub.md's fragment-only link names stub.md's own section, and guide.md's {stub.md: other.md} names no link guide.md writes, so other.md is never read and that pair warns unused."
+description = "A subst pair redirects only the links its declaring document writes: guide.md's {rules.md: stub.md} bundles stub.md for the guide's own link, while the index linking the guide, the notes the guide links and the substitute stub.md each keep the real rules.md, stub.md's fragment-only link names stub.md's own section, and guide.md's {stub.md: other.md} names no link guide.md writes, so other.md is never read and that pair warns unused."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

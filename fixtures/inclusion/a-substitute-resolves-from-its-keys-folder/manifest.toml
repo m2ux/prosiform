@@ -1,4 +1,4 @@
-description = "A preset's subst pair declared in stages/check.md as {../references/rules.md: strict-rules.md} resolves its substitute from the key's directory, so the run compiles references/strict-rules.md in place of references/rules.md, and stages/strict-rules.md beside the declaring file is not read."
+description = "A preset's subst pair declared in stages/check.md as {../references/rules.md: strict-rules.md} resolves its substitute from the key's directory, so the run bundles references/strict-rules.md in place of references/rules.md, and stages/strict-rules.md beside the declaring file is not read."
 
 clauses = [
   "Conversion metadata — subst holds colon pairs",

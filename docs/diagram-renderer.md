@@ -47,7 +47,7 @@ Use a clean Prosiform bundler checkout. In its `src/` directory, run `uv sync --
 | `--max-output-bytes N` | Bundler output-size budget in bytes; use a positive integer. |
 | `--compact` | Retain headings and links; omit other body content in both image panels. |
 | `--input-section-level N` | Input panels: show content through HN (1–6) and titles one level deeper. Defaults to all content. |
-| `--compiled-section-level N` | Compiled panel: same cutoff, independently selected. Defaults to all content. |
+| `--bundled-section-level N` | Bundled panel: same cutoff, independently selected. Defaults to all content. |
 | `--branch NAME` | Bundler branch; required for a detached checkout. Must point to its current commit. |
 | `--revision SHA` | Require an exact bundler commit. |
 
@@ -55,9 +55,9 @@ Grouping comes from each source file's [conversion metadata](../invocation.md#co
 
 For a large document set, add `--compact`. It preserves heading levels, inline and reference links, autolinks and image references. Other prose and code examples are omitted without placeholders. The saved bundle and diagnostics remain complete.
 
-Compact mode affects the image, not the bundle size. If compilation exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
+Compact mode affects the image, not the bundle size. If bundling exceeds the output budget, pass a larger limit, for example `--max-output-bytes 1048576`.
 
-Use `--compact --input-section-level 2 --compiled-section-level 2` to show H3 titles without their body content, links or deeper headings. Content under H1–H2 follows the compact-mode rules. The section cutoff also works without compact mode. Set either panel independently: `--input-section-level 2 --compiled-section-level 3` shows H3 input titles and H4 compiled titles. Omit an option to show that panel at full depth. The saved bundle remains complete.
+Use `--compact --input-section-level 2 --bundled-section-level 2` to show H3 titles without their body content, links or deeper headings. Content under H1–H2 follows the compact-mode rules. The section cutoff also works without compact mode. Set either panel independently: `--input-section-level 2 --bundled-section-level 3` shows H3 input titles and H4 bundled titles. Omit an option to show that panel at full depth. The saved bundle remains complete.
 
 ## Output
 

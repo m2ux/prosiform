@@ -1,4 +1,4 @@
-description = "A link whose text opens with the dispatch mark contributes nothing to the bundle carrying it: its target is compiled to a bundle of its own, and the link is published in place with its mark, pointing at that bundle's file."
+description = "A link whose text opens with the dispatch mark contributes nothing to the bundle carrying it: its target is bundled on its own, and the link is published in place with its mark, pointing at that bundle's file."
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",

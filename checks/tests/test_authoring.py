@@ -21,7 +21,7 @@ from pathlib import Path
 import pytest
 from documents import ROOT
 
-from prosiform.cli import main as compile_main
+from prosiform.cli import main as bundle_main
 from prosiform.cli import parser as command_parser
 from prosiform.entry import published
 
@@ -36,7 +36,7 @@ SURFACES = (GUIDE, README)
 INSTRUCTIONS = (
     (GUIDE, "pf [OPTIONS] REF [--pick ALTERNATIVE]"),
     (SOURCES, "Every key in `prosiform` is a **preset** name"),
-    (SOURCES, "the target's own declaration then decides whether it is compiled"),
+    (SOURCES, "the target's own declaration then decides whether it is bundled"),
     (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
     (GUIDE, "`-o DIR`"),
     (GUIDE, "a section written as `document#fragment`"),
@@ -136,7 +136,7 @@ def test_worked_commands_name_files_this_repository_holds() -> None:
 
 
 @pytest.mark.parametrize("document", SURFACES, ids=lambda path: path.name)
-def test_worked_commands_compile_from_their_documented_directory(
+def test_worked_commands_bundle_from_their_documented_directory(
     document: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Copy the documented source tree so publishing never edits the corpus."""
@@ -147,7 +147,7 @@ def test_worked_commands_compile_from_their_documented_directory(
         shutil.copytree(cwd, copied)
         monkeypatch.chdir(copied)
         stdout, stderr = StringIO(), StringIO()
-        assert compile_main(argv, stdout, stderr) == 0, stderr.getvalue()
+        assert bundle_main(argv, stdout, stderr) == 0, stderr.getvalue()
         assert stdout.getvalue() == ""
         if "-c" not in argv:
             assert list(copied.glob("*.bundles/*.bundle.md"))
@@ -160,7 +160,7 @@ def test_worked_commands_compile_from_their_documented_directory(
     ),
 )
 def test_documented_manifest_invocations_use_the_bundler_grammar(block: str) -> None:
-    """The fixture-authoring templates must reach compilation, not usage refusal."""
+    """The fixture-authoring templates must reach bundling, not usage refusal."""
     invocation = tomllib.loads(block).get("invocation")
     if invocation is None:
         return

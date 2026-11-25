@@ -3,7 +3,7 @@ description = "A reference carrying a scheme, and one carrying an authority, are
 clauses = [
   "Resolution sequence — step 3",
   "Link classification and resource handling — Everything else",
-  "Post-compilation invariants — Reference preservation",
+  "Post-bundling invariants — Reference preservation",
 ]
 
 [invocation]

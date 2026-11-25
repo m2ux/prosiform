@@ -4,7 +4,7 @@ A procedure step often needs material stated elsewhere: the contract of a call i
 
 A directive is a link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`. The mark requests placement and nothing else. Written `¬↳`, as in `[¬↳ Inputs](read.md#inputs)`, the directive is deferred: a later run composes the section, and the bundle publishes the link with its text unmarked. The link's text is the author's, and the run reads no meaning into it or into the title of the section it places.
 
-The design's [Section composition](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
+The design's [Section composition](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
 
 ## What it looks like
 
@@ -70,10 +70,10 @@ The [operators](references.md#operators) and the composition mark share one rule
 | `[→](a.md#in)`, `[¬→](a.md#in)` | refused: an arrow label states no operation |
 | `[¬ ↳ Inputs](a.md#in)` | refused: a blank between two symbols states no one operation |
 | `[⇉↳ Inputs](a.md#in)`, `[⫽↳ Inputs](a.md#in)` | refused: a dispatch sends material to a sub-agent and a directive places it inline, so the two contradict |
-| `[¬⇉ the rules](rules.md)` | refused: a dispatch is compiled up front, so no bundle publishes a deferred one |
+| `[¬⇉ the rules](rules.md)` | refused: a dispatch is bundled up front, so no bundle publishes a deferred one |
 | `[¬ the rules](rules.md)` | a deferral, which withholds its target from this bundle |
 
-Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
+Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
 
 - [an-arrow-label-is-refused](../fixtures/composition/an-arrow-label-is-refused)
 - [a-deferred-arrow-label-is-refused](../fixtures/composition/a-deferred-arrow-label-is-refused)
@@ -198,7 +198,7 @@ Design rule: *Budgets*. Fixtures:
 
 A directive is a reference, so its own title tags select the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: the links the contribution writes resolve through their `subst` pairs layered over the target's `default`, and through no other preset. Each contribution follows its own directive, so a section composed once with a tag selecting a preset that routes one of its links and once without publishes each copy with its own route, and another reference reaching the document, composing or including, routes neither. Two contributions whose presets map one key to two substitutes each publish with their own, and two picking different alternatives each publish with their own pick, since alternatives are counted for each contribution on its own as [Selection](selection.md#presets-in-force) states. The document's own group, where an ordinary link includes it, resolves under the presets its including references select, and no directive's presets reach it, as [The substitution mapping](selection.md#the-substitution-mapping) states. A dispatch's brief is a contribution in this respect, following the presets its dispatch selects, as [Dispatch briefs](dispatch.md#briefs) states. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
 
-An immediate directive and a later compilation of its deferred form use the same title tags. The deferred contribution preserves them in the title of its generated `↳` line, the link the later command runs as written. Scope and target headings supply no selection.
+An immediate directive and a later bundling of its deferred form use the same title tags. The deferred contribution preserves them in the title of its generated `↳` line, the link the later command runs as written. Scope and target headings supply no selection.
 
 Design rule: *Presets and `subst`*. Fixtures:
 
@@ -225,7 +225,7 @@ A deferred directive contributes no content, but keeps its place: the run emits 
 Call the fetcher [↳ Contract](fetch.md#contract); its body is composed by a later run [¬↳ Implementation](fetch.md#implementation).
 ```
 
-compiles to
+bundles to
 
 ```markdown
 ## Fetch the page
@@ -249,7 +249,7 @@ Takes a URL and returns the page it names.
 
 A scope composes a section or defers it: one scope holding an immediate and a deferred directive naming one section is refused.
 
-The `↳` line is the entry that activates the target, run as written from the bundle's folder: `pf '[↳ Implementation](../fetch.md#implementation)'` compiles an untagged target, and a line carrying title tags selects the target's presets by them, its `↳` mark ignored. It compiles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
+The `↳` line is the entry that activates the target, run as written from the bundle's folder: `pf '[↳ Implementation](../fetch.md#implementation)'` bundles an untagged target, and a line carrying title tags selects the target's presets by them, its `↳` mark ignored. It bundles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to bundle, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
 
 Design rules: *Deferred composition* and *Activation*, and *The run-pf line*. Fixtures:
 

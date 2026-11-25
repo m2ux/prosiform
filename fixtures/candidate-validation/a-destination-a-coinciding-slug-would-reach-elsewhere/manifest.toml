@@ -3,9 +3,9 @@ description = "A link whose target's heading text is carried by another group as
 clauses = [
   "Source and candidate validation modes — Candidate mode",
   "Validation and failure contract — Target integrity",
-  "Post-compilation invariants — One intended destination",
+  "Post-bundling invariants — One intended destination",
   "Adversarial acceptance fixtures — Validation modes",
-  "Compile before publishing — step 7",
+  "Bundle before publishing — step 7",
 ]
 
 [invocation]

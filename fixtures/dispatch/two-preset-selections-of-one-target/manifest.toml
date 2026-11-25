@@ -1,6 +1,6 @@
 description = "Two dispatches of one document select independent preset-owned substitutions. Each output contains only its selected body and every source dispatch names that selection's qualified bundle."
 
-clauses = ["Link classification and resource handling — Dispatched bundles", "Link classification and resource handling — Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections", "Post-compilation invariants — One intended destination"]
+clauses = ["Link classification and resource handling — Dispatched bundles", "Link classification and resource handling — Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections", "Post-bundling invariants — One intended destination"]
 
 [invocation]
 cwd = "source"

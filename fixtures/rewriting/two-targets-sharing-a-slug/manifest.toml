@@ -3,7 +3,7 @@ description = "Two bundled headings carrying one slug take a destination apiece,
 clauses = [
   "Bundle destinations — Ordinal assignment",
   "Bundle destinations — Uniqueness",
-  "Post-compilation invariants — One intended destination",
+  "Post-bundling invariants — One intended destination",
   "Validation and failure contract — Uniqueness",
 ]
 

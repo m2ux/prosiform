@@ -1,6 +1,6 @@
 description = "A parallel set retains two effective selections of one target while an equivalent raw request shares its first member. Each generated member names and contains its own selected substitution."
 
-clauses = ["Link classification and resource handling — Dispatched bundles", "Link classification and resource handling — Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections", "Post-compilation invariants — One intended destination"]
+clauses = ["Link classification and resource handling — Dispatched bundles", "Link classification and resource handling — Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections", "Post-bundling invariants — One intended destination"]
 
 [invocation]
 cwd = "source"

@@ -3,7 +3,7 @@ description = "A heading carrying a link is emitted with that link rewritten to 
 clauses = [
   "Link classification and resource handling — Local Markdown document links",
   "Bundle destinations — Visible headings",
-  "Post-compilation invariants — One intended destination",
+  "Post-bundling invariants — One intended destination",
 ]
 
 [invocation]

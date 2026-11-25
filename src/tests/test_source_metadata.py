@@ -16,7 +16,7 @@ from prosiform.metadata import InvalidMetadata
 from prosiform.source import Source, closes_head, content, hashed
 
 DECLARED = "---\nprosiform: {}\n---\n"
-"""The frontmatter block that makes a document a run's entry or compiled target."""
+"""The frontmatter block that makes a document a run's entry or bundled target."""
 
 
 def settings(group: str) -> str:

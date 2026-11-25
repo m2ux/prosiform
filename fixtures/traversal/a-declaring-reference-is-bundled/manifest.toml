@@ -3,7 +3,7 @@ description = "A local Markdown link naming a declaring document is resolved aga
 clauses = [
   "Link classification and resource handling — Local Markdown document links",
   "Link classification and resource handling — A link naming a document that declares nothing",
-  "Compile before publishing — step 4",
+  "Bundle before publishing — step 4",
 ]
 
 [invocation]

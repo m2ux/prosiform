@@ -1,4 +1,4 @@
-description = "Under an entry naming recorded, a deferral to stage.md titled checks publishes checks, recorded, and an untitled one publishes recorded, so the run compiling either selects the recorded stub again."
+description = "Under an entry naming recorded, a deferral to stage.md titled checks publishes checks, recorded, and an untitled one publishes recorded, so the run bundling either selects the recorded stub again."
 
 clauses = [
   "Presets — A deferral carries the run's names",

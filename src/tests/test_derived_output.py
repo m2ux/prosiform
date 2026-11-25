@@ -18,7 +18,7 @@ from test_file_roots import declared
 from prosiform import cli
 
 DECLARED = "---\nprosiform: {}\n---\n"
-"""The frontmatter block that makes a document a run's entry or compiled target."""
+"""The frontmatter block that makes a document a run's entry or bundled target."""
 
 
 def bundle(folder: Path, name: str) -> Path:
@@ -292,17 +292,17 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
 ) -> None:
     written(tmp_path, "a.md", DECLARED + "# A\n\n[⇉ plan](plan.md)\n")
     written(tmp_path, "plan.md", declared("# Plan\n"))
-    original = cli.compiled
+    original = cli.bundle_one
     reads = []
 
-    def edit_after_the_entry(*arguments: Any, **options: Any) -> cli.Compiled:
+    def edit_after_the_entry(*arguments: Any, **options: Any) -> cli.Bundled:
         one = original(*arguments, **options)
         reads.append(one.name)
         if len(reads) == 1:
             (tmp_path / "plan.md").write_text(declared("# Plan, edited\n"))
         return one
 
-    monkeypatch.setattr(cli, "compiled", edit_after_the_entry)
+    monkeypatch.setattr(cli, "bundle_one", edit_after_the_entry)
     run = invoke(tmp_path, "-d", "json", "a.md")
     assert reads == ["a.bundle.md", "plan.bundle.md"]
     assert run.status == 1 and run.stdout == ""

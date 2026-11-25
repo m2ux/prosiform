@@ -3,7 +3,7 @@ description = "Two members of one group whose paths differ only by Markdown exte
 clauses = [
   "Presets — default always applies",
   "Grouping — Residual ambiguity",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
   "Grouping — The parent arrangement",
 ]
 

@@ -82,7 +82,7 @@ This section states what the project has decided about its builds.
 
 ## Agent delivery contract
 
-Successful compilation establishes that the candidate passed validation.
+Successful bundling establishes that the candidate passed validation.
 
 - **Broken pipes:** Report transport failure through a nonzero exit.
 """

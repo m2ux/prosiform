@@ -1,4 +1,4 @@
-description = "Two entry references fail with E_INVALID_USAGE without publication, since a run compiles one entry."
+description = "Two entry references fail with E_INVALID_USAGE without publication, since a run bundles one entry."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 

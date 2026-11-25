@@ -1,4 +1,4 @@
-description = "A directive composes the Hand-off section of stage.md with no title. Its two alternatives route body.md, which only the uncomposed Steps section links, and state no group pair, so no alternative changes the composed section: it compiles with none in force, and the unpicked alternatives raise no warning."
+description = "A directive composes the Hand-off section of stage.md with no title. Its two alternatives route body.md, which only the uncomposed Steps section links, and state no group pair, so no alternative changes the composed section: it bundles with none in force, and the unpicked alternatives raise no warning."
 
 clauses = [
   "Presets — Exactly one alternative",

@@ -168,7 +168,7 @@ def svg(
     revision,
     compact=False,
     input_section_level=None,
-    compiled_section_level=None,
+    bundled_section_level=None,
 ):
     blocks = []
     header = [txt(32, 48, branch_name + " " + revision[:12], 20, AMBER)]
@@ -205,7 +205,7 @@ def svg(
     if compact:
         bundle_body = compact_markdown(bundle_body)
     expected = (
-        limit_section_content(bundle_body, compiled_section_level)
+        limit_section_content(bundle_body, bundled_section_level)
         if bundle
         else "No bundle published."
     )
@@ -220,7 +220,7 @@ def svg(
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="{height}" '
         f'viewBox="0 0 2142 {height}" role="img" aria-labelledby="title desc">'
-        '<title id="title">Source documents and compiled bundle</title>'
+        '<title id="title">Source documents and their bundle</title>'
         '<desc id="desc">Source documents and actual bundler output.</desc>'
         f'<rect width="2142" height="{height}" fill="{BG}"/>'
         f'<g font-family="{FONT}" xml:space="preserve">'
@@ -245,7 +245,7 @@ def main():
         help="Invocation working directory; defaults to the document directory",
     )
     parser.add_argument("--section", help="Select a fragment of the entry document")
-    for panel in ("input", "compiled"):
+    for panel in ("input", "bundled"):
         parser.add_argument(
             f"--{panel}-section-level",
             type=int,
@@ -338,7 +338,7 @@ def main():
         revision,
         compact=options.compact,
         input_section_level=options.input_section_level,
-        compiled_section_level=options.compiled_section_level,
+        bundled_section_level=options.bundled_section_level,
     )
     ET.fromstring(rendered)
     output = options.output.absolute()
@@ -380,12 +380,12 @@ def main():
             f"H{level + 1} sections show titles only."
             for panel, level in (
                 ("Input", options.input_section_level),
-                ("Compiled", options.compiled_section_level),
+                ("Bundled", options.bundled_section_level),
             )
             if level is not None
         ),
         "",
-        "![Source documents and compiled bundle](" + destinations[".svg"].name + ")",
+        "![Source documents and their bundle](" + destinations[".svg"].name + ")",
         "",
         "### Command",
         "",
@@ -401,7 +401,7 @@ def main():
         bundler_revision=revision,
         compact=options.compact,
         input_section_level=options.input_section_level,
-        compiled_section_level=options.compiled_section_level,
+        bundled_section_level=options.bundled_section_level,
         command=command,
         exit_code=status,
         sources={

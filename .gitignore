@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 
-# Compiled bundles, written wherever pf is run. A file under fixtures/ named
+# Bundles, written wherever pf is run. A file under fixtures/ named
 # as a bundle is the corpus's own, a source or an expected bundle, so it is
 # tracked, and so is an expected bundle an example's tests hold.
 *.bundle.md

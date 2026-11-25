@@ -3,7 +3,7 @@ description = "A reference inside a source normalizing to a path above the worki
 clauses = [
   "Link classification and resource handling — A link naming a document that declares nothing",
   "Resolution sequence — step 7",
-  "Compile before publishing — step 1, the invocation working directory captured once",
+  "Bundle before publishing — step 1, the invocation working directory captured once",
 ]
 
 [invocation]

@@ -1,4 +1,4 @@
-description = "A link with no title selects the Hand-off section of stage.md. Its two alternatives route body.md, which only the unselected Steps section links, and state no group pair, so no alternative changes the selected section: it compiles with none in force, and the unpicked alternatives raise no warning."
+description = "A link with no title selects the Hand-off section of stage.md. Its two alternatives route body.md, which only the unselected Steps section links, and state no group pair, so no alternative changes the selected section: it bundles with none in force, and the unpicked alternatives raise no warning."
 
 clauses = [
   "Presets — Exactly one alternative",

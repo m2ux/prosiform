@@ -66,7 +66,7 @@ budgets:
   depth         default 8; link hops from the nearest entry reference
 
 exit statuses:
-  0  successful compilation, validation, or informational response
+  0  successful bundling, validation, or informational response
   2  invalid usage or option combination
 """
 

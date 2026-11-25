@@ -2,9 +2,9 @@ description = "A source whose bytes change between discovery and the recheck bef
 
 clauses = [
   "Source consistency",
-  "Compile before publishing — step 4",
-  "Adversarial acceptance fixtures — Consistency, source modification during compilation",
-  "Compile before publishing — step 8",
+  "Bundle before publishing — step 4",
+  "Adversarial acceptance fixtures — Consistency, source modification during bundling",
+  "Bundle before publishing — step 8",
 ]
 
 fault = "source-changed"
