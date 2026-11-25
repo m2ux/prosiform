@@ -1,5 +1,6 @@
 """Dispatch occurrences publish the bundle for their effective preset selection."""
 
+import hashlib
 import re
 from io import StringIO
 from pathlib import Path
@@ -89,9 +90,9 @@ def test_a_short_preset_collision_preserves_the_published_set(
         for path in (tmp_path / "out").rglob("*")
         if path.is_file()
     }
-    sha256 = cli.hashlib.sha256
+    sha256 = hashlib.sha256
     monkeypatch.setattr(
-        cli.hashlib,
+        hashlib,
         "sha256",
         lambda data: SimpleNamespace(
             hexdigest=lambda: "0" * 12 + sha256(data).hexdigest()[12:]
