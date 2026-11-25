@@ -12,9 +12,9 @@ flowchart TD
     Scope -->|release| Stage
     Lint --> Unit
     Unit --> Release
-    Stage -->|build| Compile
+    Stage -->|build| Bundle
     Stage -->|announce| Announce
-    Compile --> Package
+    Bundle --> Package
     Package --> Sign
     Sign --> Release
     Announce --> Notify
@@ -26,7 +26,7 @@ flowchart TD
     click Lint href "states/lint.md"
     click Unit href "states/unit.md"
     click Stage href "states/stage.md"
-    click Compile href "states/compile.md"
+    click Bundle href "states/bundle.md"
     click Announce href "states/announce.md"
     click Notify href "states/notify.md"
     click Release href "states/release.md"

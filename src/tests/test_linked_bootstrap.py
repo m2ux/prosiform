@@ -1,8 +1,8 @@
 """Installed-command evidence for skill links bundled as separate documents.
 
 The suite builds the wheel, installs it outside the repository, and invokes
-that command by name. It reads a skill entry from disk, compiles each linked
-target as its own process, and retains the sources, command, compiler
+that command by name. It reads a skill entry from disk, bundles each linked
+target as its own process, and retains the sources, command, bundler
 revision, diagnostics and bundle of every run. An entry is a path relative
 to the invocation directory. A leading slash names a path the source root
 cannot contain, so a target outside the caller directory is reached by a
@@ -31,12 +31,12 @@ SKILL = (
     "---\n"
     "name: pf-bootstrap-specimen\n"
     "description: Exercise the Prosiform linked-document bootstrap "
-    "specimen when testing compilation of skill instructions.\n"
+    "specimen when testing bundling of skill instructions.\n"
     "---\n"
     "\n"
     "# Linked Instruction Bootstrap\n"
     "\n"
-    "Read this entry point directly. When the specimen is invoked, compile "
+    "Read this entry point directly. When the specimen is invoked, bundle "
     "each of the three linked documents below separately with `pf`, then "
     "read its bundle before following its instructions.\n"
     "\n"
@@ -47,7 +47,7 @@ SKILL = (
     "fragment when present. A failed "
     "command leaves that document's instructions unavailable; report its "
     "diagnostics and stop. SKILL.md is the entry point the agent already "
-    "read, not a compiler input. These bundles are loaded once for this "
+    "read, not a bundler input. These bundles are loaded once for this "
     "invocation.\n"
     "\n"
     "- [Assemble](modes/assemble.md)\n"
@@ -150,7 +150,7 @@ class Installation:
                 f"{version.stdout!r} {version.stderr!r}"
             )
         self.version = version.stdout
-        (artifacts / "compiler.json").write_text(
+        (artifacts / "bundler.json").write_text(
             json.dumps(
                 {
                     "command": COMMAND,
@@ -191,10 +191,10 @@ class Installation:
             "# Artifact Inventory",
             "",
             "Each row is one installed-command run. "
-            f"The compiler is `{self.version.strip()}`, "
+            f"The bundler is `{self.version.strip()}`, "
             f"wheel `{self.wheel}`, source commit `{self.revision}`.",
             "",
-            "Compiler identity: [compiler.json](compiler.json).",
+            "Bundler identity: [bundler.json](bundler.json).",
             "",
             "| Run | Source tree | Command | Diagnostics | Bundle |",
             "| --- | --- | --- | --- | --- |",
@@ -209,7 +209,7 @@ class Installation:
 
 
 class Stack:
-    """One generated skill tree and the runs that compile its links."""
+    """One generated skill tree and the runs that bundle its links."""
 
     def __init__(self, installation: Installation, name: str) -> None:
         self.installation = installation
@@ -324,7 +324,7 @@ class Stack:
         """The skill's links, read from the entry the agent reads directly."""
         text = self.skill.read_text(encoding="utf-8")
         assert "Read this entry point directly" in text
-        assert "not a compiler input" in text
+        assert "not a bundler input" in text
         links = LINK.findall(text)
         assert [label for label, _target in links] == ["Assemble", "Review", "Defaults"]
         return {
@@ -427,7 +427,7 @@ class Stack:
             ) == "not produced\n"
             assert not (record / "bundle.md").exists()
         identity = json.loads(
-            (self.installation.artifacts / "compiler.json").read_text(encoding="utf-8")
+            (self.installation.artifacts / "bundler.json").read_text(encoding="utf-8")
         )
         assert identity["source_commit"] == self.installation.revision
         assert identity["installed_outside_repository"] is True
@@ -439,10 +439,10 @@ class Stack:
         assert f"]({relative}/sources/)" in inventory
         assert f"]({relative}/command.json)" in inventory
         assert f"]({relative}/stderr.jsonl)" in inventory
-        assert "compiler.json" in inventory
+        assert "bundler.json" in inventory
         assert self.installation.revision in inventory
 
-    def compiled(self, *arguments: str, cwd: Path | None = None) -> str:
+    def bundled(self, *arguments: str, cwd: Path | None = None) -> str:
         """The bundle one run writes into a fresh folder, with no decoy or metadata."""
         folder = Path(tempfile.mkdtemp(prefix="pf-bundles-"))
         result = self.invoke("-o", str(folder), *arguments, cwd=cwd)
@@ -502,7 +502,7 @@ def stack(installation: Installation, request: pytest.FixtureRequest) -> Stack:
     return Stack(installation, slug(request.node.name))
 
 
-def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
+def test_three_skill_links_are_independent_runs(stack: Stack) -> None:
     """Three targets linked from the skill, each with its own group."""
     assemble = stack.tree / "skills/pf-bootstrap-specimen/modes/assemble.md"
     review = stack.tree / "skills/pf-bootstrap-specimen/modes/review.md"
@@ -585,7 +585,7 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
     }
     assert len(stack.targets()) >= 3
     for label in stack.targets():
-        output = stack.compiled(stack.entry(label))
+        output = stack.bundled(stack.entry(label))
         markers, outline, absent = cases[label]
         stack.assert_content(
             output, [*markers, "RUN_LEAF_MARKER", "RUN_TAIL_MARKER"], outline
@@ -595,14 +595,14 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         assert stack.skill.name not in stack.entry(label)
 
 
-def test_a_declaring_link_above_the_invocation_directory_is_compiled(
+def test_a_declaring_link_above_the_invocation_directory_is_bundled(
     stack: Stack,
 ) -> None:
-    """A link leaving the caller directory compiles the declaring document it names."""
+    """A link leaving the caller directory bundles the declaring document it names."""
     other = stack.tree / "skills"
     for label in stack.targets():
-        first = stack.compiled(stack.entry(label))
-        second = stack.compiled(stack.entry(label, cwd=other), cwd=other)
+        first = stack.bundled(stack.entry(label))
+        second = stack.bundled(stack.entry(label, cwd=other), cwd=other)
         assert "RUN_LEAF_MARKER" in first
         assert "RUN_LEAF_MARKER" in second
         assert "](../../../" not in second
@@ -610,7 +610,7 @@ def test_a_declaring_link_above_the_invocation_directory_is_compiled(
 
 def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
     """A fragment keeps the entry file's settings and drops the unselected intro."""
-    output = stack.compiled(stack.entry("Assemble", "steps"))
+    output = stack.bundled(stack.entry("Assemble", "steps"))
     assert "ENTRY_INTRO" not in output
     stack.assert_content(
         output,
@@ -642,7 +642,7 @@ def test_a_named_folder_and_the_working_directory_carry_one_bundle(
 ) -> None:
     """A named folder and the working directory carry one bundle under one name."""
     target = stack.entry("Assemble")
-    expected = stack.compiled(target)
+    expected = stack.bundled(target)
     derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble")
     published = stack.invoke(target, bundle=derived)
     assert published.returncode == 0, published.stderr
@@ -660,7 +660,7 @@ def test_a_named_folder_and_the_working_directory_carry_one_bundle(
 def test_repeated_target_is_included_once(stack: Stack) -> None:
     """Naming one linked target twice publishes its content once."""
     target = stack.entry("Defaults")
-    output = stack.compiled(target)
+    output = stack.bundled(target)
     assert output.count("DEFAULTS_MARKER") == 1
     assert output.count("RUN_LEAF_MARKER") == 1
     derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
@@ -708,7 +708,7 @@ def test_a_shared_source_is_captured_once(stack: Stack) -> None:
             depth=2,
         ),
     )
-    output = stack.compiled("join.md")
+    output = stack.bundled("join.md")
     for marker in (
         "JOIN_MARKER",
         "ALPHA_VIA_MARKER",
@@ -744,10 +744,10 @@ def test_a_shared_source_is_captured_once(stack: Stack) -> None:
 
 
 def test_rewritten_destinations_are_stable(stack: Stack) -> None:
-    """A second compilation rewrites the same destinations and the same file."""
+    """A second bundling rewrites the same destinations and the same file."""
     target = stack.entry("Assemble")
-    first = stack.compiled(target)
-    second = stack.compiled(target)
+    first = stack.bundled(target)
+    second = stack.bundled(target)
     assert first == second
     assert "[Rules](#checks)" in first
     assert "[Checks](#checks-2)" in first
@@ -804,13 +804,13 @@ def test_invalid_metadata_publishes_nothing(stack: Stack, depth: Any) -> None:
 
 
 def test_inventory_links_each_retained_run(stack: Stack) -> None:
-    """The published inventory links the compiler revision and one run's files."""
-    stack.compiled(stack.entry("Defaults"))
+    """The published inventory links the bundler revision and one run's files."""
+    stack.bundled(stack.entry("Defaults"))
     inventory = (stack.installation.artifacts / "inventory.md").read_text(
         encoding="utf-8"
     )
     identity = json.loads(
-        (stack.installation.artifacts / "compiler.json").read_text(encoding="utf-8")
+        (stack.installation.artifacts / "bundler.json").read_text(encoding="utf-8")
     )
     assert identity["source_commit"] in inventory
     assert identity["wheel"] in inventory

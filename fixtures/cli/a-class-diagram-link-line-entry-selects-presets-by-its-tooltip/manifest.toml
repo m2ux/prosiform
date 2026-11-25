@@ -1,4 +1,4 @@
-description = "A class diagram link line entry compiles its destination under the presets its tooltip selects, as an authored class diagram link's tooltip selects them."
+description = "A class diagram link line entry bundles its destination under the presets its tooltip selects, as an authored class diagram link's tooltip selects them."
 
 clauses = [
   "Link entries — A link entry",

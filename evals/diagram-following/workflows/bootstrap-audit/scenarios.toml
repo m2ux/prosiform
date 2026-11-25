@@ -3,7 +3,7 @@
 # under inputs/ holding the value written, then a newline. A trace entry names
 # the section a sub-agent follows, in the order the walk dispatches it, whether
 # it started beside the entry above it, and the action file and value its
-# section states. A compile entry names the references one pf run compiles, from
+# section states. A bundle entry names the references one pf run bundles, from
 # the skill's directory, in the order the session makes them: bare pf for the
 # guide the skill says to run, then the workflow its link names.
 
@@ -34,9 +34,9 @@ dispatch = "review#appraise"
 [[scenario.trace]]
 dispatch = "review#repair"
 
-[[scenario.compile]]
+[[scenario.run]]
 
-[[scenario.compile]]
+[[scenario.run]]
 entry = "sources/workflow.md"
 
 [[scenario]]
@@ -62,7 +62,7 @@ together = true
 [[scenario.trace]]
 dispatch = "review#appraise"
 
-[[scenario.compile]]
+[[scenario.run]]
 
-[[scenario.compile]]
+[[scenario.run]]
 entry = "sources/workflow.md"

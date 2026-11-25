@@ -71,7 +71,7 @@ def test_substitution_keeps_the_occurrences_tags_and_context() -> None:
 @pytest.mark.parametrize(
     "opening", ["Rules", "↳ Rules", "¬ Rules", "⇉ Rules", "⫽ Rules"]
 )
-def test_compiled_and_withheld_resolution_keep_their_own_selection(
+def test_bundled_and_withheld_resolution_keep_their_own_selection(
     opening: str,
 ) -> None:
     mapping = Substitution().governed(

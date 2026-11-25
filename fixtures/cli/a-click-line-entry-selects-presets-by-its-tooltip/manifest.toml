@@ -1,4 +1,4 @@
-description = "A Mermaid click line entry compiles its destination under the presets its tooltip selects, the tooltip read whole as its title, as an authored click's tooltip selects them."
+description = "A Mermaid click line entry bundles its destination under the presets its tooltip selects, the tooltip read whole as its title, as an authored click's tooltip selects them."
 
 clauses = [
   "Link entries — A link entry",

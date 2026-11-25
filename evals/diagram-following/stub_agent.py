@@ -237,7 +237,7 @@ def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None,
     listed = bool(os.environ.get("STUB_AGENT_LISTING"))
     made = [
         (run.by, shlex.join(["pf", *step.args]))
-        for run in item.compile
+        for run in item.runs
         for step in (
             (replace(run, pick=None), run)
             if listed and run.pick is not None
@@ -279,8 +279,8 @@ def handed(section: str, instruction: str) -> str:
 
     A sub-agent reads only this prompt, so it learns its trace's name only
     where the session's instruction stated that name for the session to hand on.
-    A bootstrap skill compiles the documents it carries, so its sections sit
-    under `sources/` and the sub-agent is handed the bundle compiled from that
+    A bootstrap skill bundles the documents it carries, so its sections sit
+    under `sources/` and the sub-agent is handed the bundle written from that
     path.
     """
     target = (

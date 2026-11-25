@@ -8,7 +8,7 @@ That set is a **bundle set**: one bundle for the entry, and one for each effecti
 
 Three files show what a run does. `SKILL.md` links a procedure; the procedure links the rules it is held to.
 
-![A source tree and SKILL.md select Review Mode. Arrows trace its two Rules links to one Tests section. The compiled bundle contains Work Planner, Review Mode and the test rules once, with every link pointing to its heading inside the bundle.](images/run.svg)
+![A source tree and SKILL.md select Review Mode. Arrows trace its two Rules links to one Tests section. The bundle contains Work Planner, Review Mode and the test rules once, with every link pointing to its heading inside the bundle.](images/run.svg)
 
 *Three files read, one bundle written. The links that named other files now name headings in this one.*
 
@@ -39,7 +39,7 @@ Each dispatched target's bundle sits in the same folder under its own selection'
 
 Directories and group names never rename an output. Parent segments above the working directory are kept as filename text, never joined into the output path.
 
-File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
+File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and bundles.
 
 Two bundles of one run that derive one name are refused with `E_PUBLICATION_FAILED`, naming both selections, before any bundle is written: an entry `a/b.md` dispatching `a_b.md` is one such run. So is a run folder or bundle name longer than the output folder's filesystem allows, naming the selection it derives from.
 

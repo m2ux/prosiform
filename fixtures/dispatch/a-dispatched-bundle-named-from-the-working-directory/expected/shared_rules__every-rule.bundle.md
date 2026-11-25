@@ -6,4 +6,4 @@ Run `pf`, then follow the guidance it prints. Follow [Rules](#rules) next.
 
 ### Every Rule
 
-1. Apply every rule the sub-agent compiles.
+1. Apply every rule the sub-agent bundles.

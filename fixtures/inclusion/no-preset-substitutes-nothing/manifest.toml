@@ -1,4 +1,4 @@
-description = "A link written by a document whose governing presets state no subst is compiled as authored: guide.md links rules.md under a default preset stating none, so the bundle carries rules.md although stand-in.md sits beside it, and the run states no substitution."
+description = "A link written by a document whose governing presets state no subst is bundled as authored: guide.md links rules.md under a default preset stating none, so the bundle carries rules.md although stand-in.md sits beside it, and the run states no substitution."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

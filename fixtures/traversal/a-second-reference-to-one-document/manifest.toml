@@ -3,8 +3,8 @@ description = "Two references naming one document carry it once and are rewritte
 clauses = [
   "Link classification and resource handling — Local Markdown document links",
   "Link classification and resource handling — A link naming a document that declares nothing",
-  "Post-compilation invariants — Reference preservation",
-  "Compile before publishing — step 2, each distinct source read once however many references reach it",
+  "Post-bundling invariants — Reference preservation",
+  "Bundle before publishing — step 2, each distinct source read once however many references reach it",
 ]
 
 [invocation]

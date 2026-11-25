@@ -148,7 +148,7 @@ def test_both_consumers_call_the_shared_reader(
     assert ("cli", "draft") in calls
 
 
-def test_a_selected_dispatch_names_and_compiles_its_qualified_bundle(
+def test_a_selected_dispatch_names_and_bundles_its_qualified_bundle(
     tmp_path: Path,
 ) -> None:
     tree(tmp_path)
@@ -197,7 +197,7 @@ def test_the_guide_specifies_link_entries_and_shell_quoting() -> None:
         ("modes/review.md", "Review", ("checks", "final draft")),
     ],
 )
-def test_the_guides_relative_fragment_and_quoted_commands_compile(
+def test_the_guides_relative_fragment_and_quoted_commands_bundle(
     tmp_path: Path, destination: str, section: str, names: tuple[str, str]
 ) -> None:
     metadata = (
@@ -241,7 +241,7 @@ def test_a_leading_dash_path_needs_a_separator_and_a_link_entry_does_not(
     assert "# Reviews\n\n## Guide\n\nBody." in linked.bundle
 
 
-def test_the_guides_click_command_compiles_its_pick(tmp_path: Path) -> None:
+def test_the_guides_click_command_bundles_its_pick(tmp_path: Path) -> None:
     written(
         tmp_path,
         "activities/intake.md",

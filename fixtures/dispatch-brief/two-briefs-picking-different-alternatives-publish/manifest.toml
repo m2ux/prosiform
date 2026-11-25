@@ -1,4 +1,4 @@
-description = "One briefed target is dispatched twice, by links picking its alpha and beta alternatives, each routing the brief's link. Alternatives are counted for each brief copy on its own, so each has exactly one in force and publishes with its own route, each dispatched bundle compiled under its own pick."
+description = "One briefed target is dispatched twice, by links picking its alpha and beta alternatives, each routing the brief's link. Alternatives are counted for each brief copy on its own, so each has exactly one in force and publishes with its own route, each dispatched bundle bundled under its own pick."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",

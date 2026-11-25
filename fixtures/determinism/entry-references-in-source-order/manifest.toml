@@ -3,7 +3,7 @@ description = "The entry documents lead in the order the entry references name t
 clauses = [
   "Input and output contract — Groups, headed by its title or its working-directory path",
   "File-scoped hierarchy — Source order",
-  "Compile before publishing — step 5, assign each emitted heading its destination in bundle order",
+  "Bundle before publishing — step 5, assign each emitted heading its destination in bundle order",
 ]
 
 [invocation]

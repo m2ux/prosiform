@@ -1,4 +1,4 @@
-description = "A Mermaid click whose tooltip is the pick token alone is an ordinary link naming a document this run compiles, so no agent is left to pick: the run refuses the click, naming it by its keyword and node, and publishes no bundle."
+description = "A Mermaid click whose tooltip is the pick token alone is an ordinary link naming a document this run bundles, so no agent is left to pick: the run refuses the click, naming it by its keyword and node, and publishes no bundle."
 
 clauses = [
   "Link classification and resource handling — Examples",

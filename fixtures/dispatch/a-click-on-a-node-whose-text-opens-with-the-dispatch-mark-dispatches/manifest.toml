@@ -1,4 +1,4 @@
-description = "A Mermaid click on a node whose text opens with the dispatch mark dispatches its destination: the target is compiled to a bundle of its own, the click's destination is rewritten to that bundle's file, and the node text is carried as written."
+description = "A Mermaid click on a node whose text opens with the dispatch mark dispatches its destination: the target is bundled on its own, the click's destination is rewritten to that bundle's file, and the node text is carried as written."
 
 clauses = [
   "Link classification and resource handling — Examples",

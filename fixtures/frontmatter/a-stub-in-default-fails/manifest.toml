@@ -1,4 +1,4 @@
-description = "A stub in default fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing, since default is in force wherever its document is compiled."
+description = "A stub in default fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing, since default is in force wherever its document is bundled."
 
 clauses = [
   "Conversion metadata — stub holds one line",

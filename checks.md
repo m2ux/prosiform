@@ -55,13 +55,13 @@ A pull request that touches none of those paths is reported as not checked: the 
 - **Diagnostic codes.** Each catalogue of diagnostic codes is exactly the set the design declares.
 - **Runner.** The runner decides a fixture's result from its manifest and files alone.
 - **Check readings.** Each check parses its own input correctly on cases written to be misread, and the heading-slug rule generates the anchors GitHub generated for a captured document.
-- **Authoring guidance.** Each worked compile command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the compiler's grammar; the architecture lists every package module. Both guides recommend hyphens rather than underscores in names.
+- **Authoring guidance.** Each worked bundle command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the bundler's grammar; the architecture lists every package module. The invocation guide recommends hyphens rather than underscores in names.
 
 #### The Eval Harness
 
 `make eval-harness` checks the [diagram-following eval](evals/diagram-following/README.md), which is the evaluation's own apparatus rather than anything the build's contract states. It is a manual target: it proves what a change to the eval changed, and `make check` leaves it out so a build's checks do not wait on it.
 
-- **Diagram-following corpus.** The [corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, reporting only the warnings a workflow declares, and its forms differ only in their transitions. Each scenario's path is the walk through the diagram that its inputs determine, and the walk the bundle `pf` compiles from the diagram form states.
+- **Diagram-following corpus.** The [corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, reporting only the warnings a workflow declares, and its forms differ only in their transitions. Each scenario's path is the walk through the diagram that its inputs determine, and the walk the bundle `pf` writes from the diagram form states.
 - **Scorer.** The [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done. It classifies each failing run by how it departs from the path.
 - **Eval runner.** The [runner](evals/diagram-following/run.py) is driven by a stub agent, and:
   - starts each session in a fresh workspace holding its form and inputs;

@@ -13,7 +13,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `absorbed-title/` | A reference naming a title a file heading absorbs. |
 | `ancestor-promotion/` | A heading-only ancestor promoted to a selection, and the dependencies it reaches. |
 | `boundary/` | Block boundaries between bundled content: lists, code and YAML examples, file groups. |
-| `candidate-validation/` | Candidate validation of the compiled bundle against the post-compilation invariants. |
+| `candidate-validation/` | Candidate validation of the bundle against the post-bundling invariants. |
 | `citation/` | A link above the working directory cited as text. |
 | `cli/` | The command-line grammar: its link and plain-path entries, the pick, options, budgets, exit statuses and JSON diagnostics. |
 | `composition/` | [Section composition](../docs/composition.md): directive labels, scopes, contributions, deferral, cycles and refusals. |
@@ -49,7 +49,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `resource/` | A link naming a resource rather than a document. |
 | `rewriting/` | Destinations rewritten to the bundle's own anchors, diagram links among them. |
 | `self-reference/` | A link to its own section, file or an including ancestor. |
-| `source-consistency/` | A source that changes during compilation. |
+| `source-consistency/` | A source that changes during bundling. |
 | `structural-ancestors/` | Heading-only structural ancestors above a selection. |
 | `traversal/` | Which references are followed as dependencies, cycles among them. |
 | `validation-scope/` | A defect outside the selection, and the run that later includes it. |
@@ -84,7 +84,7 @@ A checkout whose filesystem or configuration cannot create a link writes the tar
 
 Most families write their sources for the clause they exercise. The `real-source/` family does not: each of its sources is a document copied byte for byte from one of this workspace's skills, at the path that skill gives it. A source written to exercise one clause exercises that clause and says nothing about the documents the tool exists to bundle, so this family is where the corpus meets prose nobody wrote for it.
 
-A copied source is not edited beyond its declaration. A document is compiled when its leading frontmatter declares `prosiform`, and an upstream document declares nothing, so each copy's leading frontmatter opens with `prosiform: {}`, in a frontmatter block of its own where the original carries none. That declaration is what a run reads, and the one thing the copy adds. Any other edit a document needs to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original, its declaration removed, with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
+A copied source is not edited beyond its declaration. A document is bundled when its leading frontmatter declares `prosiform`, and an upstream document declares nothing, so each copy's leading frontmatter opens with `prosiform: {}`, in a frontmatter block of its own where the original carries none. That declaration is what a run reads, and the one thing the copy adds. Any other edit a document needs to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original, its declaration removed, with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
 
 A document joins the family when its closure is itself: no local Markdown document reference, and fragment-only references only where the destination the bundle generates is the fragment the source already spells. Such a document bundles to the same bytes under a build that traverses references and one that has nothing to traverse, so its expected bundle states the contract rather than a stage of the work.
 
@@ -131,7 +131,7 @@ The runner uses the working directory the manifest names and asks for diagnostic
 
 ## The clause form
 
-A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/d6b825c39/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
+A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
 
 ```toml
 clauses = [
@@ -167,7 +167,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and resolves explicit entry references and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
+A source declares `prosiform` in its leading frontmatter, and a link is bundled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and resolves explicit entry references and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
 
 ## Text an output carries
 
@@ -229,7 +229,7 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/d6b825c39/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during bundling, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
@@ -257,7 +257,7 @@ The detection and the reporting are the run's own either way, which is what each
 
 A fault writes to the tree it runs over, so a fixture declaring one runs in a copy of itself and the corpus leaves the fixture as it found it.
 
-Four fixtures declare a fault: [`source-consistency/a-source-that-changes-during-compilation`](source-consistency/a-source-that-changes-during-compilation/manifest.toml), [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml), [`publication/an-earlier-set-the-run-cannot-remove-warns`](publication/an-earlier-set-the-run-cannot-remove-warns/manifest.toml) and [`cli/an-unknown-fault-is-invalid-usage`](cli/an-unknown-fault-is-invalid-usage/manifest.toml).
+Four fixtures declare a fault: [`source-consistency/a-source-that-changes-during-bundling`](source-consistency/a-source-that-changes-during-bundling/manifest.toml), [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml), [`publication/an-earlier-set-the-run-cannot-remove-warns`](publication/an-earlier-set-the-run-cannot-remove-warns/manifest.toml) and [`cli/an-unknown-fault-is-invalid-usage`](cli/an-unknown-fault-is-invalid-usage/manifest.toml).
 
 ## The schema
 
@@ -273,7 +273,7 @@ An error decides a failing run.
 
 | Code | Declared by |
 | --- | --- |
-| `E_ALTERNATIVE_UNRESOLVED` | Presets, Exactly one alternative — a document declaring alternatives compiled with several of them in force in one bundle, or none where one changes its selected content. |
+| `E_ALTERNATIVE_UNRESOLVED` | Presets, Exactly one alternative — a document declaring alternatives bundled with several of them in force in one bundle, or none where one changes its selected content. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
 | `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
@@ -291,7 +291,7 @@ An error decides a failing run.
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it, or a numeric scalar longer than the 65,536 characters a byte budget admits. |
 | `E_SOURCE_ACCESS` | Metadata failures — a source that cannot be opened or read for an access or filesystem error other than a missing, symlinked or unconfined one. |
-| `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
+| `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during bundling. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the working directory cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the working directory. |
 | `E_TARGET_NOT_FOUND` | Link classification, and Section composition, The eligible target — an operator's reference or a composition directive naming no document, or a reference naming no heading in the document it resolves to. |
@@ -331,7 +331,7 @@ export PROSIFORM_BUILD=pf
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/d6b825c39/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

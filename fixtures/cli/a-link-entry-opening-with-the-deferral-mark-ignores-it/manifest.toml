@@ -1,4 +1,4 @@
-description = "A Markdown link entry whose text opens with the deferral mark ¬ compiles its destination under the presets its title selects: the mark directs the agent and is ignored, so the bundle is the one the same link without it writes."
+description = "A Markdown link entry whose text opens with the deferral mark ¬ bundles its destination under the presets its title selects: the mark directs the agent and is ignored, so the bundle is the one the same link without it writes."
 
 clauses = [
   "Link entries — A link entry",

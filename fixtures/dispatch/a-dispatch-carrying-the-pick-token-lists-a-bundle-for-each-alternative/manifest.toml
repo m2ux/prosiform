@@ -1,4 +1,4 @@
-description = "A dispatched link carries the pick token ?, so the run compiles its target once for each alternative the target declares, each a bundle of its own routed by that alternative, and the section writing the link points it at a dispatch-pick sub-section listing one dispatch line for each alternative beside its choice line, in declaration order, for the dispatching agent to hand on one."
+description = "A dispatched link carries the pick token ?, so the run bundles its target once for each alternative the target declares, each a bundle of its own routed by that alternative, and the section writing the link points it at a dispatch-pick sub-section listing one dispatch line for each alternative beside its choice line, in declaration order, for the dispatching agent to hand on one."
 
 clauses = [
   "Link classification and resource handling — The pick token",

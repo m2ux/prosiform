@@ -88,7 +88,7 @@ def test_label_edits_preserve_click_offsets_on_shared_lines(
     assert 'click Direct href "direct.bundle.md"' in run.bundle
 
 
-def test_class_label_marks_follow_the_compiled_destination(tmp_path: Path) -> None:
+def test_class_label_marks_follow_the_bundled_destination(tmp_path: Path) -> None:
     written(tmp_path, "read.md", BRIEF)
     written(tmp_path, "direct.md", DECLARED + "# Direct\n")
     written(

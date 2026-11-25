@@ -109,14 +109,14 @@ LINK_CLOSE = "link_close"
 LIMIT = 3
 
 DEPTH_REMEDY = (
-    "compile an intermediate target into the bundle that dispatches it, or "
+    "bundle an intermediate target into the bundle that dispatches it, or "
     "dispatch its targets from an earlier hop"
 )
 SELF_REMEDY = (
     "move the procedure to a document of its own, or link it without the "
     "dispatch operator"
 )
-CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching it"
+CYCLE_REMEDY = "bundle or cite one target of the cycle rather than dispatching it"
 LEVEL_REMEDY = "move the dispatch to a shallower section"
 COLLISION_REMEDY = "retitle the authored heading"
 NAMED_REMEDY = (
@@ -325,7 +325,7 @@ def selfward(hop: Hop) -> Diagnostic:
         WARNING,
         f"the dispatch {hop.target.original!r} names {hop.name!r} in the document "
         f"that writes it, so it hands a sub-agent material the dispatching "
-        f"session compiles itself",
+        f"session bundles itself",
         code=DISPATCH_SELF,
         reference=hop.target.original,
         resolved=hop.name,

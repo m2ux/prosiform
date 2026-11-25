@@ -2,7 +2,7 @@ description = "A nested section selected on its own carries a link naming the in
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Link position",
-  "Post-compilation invariants — Destination stability",
+  "Post-bundling invariants — Destination stability",
   "Source and candidate validation modes — Ownership",
 ]
 

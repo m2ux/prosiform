@@ -141,7 +141,7 @@ def test_a_definition_is_read_as_its_source_spelled_it(
         ("nothing to rewrite", [], "nothing to rewrite"),
     ],
 )
-def test_a_compiled_link_is_written_to_its_destination(
+def test_a_bundled_link_is_written_to_its_destination(
     text: str, assigned: list[str | None], expected: str
 ) -> None:
     assert "".join(rewritten(lines(text), inline_of(text), assigned, {})) == expected
@@ -260,7 +260,7 @@ def test_a_definition_spelled_across_two_lines_is_published_as_authored() -> Non
     ]
 
 
-def test_a_compiled_use_of_such_a_definition_takes_its_assigned_destination() -> None:
+def test_a_bundled_use_of_such_a_definition_takes_its_assigned_destination() -> None:
     body = "A [full][rules] use.\n"
     definition = '[rules]:\n  rules.md\n  "The Rules,\nwritten out"\n'
     inline, defined = read(f"{body}\n{definition}")

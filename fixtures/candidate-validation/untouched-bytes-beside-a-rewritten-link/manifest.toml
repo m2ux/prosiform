@@ -2,8 +2,8 @@ description = "A region carrying a rewritten link keeps every byte the rewrite d
 
 clauses = [
   "Validation and failure contract — Preservation, untouched non-heading bytes and code examples are not reformatted or repaired",
-  "Post-compilation invariants — Reference preservation",
-  "Post-compilation invariants — No new links",
+  "Post-bundling invariants — Reference preservation",
+  "Post-bundling invariants — No new links",
 ]
 
 [invocation]

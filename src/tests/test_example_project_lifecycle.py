@@ -1,14 +1,14 @@
-"""Compile the project-lifecycle example and hold what it writes.
+"""Bundle the project-lifecycle example and hold what it writes.
 
 The skill's entry is read as written: one link per SDLC to the lifecycle,
-tagged with the preset that binds the SDLC's adapter. Each case compiles the
+tagged with the preset that binds the SDLC's adapter. Each case bundles the
 lifecycle under one SDLC from `example/project-lifecycle/` where it stands
 and compares the folder the run writes with the one committed under the
 example's `expected/` folder, byte for byte. A case's expected folder is the
 output of `pf -o expected/<case> <arguments>`, run from the example's folder.
 
 The SDLCs are read from the lifecycle's presets, so an adapter added there
-is compiled and needs an expected folder of its own.
+is bundled and needs an expected folder of its own.
 
 The remaining cases hold the claims the example's README makes: the entry
 offers one link per SDLC, each SDLC's bundle carries its own practice and no
@@ -57,7 +57,7 @@ CASES = {
 """Each SDLC's arguments, and the diagnostic codes its run reports."""
 
 
-def compile_in(
+def bundle_in(
     root: Path, folder: Path, *arguments: str
 ) -> tuple[int, list[dict[str, str]]]:
     """Run the build from `root` into `folder`, returning status and diagnostics."""
@@ -101,13 +101,13 @@ def modes_of(bundle: str) -> str:
 
 
 def test_the_lifecycle_declares_an_sdlc() -> None:
-    assert SDLCS, "the lifecycle declares no SDLC, so no preset is compiled"
+    assert SDLCS, "the lifecycle declares no SDLC, so no preset is bundled"
 
 
 @pytest.mark.parametrize("case", sorted(CASES))
 def test_an_sdlc_writes_the_bundles_committed_for_it(tmp_path: Path, case: str) -> None:
     arguments, codes = CASES[case]
-    status, diagnostics = compile_in(EXAMPLE, tmp_path, *arguments)
+    status, diagnostics = bundle_in(EXAMPLE, tmp_path, *arguments)
     assert status == 0, diagnostics
     assert {one["code"] for one in diagnostics} == codes
     assert tree(tmp_path) == tree(EXPECTED / case)
@@ -141,7 +141,7 @@ def test_an_adapter_missing_a_practice_fails_its_sdlc(tmp_path: Path) -> None:
     adapter = copy / "sdlc" / "waterfall.md"
     text = adapter.read_text()
     adapter.write_text(text[: text.index("## Verify")])
-    status, diagnostics = compile_in(
+    status, diagnostics = bundle_in(
         copy, tmp_path / "out", f'[↳ Waterfall]({LIFECYCLE} "waterfall")'
     )
     assert status == 1
@@ -168,7 +168,7 @@ def test_an_adapter_binds_through_one_preset_and_one_link(tmp_path: Path) -> Non
     entry.write_text(entry.read_text() + f'- [↳ Iterative]({LIFECYCLE} "iterative")\n')
     assert sorted(offered(entry.read_text())) == sorted(["", "iterative", *SDLCS])
     folder = tmp_path / "out"
-    status, diagnostics = compile_in(
+    status, diagnostics = bundle_in(
         copy, folder, f'[↳ Iterative]({LIFECYCLE} "iterative")'
     )
     assert status == 0, diagnostics

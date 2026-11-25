@@ -1,4 +1,4 @@
-description = "A parallel link's target holding a numbered list compiles to a bundle of its own with no diagnostic, since a set states nothing about its targets' shape."
+description = "A parallel link's target holding a numbered list bundles on its own with no diagnostic, since a set states nothing about its targets' shape."
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",

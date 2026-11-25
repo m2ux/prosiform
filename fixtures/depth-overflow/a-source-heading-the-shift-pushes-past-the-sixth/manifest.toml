@@ -2,7 +2,7 @@ description = "A source heading the group's shift would place at the seventh lev
 
 clauses = [
   "File-scoped hierarchy — Depth overflow",
-  "Post-compilation invariants — Depth safety",
+  "Post-bundling invariants — Depth safety",
   "Adversarial acceptance fixtures — File hierarchy, H6 overflow",
 ]
 

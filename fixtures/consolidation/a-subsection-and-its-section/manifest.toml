@@ -1,7 +1,7 @@
 description = "A subsection named alongside the section containing it is represented by that section alone, so the region the two selections share is emitted once."
 
 clauses = [
-  "Compile before publishing — step 5, consolidate selections",
+  "Bundle before publishing — step 5, consolidate selections",
   "Input and output contract — Groups, emit each selected region once",
   "File-scoped hierarchy — Source order",
 ]

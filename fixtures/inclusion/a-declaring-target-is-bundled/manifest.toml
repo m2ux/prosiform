@@ -1,4 +1,4 @@
-description = "A target declaring prosiform is compiled into the bundle: its content follows the guide under its own heading and the link is rewritten to that heading."
+description = "A target declaring prosiform is bundled into the bundle: its content follows the guide under its own heading and the link is rewritten to that heading."
 
 clauses = [
   "Link classification and resource handling — Local Markdown document links",

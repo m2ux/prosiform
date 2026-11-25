@@ -1,4 +1,4 @@
-description = "A preset's subst pair declared in modes/plan.md as {../rules.md: stub.md} resolves its key from the declaring file's directory and its substitute from the key's, so a run started from the directory above, naming modes/plan.md, compiles stub.md in place of rules.md, as the declaration reads wherever the run starts."
+description = "A preset's subst pair declared in modes/plan.md as {../rules.md: stub.md} resolves its key from the declaring file's directory and its substitute from the key's, so a run started from the directory above, naming modes/plan.md, bundles stub.md in place of rules.md, as the declaration reads wherever the run starts."
 
 clauses = [
   "Conversion metadata — subst holds colon pairs",

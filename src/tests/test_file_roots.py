@@ -195,7 +195,7 @@ def test_a_cached_target_still_verifies_each_access_route(
     assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
 
 
-def test_a_declaring_target_above_the_writing_directory_is_compiled(
+def test_a_declaring_target_above_the_writing_directory_is_bundled(
     tmp_path: Path,
 ) -> None:
     written(

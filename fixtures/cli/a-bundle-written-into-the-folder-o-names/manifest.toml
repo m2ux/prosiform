@@ -3,7 +3,7 @@ description = "A run naming an output folder writes its bundle into that folder 
 clauses = [
   "CLI contract — -o DIR, the folder each bundle is written to",
   "Automatic output names, a selection is named by its path",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
 ]
 
 [invocation]

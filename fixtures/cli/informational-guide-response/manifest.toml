@@ -2,7 +2,7 @@ description = "A command line holding no argument prints the guide: that a bundl
 
 clauses = [
   "Guide",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
 ]
 
 [invocation]

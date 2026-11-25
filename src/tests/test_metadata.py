@@ -117,7 +117,7 @@ def test_a_field_outside_its_preset_names_the_preset_it_belongs_in(
     assert f"prosiform.default.{field}" in message
 
 
-def test_a_document_declaring_no_default_is_compiled_under_an_empty_one() -> None:
+def test_a_document_declaring_no_default_is_bundled_under_an_empty_one() -> None:
     result = parse("prosiform: {Target: {group: {rules: 2}}}")
     assert result.default == Preset("default")
     assert parse("prosiform: {}").default == Preset("default")

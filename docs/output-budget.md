@@ -1,6 +1,6 @@
 # The output budget, measured
 
-This page records a historical measurement against the source revision named below, not a measurement of the current compiler or skill. The figures and diagnostic are retained as evidence; the re-taking commands use the current single-entry grammar, and a fresh run must record its own compiler revision and results.
+This page records a historical measurement against the source revision named below, not a measurement of the current bundler or skill. The figures and diagnostic are retained as evidence; the re-taking commands use the current single-entry grammar, and a fresh run must record its own bundler revision and results.
 
 The `output-bytes` budget defaults to 262,144. The figure is an engineering default, and
 the bundling it has to admit or refuse is the one the proposal used as its evidence:

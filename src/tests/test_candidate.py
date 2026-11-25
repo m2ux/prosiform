@@ -73,7 +73,7 @@ BUDGET = NESTING.default
 
 @dataclass
 class Built:
-    """One compiled candidate, with every part the validation pass reads."""
+    """One bundled candidate, with every part the validation pass reads."""
 
     bundled: str
     groups: list[Group]
@@ -84,7 +84,7 @@ class Built:
     composing: Contributing
 
     def validate(self) -> None:
-        """Run the validation pass over this candidate as a compilation does."""
+        """Run the validation pass over this candidate as a bundling does."""
         validate(
             self.bundled,
             self.groups,
@@ -103,10 +103,10 @@ class Built:
 def built(
     documents: dict[str, str], references: Sequence[str], whole: bool = True
 ) -> Built:
-    """One candidate compiled from the sources and entry references given.
+    """One candidate bundled from the sources and entry references given.
 
     The parts are produced by the command's own assembly, so the pass
-    under test is given what a compilation gives it rather than a second
+    under test is given what a bundling gives it rather than a second
     construction written for the test.
 
     Every document is selected whole as well, which is what a run
@@ -277,7 +277,7 @@ def test_a_candidate_agreeing_with_its_provenance_validates() -> None:
     built({"guide.md": GUIDE}, ["guide.md"]).validate()
 
 
-def test_a_candidate_carrying_compiled_and_literal_references_validates() -> None:
+def test_a_candidate_carrying_bundled_and_literal_references_validates() -> None:
     built({"guide.md": LINKED, "note.md": NOTE}, ["guide.md"]).validate()
 
 

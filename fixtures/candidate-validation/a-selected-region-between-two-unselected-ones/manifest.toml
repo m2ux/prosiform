@@ -2,8 +2,8 @@ description = "A section selected from the middle of a document carries that sec
 
 clauses = [
   "Source and candidate validation modes — Candidate mode",
-  "Post-compilation invariants — No accidental omissions",
-  "Post-compilation invariants — No accidental expansion",
+  "Post-bundling invariants — No accidental omissions",
+  "Post-bundling invariants — No accidental expansion",
 ]
 
 [invocation]

@@ -204,7 +204,7 @@ def test_two_dispatch_marks_opening_one_text_conflict() -> None:
 
 @pytest.mark.parametrize("opening", ["¬⇉ the rules", "¬⫽ the rules", "¬⇉⫽ the rules"])
 def test_a_deferral_written_against_a_dispatch_mark_is_refused(opening: str) -> None:
-    """A dispatch is compiled up front, so no bundle publishes a deferred one."""
+    """A dispatch is bundled up front, so no bundle publishes a deferred one."""
     assert deferring_dispatch(opening)
     assert conflicting(opening)
 
@@ -369,7 +369,7 @@ def test_a_mark_written_inside_a_link_text_withholds_nothing() -> None:
         "rules.md?view=raw",
     ],
 )
-def test_a_reference_the_bundle_compiles_none_of_names_no_dependency(
+def test_a_reference_the_run_bundles_none_of_names_no_dependency(
     destination: str,
 ) -> None:
     assert bundled("guide.md", destination, "the rules") is None

@@ -100,14 +100,14 @@ A step can need a section stated in another document, such as the contract of a 
 flowchart LR
   Link["[↳ Inputs](read.md#inputs)<br/><i>in ## Prepare</i>"] -- "places" --> Dest["### Inputs<br/><i>a destination section</i>"]
   Dest --> Contrib["#### Read<br/><i>a contribution:<br/>the target's content</i>"]
-  Deferred["[¬↳ Inputs](read.md#inputs)"] -. "deferred" .-> Line["[↳ Inputs](read.md#inputs)<br/><i>compiled by a later run</i>"]
+  Deferred["[¬↳ Inputs](read.md#inputs)"] -. "deferred" .-> Line["[↳ Inputs](read.md#inputs)<br/><i>bundled by a later run</i>"]
 ```
 
 *Figure 6. A Directive Places Its Target Beneath the Section That Writes It.*
 
 ## Destination
 
-A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a [**destination**](destinations.md) — the fragment a Markdown renderer generates for it — and each compiled link is rewritten to the destination of what it named. Nothing else is rewritten.
+A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a [**destination**](destinations.md) — the fragment a Markdown renderer generates for it — and each bundled link is rewritten to the destination of what it named. Nothing else is rewritten.
 
 ```mermaid
 flowchart LR
@@ -128,16 +128,16 @@ flowchart LR
 
 ## Dispatch
 
-Some material is meant for a different agent rather than for the reader of this bundle. A [**dispatch**](dispatch.md) hands it over: the target is compiled as a bundle of its own in the same run folder, and the section that dispatched it says which bundle to follow.
+Some material is meant for a different agent rather than for the reader of this bundle. A [**dispatch**](dispatch.md) hands it over: the target is bundled on its own in the same run folder, and the section that dispatched it says which bundle to follow.
 
 ```mermaid
 flowchart LR
-  Link["[⇉ Publish](publish.md)"] -- "withheld from<br/>the bundle carrying it" --> Target["<b>publish.bundle.md</b><br/><i>compiled on its own</i>"]
+  Link["[⇉ Publish](publish.md)"] -- "withheld from<br/>the bundle carrying it" --> Target["<b>publish.bundle.md</b><br/><i>bundled on its own</i>"]
   Entry["<b>the entry's bundle</b>"] -- "a link names its file" --> Target
   Target -- "a sub-agent follows it" --> Agent["<b>the other agent</b><br/><i>its own context</i>"]
 ```
 
-*Figure 8. Withheld Here, Compiled There, Followed by Another Agent.*
+*Figure 8. Withheld Here, Bundled There, Followed by Another Agent.*
 
 ## Bundle
 
@@ -172,7 +172,7 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 
 | Module | Responsibility |
 | --- | --- |
-| `cli` | The `pf` command: reads the command line and its budgets, compiles the entry's bundle and each dispatched one, puts presets and `subst` pairs in force, refuses misplaced operators and directives, and publishes the run folder. |
+| `cli` | The `pf` command: reads the command line and its budgets, builds the entry's bundle and each dispatched one, puts presets and `subst` pairs in force, refuses misplaced operators and directives, and publishes the run folder. |
 | `access` | Reads a source, or its frontmatter alone, through a rooted, no-follow directory walk, never past the budget it is given. |
 | `source` | Holds one source: removes its byte-order mark and frontmatter, indexes its headings and their slugs, and lists its regions and the links it uses. |
 | `metadata` | Decodes a frontmatter block's YAML into conversion settings: presets, `group` pairs and `subst` pairs. |
@@ -186,7 +186,7 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 | `preamble` | Groups the title and introduction of each fragment-selected document beneath its parent folder, and resolves its preamble links to carried destinations. |
 | `composition` | Places each composition directive's target in a destination section beneath the section that writes it. |
 | `dispatch` | Inserts the dispatch-set sub-sections, and finds dispatch cycles, deep chains and self-dispatch. |
-| `rewrite` | Rewrites each compiled link to its destination, turns reference-style uses into inline links, and drops definitions. |
+| `rewrite` | Rewrites each bundled link to its destination, turns reference-style uses into inline links, and drops definitions. |
 | `heading` | Title-cases every heading the bundle generates. |
 | `provenance` | Records the source range or generated heading each part of the candidate came from. |
 | `pruning` | Omits empty generated wrappers while retaining authored and addressed structure. |

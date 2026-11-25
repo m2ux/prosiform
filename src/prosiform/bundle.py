@@ -731,7 +731,7 @@ def target(
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> str | Titled | Followed | None:
-    """The published destination for a source use, or none for an uncompiled use.
+    """The published destination for a source use, or none for an unbundled use.
 
     Resolve the use through `closure.bundled` or `closure.withholding_target`.
     A selected target takes its

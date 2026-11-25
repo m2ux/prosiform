@@ -2,7 +2,7 @@ description = "A check run told to publish into a folder the fixture does not ho
 
 clauses = [
   "Validation and failure contract — Publication",
-  "Compile before publishing — step 7",
+  "Bundle before publishing — step 7",
 ]
 
 [invocation]

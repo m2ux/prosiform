@@ -3,10 +3,10 @@ description = "A link promotes a heading-only structural ancestor to its selecte
 clauses = [
   "Heading-only structural ancestors — Targets",
   "Heading-only structural ancestors — Deduplication",
-  "Compile before publishing — step 4, expand included source coverage to a fixed point",
-  "Compile before publishing — step 5, derive required heading-only ancestors",
-  "Compile before publishing, expanding coverage",
-  "Post-compilation invariants — No accidental expansion",
+  "Bundle before publishing — step 4, expand included source coverage to a fixed point",
+  "Bundle before publishing — step 5, derive required heading-only ancestors",
+  "Bundle before publishing, expanding coverage",
+  "Post-bundling invariants — No accidental expansion",
   "Validation scope",
   "Adversarial acceptance fixtures — Partial outlines, ancestor promotion after dependency expansion",
 ]

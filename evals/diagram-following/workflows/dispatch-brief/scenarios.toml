@@ -13,7 +13,7 @@
 # followed the lead's links.
 #
 # The briefed form declares each target's Contract section as its brief; the
-# compiled form composes it with a ↳ line beside the dispatch.
+# bundle-set form composes it with a ↳ line beside the dispatch.
 
 [[scenario]]
 name = "ledger-brief"

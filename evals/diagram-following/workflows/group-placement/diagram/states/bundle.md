@@ -1,8 +1,8 @@
 ---
 prosiform: {}
 ---
-# Compile
+# Bundle
 
-Write `actions/compile.txt` containing `compiled`.
+Write `actions/bundle.txt` containing `bundled`.
 
 The [Package](package.md) state packages the build.

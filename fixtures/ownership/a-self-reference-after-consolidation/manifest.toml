@@ -2,7 +2,7 @@ description = "A section's link to itself resolves to that section's own destina
 
 clauses = [
   "Self-reference and ancestor-reference behavior — Link position",
-  "Post-compilation invariants — Destination stability",
+  "Post-bundling invariants — Destination stability",
 ]
 
 [invocation]

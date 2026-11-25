@@ -447,7 +447,7 @@ def test_a_run_stating_no_pair_states_neither_warning(tree: Path) -> None:
 
 
 def test_a_section_key_leaves_the_rest_of_its_document_real(tree: Path) -> None:
-    """One branch is redirected and the rest of its document compiles as it ships."""
+    """One branch is redirected and the rest of its document bundles as it ships."""
     (tree / "guide.md").write_text(
         DECLARED + "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
         "Read [the escalation](rules.md#escalation) with it.\n"
@@ -691,7 +691,7 @@ def withheld_tree(tmp_path: Path) -> Path:
 def test_a_deferred_target_is_redirected_to_the_substitute(tmp_path: Path) -> None:
     """AC4: the destination a deferral publishes is the substitute's own path.
 
-    A deferral compiles nothing here, so the substitute contributes no
+    A deferral bundles nothing here, so the substitute contributes no
     content and no heading: what moves is the destination the later run
     follows.
     """
@@ -743,10 +743,10 @@ def test_a_deferred_targets_heading_is_confirmed_of_the_substitute(
     assert said[0]["resolved"] == "stand-in.md"
 
 
-def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
+def test_a_dispatched_target_is_redirected_and_its_substitute_bundled(
     tmp_path: Path,
 ) -> None:
-    """A dispatch compiles the bundle of the substitute, not of the target."""
+    """A dispatch bundles the substitute, not the target."""
     (tmp_path / "out").mkdir()
     (tmp_path / "guide.md").write_text(
         DECLARED + "# Guide\n\n## Steps\n\nApply [\u21c9 the rules](rules.md).\n"
@@ -948,7 +948,7 @@ def test_a_selected_presets_pair_holds_over_defaults(tree: Path) -> None:
     assert "# Other" not in published
 
 
-def test_a_document_under_no_subst_compiles_its_links_as_authored(
+def test_a_document_under_no_subst_bundles_its_links_as_authored(
     tree: Path,
 ) -> None:
     presetted(tree, "  default:\n    group: {guides: 1}\n")
@@ -1212,7 +1212,7 @@ def test_two_including_references_mapping_one_key_apart_are_refused(
 def test_a_copy_needs_no_alternative_that_states_only_a_group_pair(
     tree: Path,
 ) -> None:
-    """A group pair places no copy, so it changes nothing a copy compiles to."""
+    """A group pair places no copy, so it changes nothing a copy bundles to."""
     (tree / "guide.md").write_text(
         DECLARED + "# Guide\n\n## Plan\n\nStart from the [↳ Given](stage.md#given).\n"
     )

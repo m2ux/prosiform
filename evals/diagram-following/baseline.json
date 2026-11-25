@@ -631,7 +631,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "dispatch-beside",
       "scenario": "set-beside-a-dispatch",
       "sessions": 5,
@@ -654,7 +654,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "dispatch-question",
       "scenario": "returned-question",
       "sessions": 5,
@@ -677,7 +677,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "dispatch-set",
       "scenario": "parallel-set",
       "sessions": 5,

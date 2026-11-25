@@ -2,7 +2,7 @@ description = "A chain of dependencies bundles in the order its links first reac
 
 clauses = [
   "Input and output contract — Groups, headed by its title or its working-directory path",
-  "Compile before publishing, expanding coverage",
+  "Bundle before publishing, expanding coverage",
 ]
 
 [invocation]

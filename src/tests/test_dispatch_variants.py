@@ -1,4 +1,4 @@
-"""Effective dispatch selections govern compilation, analysis and publication."""
+"""Effective dispatch selections govern bundling, analysis and publication."""
 
 import argparse
 from pathlib import Path
@@ -31,7 +31,7 @@ def name(*presets: str, path: str = "task.md") -> str:
     return cli.bundle_file(BundleSelection(path, presets=frozenset(presets)))
 
 
-def test_distinct_effective_selections_compile_distinct_bodies(tmp_path: Path) -> None:
+def test_distinct_effective_selections_bundle_distinct_bodies(tmp_path: Path) -> None:
     tree(
         tmp_path,
         '[⇉ Checked](task.md "checks")\n\n[⇉ Draft](task.md "draft")',
@@ -48,7 +48,7 @@ def test_distinct_effective_selections_compile_distinct_bodies(tmp_path: Path) -
 
 
 @pytest.mark.parametrize("reversed_order", [False, True])
-def test_equivalent_requests_compile_once_under_the_contract_name(
+def test_equivalent_requests_bundle_once_under_the_contract_name(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reversed_order: bool
 ) -> None:
     links = [
@@ -67,7 +67,7 @@ def test_equivalent_requests_compile_once_under_the_contract_name(
         "  draft: {}\n---\n# Task\n\n[Body](body.md)\n",
     )
     observed: list[BundleSelection] = []
-    compile_bundle = cli.compiled
+    build_bundle = cli.bundle_one
 
     def observing(
         root: Path,
@@ -77,14 +77,14 @@ def test_equivalent_requests_compile_once_under_the_contract_name(
         run: frozenset[str],
         entry: BundleSelection | None = None,
         models: tuple[tuple[str, str], ...] | None = None,
-    ) -> cli.Compiled:
-        result = compile_bundle(
+    ) -> cli.Bundled:
+        result = build_bundle(
             root, requested, options, substitution, run, entry, models
         )
         observed.append(result.selection)
         return result
 
-    monkeypatch.setattr(cli, "compiled", observing)
+    monkeypatch.setattr(cli, "bundle_one", observing)
     run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     expected = "task-checks+draft.bundle.md"

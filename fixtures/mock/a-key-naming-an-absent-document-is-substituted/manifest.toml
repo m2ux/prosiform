@@ -1,4 +1,4 @@
-description = "A key naming a document the tree does not hold compiles its substitute and publishes, because the reference is redirected before its target is read, which is what makes an artifact under authoring testable."
+description = "A key naming a document the tree does not hold bundles its substitute and publishes, because the reference is redirected before its target is read, which is what makes an artifact under authoring testable."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

@@ -1,4 +1,4 @@
-description = "An image whose alternative text opens with the dispatch operator names a resource whatever file it points at, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+description = "An image whose alternative text opens with the dispatch operator names a resource whatever file it points at, so it withholds no bundling and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
 
 clauses = [
   "Link classification and resource handling — An operator's target",
