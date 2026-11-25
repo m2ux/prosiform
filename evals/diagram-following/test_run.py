@@ -23,6 +23,7 @@ from typing import Any
 
 import pytest
 import workflow as source
+from codex_agent import TOOLS as CODEX_TOOLS
 from harness import HARNESSES, MANAGED_SETTINGS, Claude, Codex, Cursor, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
@@ -360,7 +361,7 @@ def test_a_bundle_set_session_receives_its_sources_the_bundle_set_and_the_build(
     assert Path(entry["which_pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
     assert not Path(entry["which_pf"]).is_relative_to(workspace)
     assert f"{workflow.entry_bundle.as_posix()} describes a workflow" in entry["prompt"]
-    assert "Run each pf command from this directory." in entry["prompt"]
+    assert "Run a link in a bundle from the folder" in entry["prompt"]
 
 
 def test_a_run_gives_each_harness_the_bundle_set_scenarios_its_stream_reports() -> None:
@@ -549,7 +550,7 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
         assert argv[argv.index("--tools") + 1] == tools + ",Bash"
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
-        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(cd *),Bash(pf *)"
         assert Path(entry["pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
         assert not Path(entry["pf"]).is_relative_to(entry["workspace"])
         bundled = "workflow.bundles/workflow.bundle.md"
@@ -1997,6 +1998,113 @@ def test_a_bundle_set_session_runs_pf_bare_and_bundles_a_composition_line(
     assert "Count the files." in written.read_text()
 
 
+DEFERRED_LINE = re.compile(r"\[↳ [^\]]*\]\(([^)\s#]+)")
+"""A deferred line a bundle publishes, and the document its link names."""
+
+
+def test_a_deferred_line_in_a_prepared_workspace_names_a_document_there(
+    tmp_path: Path,
+) -> None:
+    """F40 AC1: each deferred line names a document of the workspace.
+
+    The runner lays out a workspace as `prepare` does, and a line names its
+    target from the folder its bundle is in, so the document it names is one
+    the workspace holds.
+    """
+    lines = 0
+    for workflow, form in (
+        (workflow, form)
+        for workflow in CORPUS.values()
+        for form in sorted(SOURCE_SETS)
+        if FORMS[form] in workflow.forms
+    ):
+        scenario = workflow.scenarios[0]
+        workspace = tmp_path / workflow.name / form
+        workspace.mkdir(parents=True)
+        sets = {(workflow.name, form): bundles_of(workflow, form)}
+        prepare(workspace, workflow, scenario, form, sets)
+        for written in (workspace / workflow.entry_bundle.parent).glob("*.bundle.md"):
+            for document in DEFERRED_LINE.findall(written.read_text()):
+                lines += 1
+                named = (written.parent / document).resolve()
+                assert named.is_relative_to(workspace.resolve()), (
+                    workflow.name,
+                    document,
+                )
+                assert named.is_file(), (workflow.name, document)
+    assert lines
+
+
+def test_a_stub_session_bundles_a_deferred_line_from_its_bundles_folder(
+    tmp_path: Path, log: Path
+) -> None:
+    """F40 AC2: a session following the guide bundles a deferred line in its sandbox.
+
+    The stub runs the `deferred-dispatch` line as written, from the folder of
+    the bundle carrying it, under the rules the harness admits, and the run
+    bundles the target; the session's runs and path pass.
+    """
+    eval_run(
+        tmp_path,
+        *("--workflows", "deferred-dispatch", "--forms", BUNDLE_SET),
+        *("--repetitions", "1", "--budget-tokens", "4000"),
+    )
+    cells = {record["scenario"]: record["verdict"] for record in records(tmp_path)}
+    assert cells["deferred-dispatch-bundled"]["passed"], cells
+    [transcript] = [
+        path
+        for path in (tmp_path / "results" / "test").rglob(TRANSCRIPT)
+        if "deferred-dispatch-bundled" in str(path)
+    ]
+    said = [json.loads(line) for line in transcript.read_text().splitlines()]
+    calls = {
+        block["id"]: block["input"]["command"]
+        for message in said
+        if message.get("type") == "assistant"
+        for block in message["message"]["content"]
+        if isinstance(block, dict) and block.get("name") == "Bash"
+    }
+    answers = {
+        block["tool_use_id"]: block
+        for message in said
+        if message.get("type") == "user"
+        for block in message["message"]["content"]
+        if block.get("tool_use_id") in calls
+    }
+    [(identifier, command)] = [
+        (identifier, command)
+        for identifier, command in calls.items()
+        if command.startswith("cd ")
+    ]
+    folder = CORPUS["deferred-dispatch"].entry_bundle.parent.as_posix()
+    assert command.startswith(f"cd {folder} && pf '[↳ "), command
+    assert "../reference/loading.md#crew" in command
+    assert answers[identifier]["is_error"] is False, answers[identifier]["content"]
+
+
+def test_the_instruction_guide_and_harnesses_agree_where_a_line_runs() -> None:
+    """F40 AC3: a line runs from its bundle's folder, and every harness admits it.
+
+    The guide and the bundle-set instruction both run a link in a bundle from
+    the folder that bundle is in. `claude` and `opencode` admit `cd` beside
+    `pf`, so a session changes into that folder, and the `codex` `pf` tool
+    takes the folder as its `cwd`.
+    """
+    folder = "from the folder that bundle is in"
+    told = " ".join(source.instruction("ENTRY", BUNDLE_SET).split())
+    assert folder in " ".join(GUIDE.split())
+    assert folder in told
+    assert "Run each pf command from this directory" not in told
+    assert Claude().pf_only.split(",") == ["Bash(cd *)", "Bash(pf *)"]
+    bash = Opencode().permission["bash"]
+    assert isinstance(bash, dict)
+    assert (bash["cd *"], bash["pf *"]) == ("allow", "allow")
+    [tool] = [tool for tool in CODEX_TOOLS if tool["name"] == "pf"]
+    schema = tool["inputSchema"]
+    assert isinstance(schema, dict)
+    assert "cwd" in schema["properties"]
+
+
 def test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it(
     tmp_path: Path, log: Path
 ) -> None:
@@ -2011,7 +2119,7 @@ def test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it(
         argv = entry["argv"]
         assert "bin/pf" not in entry["files"]
         assert Path(entry["pf"]).is_file()
-        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(cd *),Bash(pf *)"
         assert argv[argv.index("--tools") + 1].endswith(",Bash")
     transcripts = [
         path.read_text() for path in (tmp_path / "results" / "test").rglob(TRANSCRIPT)

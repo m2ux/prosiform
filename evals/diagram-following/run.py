@@ -164,9 +164,10 @@ from workflow import (
     SOURCE_FORMS,
     CorpusError,
     Scenario,
+    StatedRun,
     Workflow,
     baseline_workflows,
-    bundle,
+    bundle_reference,
     bundled,
     dispatch_starts,
     instruction,
@@ -405,18 +406,24 @@ def observable(
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
     """One bundled form's bundle set, each bundle by the name `pf` gave it.
 
+    The set is bundled into a copy of the form's sources, as a session's
+    workspace lays it out, so a deferred line names its target from the
+    folder its bundle sits in beside those sources.
+
     A run reporting any diagnostic beyond the warnings the workflow declares
     is refused, as one exiting nonzero is.
     """
-    with tempfile.TemporaryDirectory() as output:
-        built = bundle(workflow, FORMS[form], Path(output))
+    with tempfile.TemporaryDirectory() as scratch:
+        output = Path(scratch) / "sources"
+        shutil.copytree(workflow.form(FORMS[form]), output)
+        built = bundle_reference(output, StatedRun(None, workflow.entry), output)
         reported = stray(workflow, built.stderr)
         if built.returncode != 0 or reported:
             raise CorpusError(
                 f"{workflow.name}: pf bundled the {form} form with exit "
                 f"{built.returncode} and {reported!r}"
             )
-        written = bundled(Path(output))
+        written = bundled(output)
         if not written:
             raise CorpusError(f"{workflow.name}: pf bundled the {form} form to no file")
         return {path.name: path.read_bytes() for path in written}

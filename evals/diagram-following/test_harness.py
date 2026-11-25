@@ -119,7 +119,7 @@ def test_every_claude_session_carries_a_shell_limited_to_pf() -> None:
     """Every form can follow the run-pf line, with arguments and redirects."""
     argv = Claude().argv(["claude"], "a-model", 60_000)
     assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent,Bash"
-    assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
+    assert argv[argv.index("--allowedTools") + 1] == "Bash(cd *),Bash(pf *)"
 
 
 def test_claude_reads_the_shell_commands_a_session_ran(tmp_path: Path) -> None:
@@ -602,7 +602,11 @@ def test_an_opencode_session_may_run_only_pf_and_read_its_workspace(
     Opencode().prepare(config)
     settings = json.loads((config / "harness.json").read_text())
     assert settings["permission"] == Opencode().permission
-    assert settings["permission"]["bash"] == {"*": "deny", "pf *": "allow"}
+    assert settings["permission"]["bash"] == {
+        "*": "deny",
+        "cd *": "allow",
+        "pf *": "allow",
+    }
     assert settings["permission"]["external_directory"] == "deny"
     assert settings["permission"]["webfetch"] == "deny"
 
