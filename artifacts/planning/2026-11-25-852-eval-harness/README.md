@@ -30,7 +30,7 @@ Delivery found a live defect from the same cause: a live session cannot bundle a
 
 | Decision | State |
 | --- | --- |
-| Whether the eval harness runs in CI on changes under `evals/` | Open; the issue's proposal names it and no criterion holds it. |
+| Whether the eval harness runs in CI | Decided by the user: it stays a manual target, outside CI. |
 
 ## Artifacts
 
