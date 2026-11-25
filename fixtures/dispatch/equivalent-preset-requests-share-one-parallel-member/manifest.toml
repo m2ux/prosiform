@@ -8,5 +8,5 @@ arguments = ["entry.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/entry.bundle.md", "expected/task--p-13c9f40c.bundle.md"]
+bundles = ["expected/entry.bundle.md", "expected/task-checks+draft.bundle.md"]
 diagnostics = []

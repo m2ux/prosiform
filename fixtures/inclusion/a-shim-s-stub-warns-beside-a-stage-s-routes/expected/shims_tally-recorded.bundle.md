@@ -10,8 +10,8 @@ Run Tally as the unit under test, on the model its level maps to.
 
 ## Tally
 
-[⇉ Tally](stages_tally--p-af5ec6f2.bundle.md) on haiku — The source is prose.
-[⇉ Tally](stages_tally--p-2829ff28.bundle.md) on haiku — The source is code.
+[⇉ Tally](stages_tally-prose%2Bstrict.bundle.md) on haiku — The source is prose.
+[⇉ Tally](stages_tally-code%2Bstrict.bundle.md) on haiku — The source is code.
 
 ### Given
 

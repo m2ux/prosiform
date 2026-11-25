@@ -15,6 +15,6 @@ exit_status = 0
 bundles = [
   "expected/decide.bundle.md",
   "expected/gather.bundle.md",
-  "expected/guide--p-013b77c8.bundle.md",
+  "expected/guide-trial.bundle.md",
 ]
 diagnostics = []

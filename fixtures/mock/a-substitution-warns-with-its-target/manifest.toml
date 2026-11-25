@@ -12,7 +12,7 @@ arguments = ["[Guide](guide.md \"mock\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide--p-23fe6364.bundle.md"]
+bundles = ["expected/guide-mock.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

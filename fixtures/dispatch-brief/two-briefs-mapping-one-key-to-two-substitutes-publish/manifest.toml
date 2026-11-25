@@ -14,7 +14,7 @@ arguments = ["guide.md"]
 exit_status = 0
 bundles = [
   "expected/guide.bundle.md",
-  "expected/investigate--p-72f1e703.bundle.md",
-  "expected/investigate--p-bd35bffa.bundle.md",
+  "expected/investigate-first.bundle.md",
+  "expected/investigate-second.bundle.md",
 ]
 diagnostics = []

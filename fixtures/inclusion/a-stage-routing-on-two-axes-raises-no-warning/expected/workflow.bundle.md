@@ -12,8 +12,8 @@ Count one source's lines under each counting rule.
 
 ## Tally Strictly
 
-[⇉ Tally Strictly](stages_tally--p-af5ec6f2.bundle.md) on haiku — The source is prose.
-[⇉ Tally Strictly](stages_tally--p-2829ff28.bundle.md) on haiku — The source is code.
+[⇉ Tally Strictly](stages_tally-prose%2Bstrict.bundle.md) on haiku — The source is prose.
+[⇉ Tally Strictly](stages_tally-code%2Bstrict.bundle.md) on haiku — The source is code.
 
 ### Given
 
@@ -25,8 +25,8 @@ Count one source's lines under each counting rule.
 
 ## Tally Leniently
 
-[⇉ Tally Leniently](stages_tally--p-830bcae2.bundle.md) on haiku — The source is prose.
-[⇉ Tally Leniently](stages_tally--p-9091014c.bundle.md) on haiku — The source is code.
+[⇉ Tally Leniently](stages_tally-lenient%2Bprose.bundle.md) on haiku — The source is prose.
+[⇉ Tally Leniently](stages_tally-code%2Blenient.bundle.md) on haiku — The source is code.
 
 ### Given
 

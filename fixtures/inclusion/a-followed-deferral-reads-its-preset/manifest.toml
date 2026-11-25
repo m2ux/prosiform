@@ -12,5 +12,5 @@ arguments = ["[the draft notes](noted.md#draft \"Draft\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/noted__draft--p-3af75e8d.bundle.md"]
+bundles = ["expected/noted__draft-Draft.bundle.md"]
 diagnostics = []

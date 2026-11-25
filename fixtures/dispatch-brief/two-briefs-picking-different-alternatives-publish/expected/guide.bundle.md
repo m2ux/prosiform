@@ -12,7 +12,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Write the case number as [the rules](#tests) say.
 
-[⇉ Investigate](investigate--p-15070794.bundle.md)
+[⇉ Investigate](investigate-alpha.bundle.md)
 
 ## Review
 
@@ -22,7 +22,7 @@ Write the case number as [the rules](#tests) say.
 
 Write the case number as [the rules](#tests-1) say.
 
-[⇉ Recheck](investigate--p-fdf48a18.bundle.md)
+[⇉ Recheck](investigate-beta.bundle.md)
 
 # Alpha Rules
 

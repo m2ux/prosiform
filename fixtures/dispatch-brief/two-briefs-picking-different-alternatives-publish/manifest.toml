@@ -16,6 +16,6 @@ exit_status = 0
 diagnostics = []
 bundles = [
   "expected/guide.bundle.md",
-  "expected/investigate--p-15070794.bundle.md",
-  "expected/investigate--p-fdf48a18.bundle.md",
+  "expected/investigate-alpha.bundle.md",
+  "expected/investigate-beta.bundle.md",
 ]

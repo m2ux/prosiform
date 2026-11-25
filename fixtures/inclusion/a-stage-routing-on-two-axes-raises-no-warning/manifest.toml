@@ -12,5 +12,5 @@ arguments = ["workflow.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/stages_tally--p-2829ff28.bundle.md", "expected/stages_tally--p-830bcae2.bundle.md", "expected/stages_tally--p-9091014c.bundle.md", "expected/stages_tally--p-af5ec6f2.bundle.md", "expected/workflow.bundle.md"]
+bundles = ["expected/stages_tally-code+strict.bundle.md", "expected/stages_tally-lenient+prose.bundle.md", "expected/stages_tally-code+lenient.bundle.md", "expected/stages_tally-prose+strict.bundle.md", "expected/workflow.bundle.md"]
 diagnostics = []

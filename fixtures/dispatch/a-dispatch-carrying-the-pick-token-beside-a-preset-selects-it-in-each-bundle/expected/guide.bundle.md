@@ -10,5 +10,5 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ### Populate the body
 
-[⇉ Populate the body](work-kind--p-bfbc1162.bundle.md) — Lists its tasks in a Work Breakdown table.
-[⇉ Populate the body](work-kind--p-8df9a9ab.bundle.md) — One pull request's worth of work.
+[⇉ Populate the body](work-kind-checks%2Bepic.bundle.md) — Lists its tasks in a Work Breakdown table.
+[⇉ Populate the body](work-kind-checks%2Btask.bundle.md) — One pull request's worth of work.

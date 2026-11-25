@@ -1,16 +1,15 @@
 """Dispatch occurrences publish the bundle for their effective preset selection."""
 
-import hashlib
-import re
 from io import StringIO
 from pathlib import Path
-from types import SimpleNamespace
+from urllib.parse import quote, unquote
 
 import pytest
 from test_cli import DECLARED, invoke, written
 
 from prosiform import cli
 from prosiform.cli import GUIDE
+from prosiform.closure import BundleSelection
 from prosiform.dispatch import PARALLEL
 
 
@@ -66,14 +65,14 @@ def test_inline_dispatches_of_one_target_point_to_their_selected_contents(
     checked = next(name for name, body in run.bundles.items() if "CHECKED_BODY" in body)
     drafted = next(name for name, body in run.bundles.items() if "DRAFTED_BODY" in body)
     assert checked != drafted
-    assert re.fullmatch(r"task--p-[0-9a-f]{8}\.bundle\.md", checked)
-    assert re.fullmatch(r"task--p-[0-9a-f]{8}\.bundle\.md", drafted)
+    assert checked == "task-checks.bundle.md"
+    assert drafted == "task-draft.bundle.md"
     assert f'[⇉ Checks]({checked} "checks")' in run.bundle
     assert f'[⇉ Draft]({drafted} "draft")' in run.bundle
     assert len(run.bundles) == 3
 
 
-def test_a_short_preset_collision_preserves_the_published_set(
+def test_a_preset_and_source_name_collision_preserves_the_published_set(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     task(tmp_path)
@@ -90,23 +89,61 @@ def test_a_short_preset_collision_preserves_the_published_set(
         for path in (tmp_path / "out").rglob("*")
         if path.is_file()
     }
-    sha256 = hashlib.sha256
-    monkeypatch.setattr(
-        hashlib,
-        "sha256",
-        lambda data: SimpleNamespace(
-            hexdigest=lambda: "0" * 8 + sha256(data).hexdigest()[8:]
-        ),
-    )
+    written(tmp_path, "task-checks.md", DECLARED + "# Another Task\n")
+    guide = tmp_path / "guide.md"
+    guide.write_text(guide.read_text() + "\n[⇉ Other](task-checks.md)\n")
     errors = StringIO()
     assert cli.main(["-o", "out", "guide.md"], StringIO(), errors) == 3
     assert "E_PUBLICATION_FAILED" in errors.getvalue()
-    assert "checks" in errors.getvalue() and "draft" in errors.getvalue()
+    assert "task-checks.md" in errors.getvalue() and "task.md" in errors.getvalue()
     assert published == {
         str(path.relative_to(tmp_path)): path.read_bytes()
         for path in (tmp_path / "out").rglob("*")
         if path.is_file()
     }
+
+
+@pytest.mark.parametrize("preset", ["a+b", "a/b", "a%2Fb", "Release Candidate", "Café"])
+def test_preset_names_publish_as_one_file_with_resolving_links(
+    tmp_path: Path, preset: str
+) -> None:
+    written(tmp_path, "task.md", f'---\nprosiform:\n  "{preset}": {{}}\n---\n# Task\n')
+    written(
+        tmp_path, "guide.md", DECLARED + f'# Guide\n\n[⇉ Task](task.md "{preset}")\n'
+    )
+    run = invoke("guide.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    expected = "task-" + quote(preset, safe="") + ".bundle.md"
+    assert set(run.bundles) == {"guide.bundle.md", expected}
+    destination = quote(expected, safe="")
+    assert f"]({destination}" in run.bundle
+    assert unquote(destination) == expected
+
+
+def test_a_literal_plus_and_two_presets_have_distinct_names(tmp_path: Path) -> None:
+    written(
+        tmp_path,
+        "task.md",
+        '---\nprosiform:\n  a: {}\n  b: {}\n  "a+b": {}\n---\n# Task\n',
+    )
+    written(
+        tmp_path,
+        "guide.md",
+        DECLARED + '# Guide\n\n[⇉ Both](task.md "b,a")\n\n[⇉ Literal](task.md "a+b")\n',
+    )
+    run = invoke("guide.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert set(run.bundles) == {
+        "guide.bundle.md",
+        "task-a+b.bundle.md",
+        "task-a%2Bb.bundle.md",
+    }
+    assert (
+        cli.run_folder(
+            tmp_path, BundleSelection("task.md", presets=frozenset({"b", "a"}))
+        ).name
+        == "task-a+b.bundles"
+    )
 
 
 @pytest.mark.parametrize(
@@ -131,8 +168,8 @@ def test_equivalent_parallel_occurrences_publish_single_direct_dispatches(
     assert run.status == 0, run.stderr
     assert len(run.bundles) == 2
     name = next(name for name, body in run.bundles.items() if content in body)
-    assert f'[⇉ First]({name} "{first}")' in run.bundle
-    assert f'[⇉ Second]({name} "{second}")' in run.bundle
+    assert f'[⇉ First]({quote(name, safe="")} "{first}")' in run.bundle
+    assert f'[⇉ Second]({quote(name, safe="")} "{second}")' in run.bundle
     assert PARALLEL not in run.bundle
 
 

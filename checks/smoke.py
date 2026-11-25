@@ -311,7 +311,7 @@ def selects_presets(environment: Path, elsewhere: Path, sources: Path) -> None:
     entry = os.path.relpath(target, elsewhere)
     run = invoke(environment, elsewhere, link(entry, " CHECKS,unknown,,checks "))
     reported(run, "installed preset selection")
-    named = derived(entry) + ("--p-46dbac18")
+    named = derived(entry) + ("-checks")
     destination = elsewhere / run_folder(named) / f"{named}.bundle.md"
     if "# Reviews\n\n## Selected" not in destination.read_text():
         raise Failed("the installed preset selection places no Reviews group")

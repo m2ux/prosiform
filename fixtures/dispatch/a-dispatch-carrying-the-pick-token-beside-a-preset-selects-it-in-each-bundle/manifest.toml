@@ -15,7 +15,7 @@ arguments = ["guide.md"]
 exit_status = 0
 bundles = [
   "expected/guide.bundle.md",
-  "expected/work-kind--p-bfbc1162.bundle.md",
-  "expected/work-kind--p-8df9a9ab.bundle.md",
+  "expected/work-kind-checks+epic.bundle.md",
+  "expected/work-kind-checks+task.bundle.md",
 ]
 diagnostics = []

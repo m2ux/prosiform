@@ -25,7 +25,7 @@ flowchart TD
 
 A selection's name is its path relative to the working directory, without the Markdown suffix, with each separator written as `_`. A section adds `__` and the fragment.
 
-A selection includes the effective named presets its destination declares. A nonempty set appends `--p-` and the first 8 lowercase hexadecimal characters of the SHA-256 digest of its canonical serialization: a UTF-8 JSON array of distinct matched names, preserving declaration spelling, sorted by Unicode code point, with no whitespace and without ASCII escaping. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier. Two distinct selections producing the same name fail before publication.
+A selection includes the effective named presets its destination declares. A nonempty set appends `-` and the distinct matched names, preserving declaration spelling, sorted by Unicode code point and joined with `+`. Each name is UTF-8 percent-encoded except ASCII letters, digits, `-`, `.`, `_` and `~`, so a literal plus or slash within a name cannot become a separator. For example, selecting `codex` gives `workflow-codex.bundle.md`; selecting `recorded` and `codex` gives `workflow-codex+recorded.bundle.md`. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier. Links URL-encode the resulting filename. Two distinct selections producing the same name fail before publication.
 
 The entry name with `.bundles` appended names the run folder; with `.bundle.md` appended it names the entry bundle. Each dispatched selection uses its own name inside that same folder.
 

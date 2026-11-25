@@ -12,5 +12,5 @@ Run `pf`, then follow the guidance it prints. Follow [Entry](#entry) next.
 
 ## ⫽ Dispatch Set
 
-[⇉ Checks](task--p-46dbac18.bundle.md)
-[⇉ Draft](task--p-eef2db53.bundle.md)
+[⇉ Checks](task-checks.bundle.md)
+[⇉ Draft](task-draft.bundle.md)
