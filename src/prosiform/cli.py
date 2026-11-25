@@ -7,7 +7,6 @@ units own reference, source, layout and diagnostic rules.
 
 import argparse
 import errno
-import hashlib
 import json
 import os
 import posixpath
@@ -21,6 +20,7 @@ from dataclasses import dataclass, replace
 from importlib.metadata import version
 from pathlib import Path
 from typing import IO, Any, NoReturn
+from urllib.parse import quote
 
 from markdown_it.token import Token
 
@@ -4353,15 +4353,18 @@ def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
 
 
 def selection_name(selection: BundleSelection) -> str:
-    """One effective selection's path, fragment and canonical preset qualifier."""
+    """Path and fragment with sorted, individually URL-escaped preset names.
+
+    A nonempty selection adds a hyphen and joins declaration spellings with
+    plus signs. Escaping each name keeps separators and path characters literal.
+    """
     name = str(Path(selection.path).with_suffix("")).replace(os.sep, "_")
     if selection.fragment is not None:
         name += "__" + selection.fragment
     if selection.presets:
-        encoded = json.dumps(
-            sorted(selection.presets), ensure_ascii=False, separators=(",", ":")
-        ).encode("utf-8")
-        name += "--p-" + hashlib.sha256(encoded).hexdigest()
+        name += "-" + "+".join(
+            quote(preset, safe="") for preset in sorted(selection.presets)
+        )
     return name
 
 

@@ -13,5 +13,5 @@ arguments = ["[Checks](docs/guide.md#checks \"Checks\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/docs_guide__checks--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"]
+bundles = ["expected/docs_guide__checks-Checks.bundle.md"]
 diagnostics = []

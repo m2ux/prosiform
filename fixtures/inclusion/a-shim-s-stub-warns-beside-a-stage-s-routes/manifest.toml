@@ -13,7 +13,7 @@ arguments = ["[Tally](shims/tally.md \"recorded\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/shims_tally--p-d39dc21d7beb9d3b49138e616dc40270f2e7e38f8c4a1f06201d6e2a6cb1d52e.bundle.md", "expected/stages_tally--p-2829ff28b838b7677c2f51a9fdc3c673dd603030e6009eda417f1e91809e90bc.bundle.md", "expected/stages_tally--p-af5ec6f26fe5b7094001c5367e5b8979928c7250f0d79c74001ff5725cb1280c.bundle.md"]
+bundles = ["expected/shims_tally-recorded.bundle.md", "expected/stages_tally-code+strict.bundle.md", "expected/stages_tally-prose+strict.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

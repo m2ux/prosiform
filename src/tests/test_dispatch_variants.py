@@ -8,6 +8,7 @@ from test_cli import DECLARED, invoke, written
 
 from prosiform import cli
 from prosiform.closure import BundleSelection, Reference, Substitution
+from prosiform.dispatch import file_destination
 
 PRESETS = (
     "---\nprosiform:\n"
@@ -86,12 +87,9 @@ def test_equivalent_requests_bundle_once_under_the_contract_name(
     monkeypatch.setattr(cli, "bundle_one", observing)
     run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    expected = (
-        "task--p-13c9f40cda0225cb29b9fa2332a291e8950291238a73b75fed0cd1521986f6e8"
-        ".bundle.md"
-    )
+    expected = "task-checks+draft.bundle.md"
     assert set(run.bundles) == {"entry.bundle.md", expected}
-    assert run.bundle.count(f"]({expected}") == 3
+    assert run.bundle.count(f"]({file_destination(expected)}") == 3
     assert observed == [
         BundleSelection("entry.md"),
         BundleSelection("task.md", presets=frozenset({"checks", "draft"})),

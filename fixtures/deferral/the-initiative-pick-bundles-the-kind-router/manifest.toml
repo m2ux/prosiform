@@ -15,5 +15,5 @@ arguments = ["[Populate the body](work-kind.md#populate-body \"?\")", "--pick", 
 
 [expected]
 exit_status = 0
-bundles = ["expected/work-kind__populate-body--p-cd0a2b9352272cfa9c842b7f502d8fd05370c2f6b404fc3e9e3f5a7e5ab5dd7b.bundle.md"]
+bundles = ["expected/work-kind__populate-body-initiative.bundle.md"]
 diagnostics = []

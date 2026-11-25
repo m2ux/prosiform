@@ -105,7 +105,9 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
         else ("Live payload.", "Draft payload.")
     )
     assert payloads(activated.bundle) == payloads(immediate.bundle) == expected
-    assert ("--p-" in next(iter(activated.bundles))) is selected
+    assert (
+        "-Caf%C3%A9+Release%20Candidate.bundle.md" in next(iter(activated.bundles))
+    ) is selected
 
     default = invoke(expected_destination, cwd=folder)
     assert default.status == 0, default.stderr

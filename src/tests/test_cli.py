@@ -33,6 +33,7 @@ from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import IO, Any
+from urllib.parse import quote
 
 import pytest
 
@@ -2423,8 +2424,8 @@ def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
     assert (
         f'Populate [the body](#the-body "{title}").\n\n'
         f"### the body\n\n"
-        f"[⇉ the body]({epic}) — Lists its tasks.\n"
-        f"[⇉ the body]({task}) — One pull request.\n"
+        f"[⇉ the body]({quote(epic, safe='')}) — Lists its tasks.\n"
+        f"[⇉ the body]({quote(task, safe='')}) — One pull request.\n"
     ) in run.bundle
 
 

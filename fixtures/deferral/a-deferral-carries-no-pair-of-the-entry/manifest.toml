@@ -12,7 +12,7 @@ arguments = ["[Entry](entry.md \"recorded\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/entry--p-d39dc21d7beb9d3b49138e616dc40270f2e7e38f8c4a1f06201d6e2a6cb1d52e.bundle.md"]
+bundles = ["expected/entry-recorded.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

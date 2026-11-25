@@ -9,6 +9,7 @@ from test_cli import DECLARED, FROM_BUNDLE, invoke, written
 
 from prosiform import cli, source
 from prosiform.closure import BundleSelection
+from prosiform.dispatch import file_destination
 from prosiform.tags import read
 
 
@@ -95,7 +96,7 @@ def test_entry_and_authored_link_select_the_same_destination_presets(
         assert "CHECKED" in run.bundle
         assert "DEFAULT" not in run.bundle
         assert "unknown" not in run.stderr
-    qualifier = "--p-13c9f40cda0225cb29b9fa2332a291e8950291238a73b75fed0cd1521986f6e8"
+    qualifier = "-checks+draft"
     expected = "guide" + ("__report" if fragment else "") + qualifier + ".bundle.md"
     assert list(direct.bundles) == [expected]
 
@@ -159,7 +160,7 @@ def test_a_selected_dispatch_names_and_bundles_its_qualified_bundle(
     name = cli.bundle_file(
         BundleSelection("guide.md", "report", frozenset({"checks", "draft"}))
     )
-    assert f"]({name}" in run.bundle
+    assert f"]({file_destination(name)}" in run.bundle
     assert "CHECKED" in run.bundles[name]
     assert "DEFAULT" not in run.bundles[name]
 
