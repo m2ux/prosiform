@@ -31,7 +31,11 @@ Where its `--tools` names `Bash`, it makes each `pf` run the scenario
 states as a `Bash` call: the session's own in a message of its own, and a
 sub-agent's in a message naming that sub-agent's `Agent` call as
 `parent_tool_use_id`, as the CLI prints a sub-agent's calls. Each session
-opens with bare `pf`, as its bundle's first line asks.
+opens with bare `pf`, as its bundle's first line asks. A run of the
+session's own on a line a bundle in its workspace publishes is made as the
+guide states, `cd <folder> && pf '<line>'` from that bundle's folder: a
+command its `--allowedTools` rules do not admit is refused, and an admitted
+one runs the build, its output and exit answering the call.
 
 The environment scripts it:
 
@@ -78,6 +82,7 @@ import os
 import re
 import shlex
 import shutil
+import subprocess
 import sys
 import time
 import uuid
@@ -92,10 +97,11 @@ from harness import (
     READ_TOOL,
     SHELL_TOOL,
 )
-from score import ACTIONS, SUB_AGENT_TRACE, TRACE
+from score import ACTIONS, SUB_AGENT_TRACE, TRACE, pf_runs
 from workflow import (
     SOURCE_DIR,
     Scenario,
+    StatedRun,
     Workflow,
     entry_bundle,
     walk,
@@ -112,6 +118,9 @@ HANDED_TRACE = re.compile(re.escape(SUB_AGENT_TRACE).replace(r"\{section\}", r"(
 """The sub-agent trace an `Agent` prompt names, the section's name its group."""
 
 HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
+
+LINK = re.compile(r'\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+"""A Markdown link a bundle publishes: its destination and any title."""
 
 
 def held(workspace: Path) -> list[str]:
@@ -224,29 +233,109 @@ def framed(report: str) -> str:
     return f"[Subagent hand-back] A subagent's final report. {HANDBACK}\n{lines}"
 
 
-def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None, str]]:
-    """Each `pf` run the stub makes, as the agent making it and its command line.
+def published_line(workspace: Path, run: StatedRun) -> tuple[Path, str] | None:
+    """The folder of a bundle in the workspace publishing a run's line, and the line.
+
+    A deferred line names its target from the folder its bundle is in, so the
+    line is the link whose destination, read from that folder, is the run's
+    entry, and whose title selects the run's names.
+    """
+    if run.entry is None:
+        return None
+    for bundle_file in sorted(workspace.rglob("*.bundle.md")):
+        folder = bundle_file.parent
+        for found in LINK.finditer(bundle_file.read_text()):
+            document, _, fragment = found.group(1).partition("#")
+            if not document:
+                continue
+            named = os.path.relpath(os.path.normpath(folder / document), workspace)
+            if (f"{named}#{fragment}" if fragment else named) != run.entry:
+                continue
+            [read] = pf_runs((shlex.join(["pf", found.group(0)]),))
+            if read is not None and read.presets == run.presets:
+                return folder, found.group(0)
+    return None
+
+
+def shell_runs(
+    item: Scenario | None, argv: list[str], workspace: Path
+) -> list[tuple[str | None, str, Path | None]]:
+    """Each `pf` run the stub makes: the agent making it, its command line and folder.
 
     These are the stated runs, each pick preceded by its listing where
-    `STUB_AGENT_LISTING` is set. A session whose `--tools` names no shell
-    runs none.
+    `STUB_AGENT_LISTING` is set. The session runs a line a bundle in its
+    workspace publishes as written, from that bundle's folder, as the guide
+    states, and names that folder; any other run is printed alone, with no
+    folder. A session whose `--tools` names no shell runs none.
     """
     tools = argv[argv.index("--tools") + 1] if "--tools" in argv else ""
     if item is None or SHELL_TOOL not in tools.split(","):
         return []
     listed = bool(os.environ.get("STUB_AGENT_LISTING"))
-    made = [
-        (run.by, shlex.join(["pf", *step.args]))
-        for run in item.runs
+    made: list[tuple[str | None, str, Path | None]] = []
+    for run in item.runs:
+        line = published_line(workspace, run) if run.by is None else None
         for step in (
             (replace(run, pick=None), run)
             if listed and run.pick is not None
             else (run,)
-        )
-    ]
+        ):
+            if line is None:
+                made.append((run.by, shlex.join(["pf", *step.args]), None))
+                continue
+            folder, link = line
+            picked = ("--pick", step.pick) if step.pick is not None else ()
+            relative = folder.relative_to(workspace).as_posix()
+            command = (
+                f"cd {shlex.quote(relative)} && {shlex.join(['pf', link, *picked])}"
+            )
+            made.append((run.by, command, folder))
     if runs := os.environ.get("STUB_AGENT_RUNS"):
         made = made[: int(runs)]
     return made
+
+
+def admitted(command: str, argv: list[str]) -> bool:
+    """Whether every command of a shell line is one `--allowedTools` admits.
+
+    A rule `Bash(<word> *)` admits a command whose first word is `<word>`.
+    """
+    rules = argv[argv.index("--allowedTools") + 1] if "--allowedTools" in argv else ""
+    words = {rule[len("Bash(") : -len(" *)")] for rule in rules.split(",") if rule}
+    return all(segment.split()[0] in words for segment in command.split(" && "))
+
+
+def made_run(
+    command: str, folder: Path, argv: list[str], identifier: str
+) -> dict[str, object]:
+    """The `tool_result` answering one run made from a bundle's folder.
+
+    A command the session's rules do not admit is refused, as the CLI refuses
+    it; an admitted one runs the build on the line from that folder, and its
+    output and exit answer the call.
+    """
+    if not admitted(command, argv):
+        text = f"Permission to use {SHELL_TOOL} with command {command} has been denied."
+        failed = True
+    else:
+        _, _, line = command.partition(" && ")
+        ran = subprocess.run(
+            shlex.split(line), cwd=folder, capture_output=True, text=True, check=False
+        )
+        text, failed = ran.stdout + ran.stderr, ran.returncode != 0
+    return {
+        "type": "user",
+        "message": {
+            "content": [
+                {
+                    "type": "tool_result",
+                    "tool_use_id": identifier,
+                    "content": text,
+                    "is_error": failed,
+                }
+            ]
+        },
+    }
 
 
 def tool_call(
@@ -442,14 +531,19 @@ def main() -> int:
     if read := os.environ.get("STUB_AGENT_READ"):
         opened: dict[str, object] = {"file_path": str(workspace / read)}
         print(json.dumps(tool_call(READ_TOOL, opened, None)))
-    runs = shell_runs(item, sys.argv[1:])
-    own = [command for by, command in runs if by is None]
-    if not own or own[0] != "pf":
-        own.insert(0, "pf")
-    for command in own:
-        print(json.dumps(shell_call(command, None)))
+    runs = shell_runs(item, sys.argv[1:], workspace)
+    own = [(command, folder) for by, command, folder in runs if by is None]
+    if not own or own[0][0] != "pf":
+        own.insert(0, ("pf", None))
+    for command, folder in own:
+        call = shell_call(command, None)
+        print(json.dumps(call))
+        if folder is not None:
+            [use] = call["message"]["content"]  # type: ignore[index]
+            print(json.dumps(made_run(command, folder, sys.argv[1:], use["id"])))
     if dispatch:
-        for said in transcript_of(dispatch, prompt, runs):
+        stated = [(by, command) for by, command, _ in runs]
+        for said in transcript_of(dispatch, prompt, stated):
             print(json.dumps(said))
     else:
         print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
