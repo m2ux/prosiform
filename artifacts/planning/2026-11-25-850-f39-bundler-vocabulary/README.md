@@ -4,7 +4,7 @@
 
 Prosiform is a bundler and a run bundles: one word names the tool, the act and the output across the product description, the guide and diagnostics `pf` emits, the documentation, the fixtures, the eval and the contract design. The glossary records "compiler" and "compile" as terms deliberately not used.
 
-[F39, issue #850](https://github.com/m2ux/prosiform/issues/850) holds the feature and stands In Progress on Python board 18. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as draft [pull request #851](https://github.com/m2ux/prosiform/pull/851) to `main` with one commit per layer, at head 6b8d5a6cb1edaabb8f7e86a4f6e459b19ad63073. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. The pull request awaits review and is not merged; [test-results.md](test-results.md) records the validation, a passing `make check` and the eval-harness failures `main` already carries. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
+[F39, issue #850](https://github.com/m2ux/prosiform/issues/850) holds the feature and is delivered. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as [pull request #851](https://github.com/m2ux/prosiform/pull/851) to `main` with one commit per layer, at head 6b8d5a6cb1edaabb8f7e86a4f6e459b19ad63073. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. GitHub records merge 86fcbad07cf279db2b2886265b5404c038b4d37e at 2026-11-25T08:34:58Z, whose tree equals the reviewed head, and CI passes there. Issue #850 is closed as completed with AC1 to AC10 ticked and stands Done on board 18. [test-results.md](test-results.md) records the validation, a passing `make check` and the eval-harness failures `main` already carries. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
 
 ## Decisions
 
@@ -92,7 +92,7 @@ Each layer is one commit, in this order. The build, the corpus and the documenta
 - [x] Land the eval layer.
 - [x] Run the search of AC1, the previous corpus against the build, `make eval-harness` and every target of `make check`, and record the results.
 - [x] Open the draft pull request to `main` and link it to F39 through Development.
-- [ ] Review the pull request, verify each criterion at the merge revision, merge and record delivery.
+- [x] Review the pull request, verify each criterion at the merge revision, merge and record delivery.
 
 ## Artifacts
 
