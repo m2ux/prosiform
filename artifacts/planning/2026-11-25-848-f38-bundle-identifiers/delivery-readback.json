@@ -11,10 +11,14 @@
   "head": "552230b96269ed26511a9652d16571d8aae07655",
   "base_ref": "main",
   "draft": false,
-  "merged": false,
+  "merged": true,
   "ci": "SUCCESS",
   "ci_run": "https://github.com/m2ux/prosiform/actions/runs/45578186008",
   "board": 18,
   "item": 317498778,
-  "status": "In Review"
+  "status": "Done",
+  "merged_at": "2026-11-25T09:02:01Z",
+  "merge_commit": "191c0cf8d2a8fa39b17f674b579daee413c0e655",
+  "issue_state": "closed",
+  "state_reason": "completed"
 }
