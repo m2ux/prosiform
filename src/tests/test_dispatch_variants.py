@@ -86,7 +86,7 @@ def test_equivalent_requests_compile_once_under_the_contract_name(
     monkeypatch.setattr(cli, "compiled", observing)
     run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    expected = "task--p-13c9f40cda02.bundle.md"
+    expected = "task--p-13c9f40c.bundle.md"
     assert set(run.bundles) == {"entry.bundle.md", expected}
     assert run.bundle.count(f"]({expected}") == 3
     assert observed == [

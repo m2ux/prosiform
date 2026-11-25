@@ -9,7 +9,7 @@ flowchart LR
   G["⇉ Gather"] --> D["⇉ Decide"] --> P["⇉ Plain"]
   click G "stages_gather.bundle.md"
   %% G on haiku
-  click D "stages_decide--p-3bcbdbfeabe6.bundle.md" "deep"
+  click D "stages_decide--p-3bcbdbfe.bundle.md" "deep"
   %% D on opus
   click P "stages_plain.bundle.md"
 ```

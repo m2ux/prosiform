@@ -16,8 +16,8 @@ exit_status = 0
 bundles = [
   "expected/direct.bundle.md",
   "expected/guide.bundle.md",
-  "expected/kinds--p-3bcbdbfeabe6.bundle.md",
-  "expected/kinds--p-eb1d12732c6e.bundle.md",
+  "expected/kinds--p-3bcbdbfe.bundle.md",
+  "expected/kinds--p-eb1d1273.bundle.md",
   "expected/read.bundle.md",
 ]
 diagnostics = []

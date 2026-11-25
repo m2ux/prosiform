@@ -15,7 +15,7 @@ arguments = ["guide.md"]
 exit_status = 0
 bundles = [
   "expected/guide.bundle.md",
-  "expected/inv--p-9aae63ebb719.bundle.md",
+  "expected/inv--p-9aae63eb.bundle.md",
   "expected/inv.bundle.md",
   "expected/loop.bundle.md",
   "expected/safe.bundle.md",

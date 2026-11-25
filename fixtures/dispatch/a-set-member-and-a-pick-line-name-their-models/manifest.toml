@@ -16,7 +16,7 @@ bundles = [
   "expected/decide.bundle.md",
   "expected/gather.bundle.md",
   "expected/guide.bundle.md",
-  "expected/kind--p-9cbdc206d702.bundle.md",
-  "expected/kind--p-b978cbc335fe.bundle.md",
+  "expected/kind--p-9cbdc206.bundle.md",
+  "expected/kind--p-b978cbc3.bundle.md",
 ]
 diagnostics = []

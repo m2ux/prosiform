@@ -24,5 +24,5 @@ Read the supplied input.
 
 ### Choose
 
-[⇉ Choose](kinds--p-eb1d12732c6e.bundle.md) — One short read.
-[⇉ Choose](kinds--p-3bcbdbfeabe6.bundle.md) — A detailed read.
+[⇉ Choose](kinds--p-eb1d1273.bundle.md) — One short read.
+[⇉ Choose](kinds--p-3bcbdbfe.bundle.md) — A detailed read.

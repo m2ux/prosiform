@@ -12,7 +12,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Hand on [Safe](#safe).
 
-[⇉ I](inv--p-9aae63ebb719.bundle.md)
+[⇉ I](inv--p-9aae63eb.bundle.md)
 
 #### Safe
 

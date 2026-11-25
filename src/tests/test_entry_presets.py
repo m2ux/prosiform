@@ -95,7 +95,7 @@ def test_entry_and_authored_link_select_the_same_destination_presets(
         assert "CHECKED" in run.bundle
         assert "DEFAULT" not in run.bundle
         assert "unknown" not in run.stderr
-    qualifier = "--p-13c9f40cda02"
+    qualifier = "--p-13c9f40c"
     expected = "guide" + ("__report" if fragment else "") + qualifier + ".bundle.md"
     assert list(direct.bundles) == [expected]
 

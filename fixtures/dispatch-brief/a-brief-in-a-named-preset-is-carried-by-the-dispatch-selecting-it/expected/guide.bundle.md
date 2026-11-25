@@ -13,4 +13,4 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Write the case number to the case file before you dispatch.
 
-[⇉ Investigate](investigate--p-d8c251f92c40.bundle.md)
+[⇉ Investigate](investigate--p-d8c251f9.bundle.md)

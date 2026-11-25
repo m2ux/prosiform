@@ -13,5 +13,5 @@ arguments = ["[⇉ Release Checks](guide.md \"Checks\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide--p-2462c733cdae.bundle.md"]
+bundles = ["expected/guide--p-2462c733.bundle.md"]
 diagnostics = []

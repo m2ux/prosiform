@@ -20,5 +20,5 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ### Kind
 
-[⇉ Kind](kind--p-9cbdc206d702.bundle.md) on opus — Lists its tasks.
-[⇉ Kind](kind--p-b978cbc335fe.bundle.md) on haiku — One pull request's worth of work.
+[⇉ Kind](kind--p-9cbdc206.bundle.md) on opus — Lists its tasks.
+[⇉ Kind](kind--p-b978cbc3.bundle.md) on haiku — One pull request's worth of work.
