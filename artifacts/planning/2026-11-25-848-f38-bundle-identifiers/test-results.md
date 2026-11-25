@@ -7,3 +7,9 @@
 - **Collision observation:** forcing two distinct full digests to the same 12-character prefix produces E_PUBLICATION_FAILED and preserves every previously published output byte. Existing tests also cover equivalent selections, distinct contents, parallel and heading placements and validation-only refusal.
 
 These checks establish compiler behavior and packaging, not native-agent accuracy or a released version. The initial stale lifecycle expectation and sandbox cache refusal are retained in the originating investigation; the complete passing source/corpus logs above identify the accepted checks.
+
+## Final Eight-Character Candidate
+
+Candidate f41769e7cd7e763ad5182efc835b0e4d64cddaac uses eight characters. All 2,324 source cases pass, including installed-wheel coverage; all 708 fixtures pass; the 59 focused preset/publication cases pass, including the actual eight-character prefix collision; type checking passes for 87 files. Changed Python files pass explicit repository lint/format settings. No previous output-name aliases are published.
+
+The earlier twelve-character candidate and native consumers pinned to it remain distinct evidence. This source/corpus result observes the final eight-character code.
