@@ -268,8 +268,9 @@ class Claude:
     shell_tool: str = SHELL_TOOL
     """The shell tool a session given `pf` also carries."""
     skill_home: str = ".claude/skills"
-    pf_only: str = "Bash(pf *)"
-    """The allowlist rule admitting `pf` with arguments and output redirects."""
+    pf_only: str = "Bash(cd *),Bash(pf *)"
+    """The allowlist rules admitting `pf` with arguments and output redirects,
+    run from the workspace or from a bundle's folder a session changes into."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
@@ -312,7 +313,8 @@ class Claude:
         token budget from what each session reports.
 
         Every session carries the shell tool, and `--allowedTools` admits
-        `pf` with any arguments and output redirects in its workspace.
+        `pf` with any arguments and output redirects in its workspace, and
+        `cd` into the folder of the bundle whose link it runs.
         """
         return [
             *agent,
@@ -956,7 +958,7 @@ class Opencode:
     """
     permission: dict[str, object] = field(
         default_factory=lambda: {
-            "bash": {"*": "deny", "pf *": "allow"},
+            "bash": {"*": "deny", "cd *": "allow", "pf *": "allow"},
             "edit": "allow",
             "read": "allow",
             "glob": "allow",
@@ -969,7 +971,8 @@ class Opencode:
         }
     )
     """What a session may do: write its workspace, read it, dispatch sections,
-    and run `pf` with any arguments and output redirects.
+    and run `pf` with any arguments and output redirects, from the workspace
+    or from the folder of the bundle whose link it runs.
 
     The CLI has no allowlist of the tools a session carries, so every other
     capability is refused here instead. `external_directory` is what confines

@@ -10,7 +10,8 @@ A run puts the entry's bundle in place of `ENTRY`.
 ENTRY describes a workflow. Interpret it as a workflow and follow it to
 completion, starting at its first state.
 
-- The pf command is on your path. Run each pf command from this directory.
+- The pf command is on your path. Run a link in a bundle from the folder
+  that bundle is in, as the guide pf prints states.
 - On entering a state, before anything else, append the state's name as one
   line to trace.log in this directory. Append only a state: a step the
   workflow takes, never the diamond it weighs a decision in, the condition
