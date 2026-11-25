@@ -1,0 +1,10 @@
+{
+  "one-preset": [
+    "named-specimen/one-preset/workflow-codex.bundles/task-codex.bundle.md",
+    "named-specimen/one-preset/workflow-codex.bundles/workflow-codex.bundle.md"
+  ],
+  "two-presets": [
+    "named-specimen/two-presets/workflow-codex+recorded.bundles/task-codex.bundle.md",
+    "named-specimen/two-presets/workflow-codex+recorded.bundles/workflow-codex+recorded.bundle.md"
+  ]
+}

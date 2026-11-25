@@ -1,0 +1,61 @@
+..........F........................................F.................... [ 68%]
+.................................                                        [100%]
+=================================== FAILURES ===================================
+_ test_equivalent_parallel_occurrences_publish_single_direct_dispatches[checks,audit- AUDIT, checks,unknown,default, -CHECKED_BODY] _
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-26/test_equivalent_parallel_occur1')
+first = 'checks,audit', second = ' AUDIT, checks,unknown,default, '
+content = 'CHECKED_BODY'
+
+    @pytest.mark.parametrize(
+        ("first", "second", "content"),
+        [
+            ("checks", "Checks,unknown,default,checks", "CHECKED_BODY"),
+            ("checks,audit", " AUDIT, checks,unknown,default, ", "CHECKED_BODY"),
+            ("", "unknown,default", "DEFAULT_BODY"),
+        ],
+    )
+    def test_equivalent_parallel_occurrences_publish_single_direct_dispatches(
+        tmp_path: Path, first: str, second: str, content: str
+    ) -> None:
+        task(tmp_path)
+        written(
+            tmp_path,
+            "guide.md",
+            DECLARED + f'# Guide\n\n[⫽ First](task.md "{first}")\n\n'
+            f'[⫽ Second](task.md "{second}")\n',
+        )
+        run = invoke("guide.md", cwd=tmp_path)
+        assert run.status == 0, run.stderr
+        assert len(run.bundles) == 2
+        name = next(name for name, body in run.bundles.items() if content in body)
+>       assert f'[⇉ First]({name} "{first}")' in run.bundle
+E       assert '[⇉ First](task-audit+checks.bundle.md "checks,audit")' in '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n\n# Guide\n\n[⇉ First...t%2Bchecks.bundle.md "checks,audit")\n\n[⇉ Second](task-audit%2Bchecks.bundle.md " AUDIT, checks,unknown,default, ")\n'
+E        +  where '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n\n# Guide\n\n[⇉ First...t%2Bchecks.bundle.md "checks,audit")\n\n[⇉ Second](task-audit%2Bchecks.bundle.md " AUDIT, checks,unknown,default, ")\n' = Run(status=0, stdout='', stderr="W_PRESET_UNUSED: the preset 'draft' of 'task.md' is selected by no reference the run ...hen follow the guidance it prints. Follow [Task](#task) next.\n\n# Task\n\n[Body](#body)\n\n# Body\n\nCHECKED_BODY\n'}).bundle
+
+src/tests/test_dispatch_publication.py:171: AssertionError
+_______ test_a_selected_dispatch_names_and_compiles_its_qualified_bundle _______
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-26/test_a_selected_dispatch_names0')
+
+    def test_a_selected_dispatch_names_and_compiles_its_qualified_bundle(
+        tmp_path: Path,
+    ) -> None:
+        tree(tmp_path)
+        written(
+            tmp_path, "entry.md", DECLARED + '[⇉ Review](guide.md#report "checks,draft")\n'
+        )
+        run = invoke("entry.md", cwd=tmp_path)
+        assert run.status == 0, run.stderr
+        name = cli.bundle_file(
+            BundleSelection("guide.md", "report", frozenset({"checks", "draft"}))
+        )
+>       assert f"]({name}" in run.bundle
+E       assert '](guide__report-checks+draft.bundle.md' in '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Entry](#entry) next.\n\n# Entry\n\n[⇉ Review](guide__report-checks%2Bdraft.bundle.md "checks,draft")\n'
+E        +  where '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Entry](#entry) next.\n\n# Entry\n\n[⇉ Review](guide__report-checks%2Bdraft.bundle.md "checks,draft")\n' = Run(status=0, stdout='', stderr='', bundle='# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [...ecks and Draft](#checks-and-draft) next.\n\n# Checks and Draft\n\n### Report\n\n[Body](#body)\n\n# Body\n\nCHECKED\n'}).bundle
+
+src/tests/test_entry_presets.py:162: AssertionError
+=========================== short test summary info ============================
+FAILED src/tests/test_dispatch_publication.py::test_equivalent_parallel_occurrences_publish_single_direct_dispatches[checks,audit- AUDIT, checks,unknown,default, -CHECKED_BODY]
+FAILED src/tests/test_entry_presets.py::test_a_selected_dispatch_names_and_compiles_its_qualified_bundle
+sbx: exit 1; writable: /tmp /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform-f38-preset-names (name more with SBX_EXTRA_ROOTS=dir1:dir2)

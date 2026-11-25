@@ -1,0 +1,118 @@
+cd src && uv lock --check
+Resolved 24 packages in 0.91ms
+uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
+All checks passed!
+uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
+513 files already formatted
+uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
+Success: no issues found in 103 source files
+cd src && uv run --frozen pytest
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................FF.............................. [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+..........................                                               [100%]
+=================================== FAILURES ===================================
+_ test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative[checks, ?] _
+
+kinds = PosixPath('/tmp/pytest-of-mike/pytest-27/test_a_dispatch_carrying_the_p1')
+title = 'checks, ?'
+
+    @pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
+    def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
+        kinds: Path, title: str
+    ) -> None:
+        written(
+            kinds,
+            "guide.md",
+            DECLARED
+            + f'# Guide\n\n## Plan\n\nPopulate [⇉ the body](work-kind.md "{title}").\n',
+        )
+        run = invoke("-d", "json", "guide.md", cwd=kinds)
+        assert run.status == SUCCESS, run.stderr
+        fixed = frozenset({"Checks"}) if "checks" in title.casefold() else frozenset()
+        epic, task = (
+            bundle_file(BundleSelection("work-kind.md", None, fixed | {kind}))
+            for kind in ("Epic", "Task")
+        )
+        assert epic in run.bundles and task in run.bundles
+        assert "# Epic-Body" in run.bundles[epic]
+        assert "# Task-Body" in run.bundles[task]
+>       assert (
+            f'Populate [the body](#the-body "{title}").\n\n'
+            f"### the body\n\n"
+            f"[⇉ the body]({epic}) — Lists its tasks.\n"
+            f"[⇉ the body]({task}) — One pull request.\n"
+        ) in run.bundle
+E       assert 'Populate [the body](#the-body "checks, ?").\n\n### the body\n\n[⇉ the body](work-kind-Checks+Epic.bundle.md) — Lists its tasks.\n[⇉ the body](work-kind-Checks+Task.bundle.md) — One pull request.\n' in '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n\n# Guide\n\n## Plan\...ind-Checks%2BEpic.bundle.md) — Lists its tasks.\n[⇉ the body](work-kind-Checks%2BTask.bundle.md) — One pull request.\n'
+E        +  where '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n\n# Guide\n\n## Plan\...ind-Checks%2BEpic.bundle.md) — Lists its tasks.\n[⇉ the body](work-kind-Checks%2BTask.bundle.md) — One pull request.\n' = Run(status=0, stdout='', stderr='', bundle='# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [...[Reviews](#reviews) next.\n\n# Reviews\n\n## Work Kind\n\nPopulate [the body](#task-body).\n\n# Task-Body\n\nText.\n'}).bundle
+
+tests/test_cli.py:2423: AssertionError
+_ test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative[Checks,?] _
+
+kinds = PosixPath('/tmp/pytest-of-mike/pytest-27/test_a_dispatch_carrying_the_p2')
+title = 'Checks,?'
+
+    @pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
+    def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
+        kinds: Path, title: str
+    ) -> None:
+        written(
+            kinds,
+            "guide.md",
+            DECLARED
+            + f'# Guide\n\n## Plan\n\nPopulate [⇉ the body](work-kind.md "{title}").\n',
+        )
+        run = invoke("-d", "json", "guide.md", cwd=kinds)
+        assert run.status == SUCCESS, run.stderr
+        fixed = frozenset({"Checks"}) if "checks" in title.casefold() else frozenset()
+        epic, task = (
+            bundle_file(BundleSelection("work-kind.md", None, fixed | {kind}))
+            for kind in ("Epic", "Task")
+        )
+        assert epic in run.bundles and task in run.bundles
+        assert "# Epic-Body" in run.bundles[epic]
+        assert "# Task-Body" in run.bundles[task]
+>       assert (
+            f'Populate [the body](#the-body "{title}").\n\n'
+            f"### the body\n\n"
+            f"[⇉ the body]({epic}) — Lists its tasks.\n"
+            f"[⇉ the body]({task}) — One pull request.\n"
+        ) in run.bundle
+E       assert 'Populate [the body](#the-body "Checks,?").\n\n### the body\n\n[⇉ the body](work-kind-Checks+Epic.bundle.md) — Lists its tasks.\n[⇉ the body](work-kind-Checks+Task.bundle.md) — One pull request.\n' in '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n\n# Guide\n\n## Plan\...ind-Checks%2BEpic.bundle.md) — Lists its tasks.\n[⇉ the body](work-kind-Checks%2BTask.bundle.md) — One pull request.\n'
+E        +  where '# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n\n# Guide\n\n## Plan\...ind-Checks%2BEpic.bundle.md) — Lists its tasks.\n[⇉ the body](work-kind-Checks%2BTask.bundle.md) — One pull request.\n' = Run(status=0, stdout='', stderr='', bundle='# § Instructions\n\nRun `pf`, then follow the guidance it prints. Follow [...[Reviews](#reviews) next.\n\n# Reviews\n\n## Work Kind\n\nPopulate [the body](#task-body).\n\n# Task-Body\n\nText.\n'}).bundle
+
+tests/test_cli.py:2423: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_cli.py::test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative[checks, ?]
+FAILED tests/test_cli.py::test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative[Checks,?]
+2 failed, 2328 passed in 8.89s
+make: *** [Makefile:81: test] Error 1

@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/849",
+    "head": "552230b96269ed26511a9652d16571d8aae07655",
+    "base": "6f103e34db5a814331f9882c7e01330cd2f3aa5a",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-848-f38-bundle-identifiers/agent-review.json",
+    "reviewer": "Codex",
+    "reviewed_at": "2026-11-25T08:43:38.076362+00:00",
+    "scope": "Complete F38 diff against integrated main 86fcbad07cf279db2b2886265b5404c038b4d37e: selection_name, BundleSelection matching, run_folder, bundle_file, dispatched_file, dispatch.file_destination and publication collision/atomic replacement paths; source regressions, installed-wheel smoke, every fixture/example transformation, documentation and diagram paths. The newer target commit changes only README description; F38 carries no README edit. Review includes real source/preset name collisions and escaping through filenames and URL destinations. Separate compiler checkouts preserve historical evaluated builds.",
+    "criteria": "AC1: exact readable names and resolving links; AC2: canonical equivalence and literal-plus separation; AC3: collision refusal with byte-identical prior output; AC4: documented contract, examples and complete check all pass. See test-results.md.",
+    "validation": "make check passes: 2330 source cases, 1155 harness cases, 708 corpus fixtures, installed wheel, lint/format, types (103 files), layout/tables/online links/vocabulary/invocation/conformance/independence. Remote Checks succeeds on this head. Fixture audit proves 3033 text files preserve content apart from naming; 64 expected downstream compilation outcomes pass. No new native-agent or timing claim.",
+    "findings": []
+  }
+]

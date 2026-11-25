@@ -1,15 +1,43 @@
 # F38 Verification
 
-- **Source suite:** all 2,324 collected cases pass at b8c4fb123bc8ffac151408c49ac54c4a38d3ad55, including installed-wheel bootstrap coverage. Initial wheel setup inside bubblewrap could not write its dependency cache; the complete passing run uses host access for that package-install boundary.
-- **Corpus:** 708 fixtures pass, zero fail or awaited. Expected preset qualifiers, filenames and rewritten links agree with the candidate.
-- **Final-head affected checks:** all 10 dispatch-publication cases pass; type checking reports no issues in 87 files. The final test-only correction addresses the hashing dependency through its defining module. Compiler implementation bytes equal b8c4fb123bc8ffac151408c49ac54c4a38d3ad55.
-- **Formatting/lint:** the five changed Python files pass the repository's explicit configuration; final collision-test imports follow the same configuration.
-- **Collision observation:** forcing two distinct full digests to the same 12-character prefix produces E_PUBLICATION_FAILED and preserves every previously published output byte. Existing tests also cover equivalent selections, distinct contents, parallel and heading placements and validation-only refusal.
+## Reviewed Revision
 
-These checks establish compiler behavior and packaging, not native-agent accuracy or a released version. The initial stale lifecycle expectation and sandbox cache refusal are retained in the originating investigation; the complete passing source/corpus logs above identify the accepted checks.
+- Head: 552230b96269ed26511a9652d16571d8aae07655
+- Integrated main: 86fcbad07cf279db2b2886265b5404c038b4d37e
+- Target at review: 6f103e34db5a814331f9882c7e01330cd2f3aa5a, main
+- The subsequent target commit changes only the README description. The PR contains no README edit. Remote CI checks the PR integration.
+- Build: pf 0.34.0 with the unreleased F38 change
 
-## Final Eight-Character Candidate
+## Results
 
-Candidate f41769e7cd7e763ad5182efc835b0e4d64cddaac uses eight characters. All 2,324 source cases pass, including installed-wheel coverage; all 708 fixtures pass; the 59 focused preset/publication cases pass, including the actual eight-character prefix collision; type checking passes for 87 files. Changed Python files pass explicit repository lint/format settings. No previous output-name aliases are published.
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Complete source suite | 2,330 passed | [make check](named-final-check.log) |
+| Check harness | 1,155 passed | [make check](named-final-check.log) |
+| Exact-output corpus | 708 passed, zero failed or awaited | [make check](named-final-check.log) |
+| Installed-wheel smoke | Passed from an independent working directory | [make check](named-final-check.log) |
+| Lint, format, types | Passed; 513 formatted files and 103 typed source files | [make check](named-final-check.log) |
+| Layout, tables, online links, vocabulary, invocation, conformance and independence | Passed | [make check](named-final-check.log) |
+| Fixture/example diff audit | 3,033 text files inspected; 60 renamed paths and 63 rewritten bodies; only specified naming changes | [audit](named-fixture-audit.json) |
+| GitHub CI | Success on the reviewed head | [Checks](https://github.com/m2ux/prosiform/actions/runs/45578186008) |
+| Downstream classifier compilation | 64 expected harness/seam outcomes passed under both harnesses | [consumer summary](consumer-validation.md) |
 
-The earlier twelve-character candidate and native consumers pinned to it remain distinct evidence. This source/corpus result observes the final eight-character code.
+## Criterion Evidence
+
+- **AC1:** Exact filenames and encoded links are checked for one and multiple presets, fragments, dispatches, Unicode, spaces, slashes, percent signs and literal plus signs. The [specimen](named-specimen/entries.json) retains actual files.
+- **AC2:** Existing equivalence tests retain canonical declaration spelling and ignore tag order, case, repetition and unknown names. A literal a+b preset and a selection of a and b publish distinct files.
+- **AC3:** A real collision between task.md selected under checks and task-checks.md returns E_PUBLICATION_FAILED. The earlier published file set remains byte-identical. Existing validation-only and dispatch collision checks also pass.
+- **AC4:** The full check uses this head. The exact-output corpus, lifecycle example, diagram paths, installed wheel and documentation agree.
+
+## Method And Limits
+
+The naming rule changes once in selection_name. Existing entry-folder naming, dispatch link encoding and publication checks consume it. Each preset is escaped before joining; the existing link encoder then encodes the whole filename as a URL destination. Canonical selection identity and publication behavior remain their existing owners.
+
+The final change is reviewed against the integrated target, including affected callers and all fixture/example transformations. The corpus and consumer matrix establish compilation behavior; this task runs no fresh native-agent evaluation and makes no performance claim. The existing conformance report retains its documented coverage gaps. Long names still face the existing filesystem-length refusal.
+
+## Retained Earlier Attempts
+
+- [Hash-candidate verification](hash-candidate-test-results.md) retains the twelve- and eight-character evidence at its original pins. Those builds remain frozen for earlier downstream evaluations.
+- [Earlier CI failure](eight-digit-ci-failure.log) identifies the README authoring assertion; integrated F39 fixes its ownership on main.
+- [Initial focused run](named-initial-focused.log) and [initial complete run](named-initial-check-failures.log) retain stale URL assertions. Corrected assertions distinguish filesystem names from encoded destinations.
+- [Pre-integration complete check](named-pre-integration-check.log) passed before current main was integrated. Final acceptance uses named-final-check.log.

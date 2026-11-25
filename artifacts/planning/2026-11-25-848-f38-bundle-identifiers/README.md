@@ -1,29 +1,35 @@
 # F38 Bundle Identifiers
 
-Preset-qualified bundle names use a 8-character SHA-256 prefix. Canonical selection matching and collision refusal govern every entry folder, dispatched filename and rewritten link.
+> Hot-fix · Created 2026-11-25
 
-## Retrospective Scope
+Preset-qualified bundles expose their selected presets: **workflow-codex.bundle.md**, or **workflow-codex+recorded.bundle.md**. Names preserve canonical selection matching, safe escaping and atomic collision refusal.
 
-The implementation and observing checks precede tracker registration. Target: main. Base 684437c06; candidate f41769e7cd7e763ad5182efc835b0e4d64cddaac. The candidate is an unreleased change to the pf 0.34.0 build.
+Target: main. Reviewed head: [552230b962](https://github.com/m2ux/prosiform/commit/552230b96269ed26511a9652d16571d8aae07655). [F38 #848](https://github.com/m2ux/prosiform/issues/848) is delivered by [PR #849](https://github.com/m2ux/prosiform/pull/849). This is an unreleased change to pf 0.34.0. The initial implementation was recorded retrospectively; the final readable-name design follows the operator's subsequent review.
 
-## Evidence
+## Source And Bundles
+
+- [Workflow source](named-specimen/source/workflow.md) and [child source](named-specimen/source/task.md)
+- One preset: [entry bundle](named-specimen/one-preset/workflow-codex.bundles/workflow-codex.bundle.md) and [child bundle](named-specimen/one-preset/workflow-codex.bundles/task-codex.bundle.md)
+- Two presets: [entry bundle](named-specimen/two-presets/workflow-codex%2Brecorded.bundles/workflow-codex%2Brecorded.bundle.md) and [child bundle](named-specimen/two-presets/workflow-codex%2Brecorded.bundles/task-codex.bundle.md)
+- [Generated-file index](named-specimen/entries.json)
+
+## Artifacts
 
 | Artifact | Contents |
 | --- | --- |
-| [Issue](issue.md) | F38 defect, design and criteria |
-| [Tests](test-results.md) | Source-bound verification and limits |
-| [Source tests](source-tests.log) | Passing complete source suite |
-| [Source-test count](source-test-count.log) | 2,324 collected cases |
-| [Corpus](corpus.log) | 708 fixtures, all passing |
-| [Collision tests](collision-tests.log) | 10 final publication cases, including a forced truncated-prefix collision |
-| [Types](types.log) | 87 source files without type findings |
-| [Pull request](pull-request.md) | Draft publication body |
-
-- [F38 #848](https://github.com/m2ux/prosiform/issues/848)
-- [Candidate](https://github.com/m2ux/prosiform/commit/f41769e7cd7e763ad5182efc835b0e4d64cddaac)
-
-## Eight-Character Revision
-
-The operator requests a shorter qualifier after the initial twelve-character candidate. [Source tests](eight-digit-source-tests.log), [708-fixture corpus](eight-digit-corpus.log), [focused preset/publication cases](eight-digit-preset-tests.log) and [types](eight-digit-types.log) verify the eight-character candidate. Earlier twelve-character checks remain retained at their original revision.
-
-[Draft PR #849](https://github.com/m2ux/prosiform/pull/849) remains open; its Development relation is verified from both ends and board18 reads In Progress.
+| [Issue](issue.md) | Confirmed naming contract and verified criteria |
+| [Pull request](pull-request.md) | Review overview and observing checks |
+| [Verification](test-results.md) | Method, results, source pins and limits |
+| [Agent review](agent-review.json) | Exact-head review and criterion evidence |
+| [Checklist](todo.md) | Delivery steps |
+| [Final complete check](named-final-check.log) | Source, harness, corpus, wheel and repository checks |
+| [Fixture audit](named-fixture-audit.json) and [audit script](fixture-diff-audit.py) | Exact naming-only transformation review |
+| [Reviewed source diff](reviewed-source.diff) | Implementation, tests and specification changes |
+| [Consumer validation](consumer-validation.md) | Private downstream compilation summary |
+| [Earlier hash verification](hash-candidate-test-results.md) | Twelve- and eight-character checks at their original pins |
+| [Earlier issue](eight-digit-issue.md), [PR](eight-digit-pull-request.md) and [README](eight-digit-README.md) | Superseded eight-character plan |
+| [Earlier CI failure](eight-digit-ci-failure.log) | Missing README assertion, resolved by integrated F39 |
+| [Initial focused run](named-initial-focused.log) and [initial complete run](named-initial-check-failures.log) | Retained URL-assertion failures |
+| [Pre-integration complete check](named-pre-integration-check.log) | Passing readable-name check before F39 integration |
+| [Earlier source tests](source-tests.log), [count](source-test-count.log), [corpus](corpus.log), [collision tests](collision-tests.log) and [types](types.log) | Twelve-character candidate evidence |
+| [Eight-character source tests](eight-digit-source-tests.log), [corpus](eight-digit-corpus.log), [preset tests](eight-digit-preset-tests.log) and [types](eight-digit-types.log) | Eight-character candidate evidence |

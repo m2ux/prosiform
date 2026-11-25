@@ -1,0 +1,493 @@
+﻿2026-11-25T07:21:14.3971058Z Current runner version: '2.338.2'
+2026-11-25T07:21:14.3988159Z ##[group]Runner Image Provisioner
+2026-11-25T07:21:14.3988829Z Hosted Compute Agent
+2026-11-25T07:21:14.3989324Z Version: 20261111.635
+2026-11-25T07:21:14.3989788Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-25T07:21:14.3990304Z Build Date: 2026-11-11T01:49:01Z
+2026-11-25T07:21:14.3990825Z Worker ID: {14201c19-f832-408c-897b-d04168a4fc13}
+2026-11-25T07:21:14.3991656Z Region: us-west-2
+2026-11-25T07:21:14.3992099Z Cloud: AWS
+2026-11-25T07:21:14.3992488Z ##[endgroup]
+2026-11-25T07:21:14.3993657Z ##[group]Operating System
+2026-11-25T07:21:14.3994132Z Ubuntu
+2026-11-25T07:21:14.3994533Z 26.04.1
+2026-11-25T07:21:14.3994940Z LTS
+2026-11-25T07:21:14.3995313Z ##[endgroup]
+2026-11-25T07:21:14.3995704Z ##[group]Runner Image
+2026-11-25T07:21:14.3996260Z Image: ubuntu-26.04
+2026-11-25T07:21:14.3996725Z Version: 20261116.88.1
+2026-11-25T07:21:14.3997702Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.88/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-25T07:21:14.3998811Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.88
+2026-11-25T07:21:14.3999570Z ##[endgroup]
+2026-11-25T07:21:14.4000383Z ##[group]GITHUB_TOKEN Permissions
+2026-11-25T07:21:14.4002259Z Contents: read
+2026-11-25T07:21:14.4002685Z Metadata: read
+2026-11-25T07:21:14.4003110Z ##[endgroup]
+2026-11-25T07:21:14.4004639Z Secret source: Actions
+2026-11-25T07:21:14.4005324Z Cache mode: write
+2026-11-25T07:21:14.4005813Z Prepare workflow directory
+2026-11-25T07:21:14.4234763Z Prepare all required actions
+2026-11-25T07:21:14.4270759Z Getting action download info
+2026-11-25T07:21:14.7673915Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-25T07:21:16.4329802Z Download action repository 'astral-sh/setup-uv@v10.3.0' (SHA:1c37ad07a6a961277cf70c0d37d6f313000f5884)
+2026-11-25T07:21:16.9111187Z Complete job name: Checks
+2026-11-25T07:21:16.9699732Z ##[group]Run actions/checkout@v7
+2026-11-25T07:21:16.9700233Z with:
+2026-11-25T07:21:16.9700544Z   fetch-depth: 0
+2026-11-25T07:21:16.9700839Z   repository: m2ux/prosiform
+2026-11-25T07:21:16.9703048Z   token: ***
+2026-11-25T07:21:16.9703393Z   ssh-strict: true
+2026-11-25T07:21:16.9703665Z   ssh-user: git
+2026-11-25T07:21:16.9703942Z   persist-credentials: true
+2026-11-25T07:21:16.9704287Z   clean: true
+2026-11-25T07:21:16.9704551Z   sparse-checkout-cone-mode: true
+2026-11-25T07:21:16.9704885Z   fetch-tags: false
+2026-11-25T07:21:16.9705153Z   show-progress: true
+2026-11-25T07:21:16.9705429Z   lfs: false
+2026-11-25T07:21:16.9705715Z   submodules: false
+2026-11-25T07:21:16.9706001Z   set-safe-directory: true
+2026-11-25T07:21:16.9706334Z   allow-unsafe-pr-checkout: false
+2026-11-25T07:21:16.9706789Z ##[endgroup]
+2026-11-25T07:21:20.1027171Z Syncing repository: m2ux/prosiform
+2026-11-25T07:21:20.1028940Z ##[group]Getting Git version info
+2026-11-25T07:21:20.1029538Z Working directory is '/home/runner/work/prosiform/prosiform'
+2026-11-25T07:21:20.1030302Z [command]/usr/bin/git version
+2026-11-25T07:21:20.1030588Z git version 2.56.1
+2026-11-25T07:21:20.1031840Z ##[endgroup]
+2026-11-25T07:21:20.1036999Z Temporarily overriding HOME='/home/runner/work/_temp/ff4b6015-5ee7-40b7-8374-f4c01db6856e' before making global git config changes
+2026-11-25T07:21:20.1037916Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-25T07:21:20.1040273Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/prosiform/prosiform
+2026-11-25T07:21:20.1402530Z Deleting the contents of '/home/runner/work/prosiform/prosiform'
+2026-11-25T07:21:20.1404893Z ##[group]Determining repository object format
+2026-11-25T07:21:20.1405860Z ##[endgroup]
+2026-11-25T07:21:20.1406384Z ##[group]Initializing the repository
+2026-11-25T07:21:20.1409172Z [command]/usr/bin/git init /home/runner/work/prosiform/prosiform
+2026-11-25T07:21:20.1901065Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-25T07:21:20.1902271Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-25T07:21:20.1902692Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-25T07:21:20.1903026Z hint: call:
+2026-11-25T07:21:20.1903216Z hint:
+2026-11-25T07:21:20.1903487Z hint: 	git config --global init.defaultBranch <name>
+2026-11-25T07:21:20.1903756Z hint:
+2026-11-25T07:21:20.1904030Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-25T07:21:20.1904434Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-25T07:21:20.1904759Z hint:
+2026-11-25T07:21:20.1904966Z hint: 	git branch -m <name>
+2026-11-25T07:21:20.1905190Z hint:
+2026-11-25T07:21:20.1905484Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-25T07:21:20.1925514Z Initialized empty Git repository in /home/runner/work/prosiform/prosiform/.git/
+2026-11-25T07:21:20.1933600Z [command]/usr/bin/git remote add origin https://github.com/m2ux/prosiform
+2026-11-25T07:21:20.2010923Z ##[endgroup]
+2026-11-25T07:21:20.2011683Z ##[group]Disabling automatic garbage collection
+2026-11-25T07:21:20.2012151Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-25T07:21:20.2034776Z ##[endgroup]
+2026-11-25T07:21:20.2035391Z ##[group]Setting up auth
+2026-11-25T07:21:20.2035755Z Removing SSH command configuration
+2026-11-25T07:21:20.2039286Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-25T07:21:20.2060638Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-25T07:21:20.5097401Z Removing HTTP extra header
+2026-11-25T07:21:20.5102970Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-25T07:21:20.5126436Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-25T07:21:20.5305857Z Removing includeIf entries pointing to credentials config files
+2026-11-25T07:21:20.5309662Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-25T07:21:20.5331568Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-25T07:21:20.5503324Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-25T07:21:20.5527323Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/prosiform/prosiform/.git.path /home/runner/work/_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:20.5546924Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/prosiform/prosiform/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:20.5571514Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:20.5593326Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:20.5611470Z ##[endgroup]
+2026-11-25T07:21:20.5611901Z ##[group]Fetching the repository
+2026-11-25T07:21:20.5617009Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +2b30fea7fe0821c3808b1f74f325701e20d539ca:refs/remotes/pull/849/merge
+2026-11-25T07:21:22.6449280Z From https://github.com/m2ux/prosiform
+2026-11-25T07:21:22.6449874Z  * [new branch]          772-stub-presets                         -> origin/772-stub-presets
+2026-11-25T07:21:22.6450729Z  * [new branch]          786-comment-cleanup                      -> origin/786-comment-cleanup
+2026-11-25T07:21:22.6451444Z  * [new branch]          786-comment-convention                   -> origin/786-comment-convention
+2026-11-25T07:21:22.6451973Z  * [new branch]          engineering                              -> origin/engineering
+2026-11-25T07:21:22.6452519Z  * [new branch]          example-drop-dispatch-link               -> origin/example-drop-dispatch-link
+2026-11-25T07:21:22.6453055Z  * [new branch]          f02-test-apparatus-prune                 -> origin/f02-test-apparatus-prune
+2026-11-25T07:21:22.6453608Z  * [new branch]          f03-work-tracker-example                 -> origin/f03-work-tracker-example
+2026-11-25T07:21:22.6454146Z  * [new branch]          f04-section-preambles                    -> origin/f04-section-preambles
+2026-11-25T07:21:22.6454697Z  * [new branch]          f05-ancestor-overviews                   -> origin/f05-ancestor-overviews
+2026-11-25T07:21:22.6455291Z  * [new branch]          f06-example-artifact-group               -> origin/f06-example-artifact-group
+2026-11-25T07:21:22.6455865Z  * [new branch]          f06-member-levels                        -> origin/f06-member-levels
+2026-11-25T07:21:22.6456351Z  * [new branch]          f07-command-blocks                       -> origin/f07-command-blocks
+2026-11-25T07:21:22.6456898Z  * [new branch]          f08-command-block-compaction             -> origin/f08-command-block-compaction
+2026-11-25T07:21:22.6457520Z  * [new branch]          f09-region-accounting                    -> origin/f09-region-accounting
+2026-11-25T07:21:22.6458123Z  * [new branch]          f10-scorer-shell-reading                 -> origin/f10-scorer-shell-reading
+2026-11-25T07:21:22.6458768Z  * [new branch]          f11-unrouted-sections                    -> origin/f11-unrouted-sections
+2026-11-25T07:21:22.6459568Z  * [new branch]          f12-dispatch-picks                       -> origin/f12-dispatch-picks
+2026-11-25T07:21:22.6460097Z  * [new branch]          f13-bundle-hand-over                     -> origin/f13-bundle-hand-over
+2026-11-25T07:21:22.6460665Z  * [new branch]          f14-unrouted-deferrals                   -> origin/f14-unrouted-deferrals
+2026-11-25T07:21:22.6461244Z  * [new branch]          f15-diagram-link-text                    -> origin/f15-diagram-link-text
+2026-11-25T07:21:22.6461989Z  * [new branch]          f16-dispatch-brief                       -> origin/f16-dispatch-brief
+2026-11-25T07:21:22.6462534Z  * [new branch]          f17-convention-scope                     -> origin/f17-convention-scope
+2026-11-25T07:21:22.6463056Z  * [new branch]          f19-tagged-compositions                  -> origin/f19-tagged-compositions
+2026-11-25T07:21:22.6463621Z  * [new branch]          f20-ambiguous-deferred-targets           -> origin/f20-ambiguous-deferred-targets
+2026-11-25T07:21:22.6464265Z  * [new branch]          f21-overcompiled-rubric                  -> origin/f21-overcompiled-rubric
+2026-11-25T07:21:22.6464873Z  * [new branch]          f22-guide-compile-step                   -> origin/f22-guide-compile-step
+2026-11-25T07:21:22.6465434Z  * [new branch]          f23-alternative-diagnostics              -> origin/f23-alternative-diagnostics
+2026-11-25T07:21:22.6466053Z  * [new branch]          f24-guide-dispatch-reading               -> origin/f24-guide-dispatch-reading
+2026-11-25T07:21:22.6466618Z  * [new branch]          f25-hand-on-unread                       -> origin/f25-hand-on-unread
+2026-11-25T07:21:22.6467251Z  * [new branch]          f26-take-the-answer                      -> origin/f26-take-the-answer
+2026-11-25T07:21:22.6467648Z  * [new branch]          f27-link-from-bundle                     -> origin/f27-link-from-bundle
+2026-11-25T07:21:22.6468058Z  * [new branch]          f28-read-the-compiled                    -> origin/f28-read-the-compiled
+2026-11-25T07:21:22.6468477Z  * [new branch]          f29-guide-hand-off-alone                 -> origin/f29-guide-hand-off-alone
+2026-11-25T07:21:22.6469053Z  * [new branch]          f30-capability-levels                    -> origin/f30-capability-levels
+2026-11-25T07:21:22.6469493Z  * [new branch]          f31-key-relative-substitutes             -> origin/f31-key-relative-substitutes
+2026-11-25T07:21:22.6469898Z  * [new branch]          f32-entry-stubs                          -> origin/f32-entry-stubs
+2026-11-25T07:21:22.6470276Z  * [new branch]          f33-routing-warnings                     -> origin/f33-routing-warnings
+2026-11-25T07:21:22.6470662Z  * [new branch]          f34-dispatch-display                     -> origin/f34-dispatch-display
+2026-11-25T07:21:22.6471087Z  * [new branch]          f37-pick-dispatch-headings               -> origin/f37-pick-dispatch-headings
+2026-11-25T07:21:22.6471888Z  * [new branch]          f38-bundle-identifiers                   -> origin/f38-bundle-identifiers
+2026-11-25T07:21:22.6472326Z  * [new branch]          hotfix/eval-folder-layout                -> origin/hotfix/eval-folder-layout
+2026-11-25T07:21:22.6472848Z  * [new branch]          i15/e00/engineering                      -> origin/i15/e00/engineering
+2026-11-25T07:21:22.6473335Z  * [new branch]          i15/e00/f717-routing-pair-order          -> origin/i15/e00/f717-routing-pair-order
+2026-11-25T07:21:22.6473915Z  * [new branch]          i15/e00/f718-metadata-failures-wording   -> origin/i15/e00/f718-metadata-failures-wording
+2026-11-25T07:21:22.6474474Z  * [new branch]          i15/e00/main                             -> origin/i15/e00/main
+2026-11-25T07:21:22.6475007Z  * [new branch]          i15/e00/w00-the-v1-design-states         -> origin/i15/e00/w00-the-v1-design-states
+2026-11-25T07:21:22.6475652Z  * [new branch]          i15/e00/w01-a-choice-line-declares       -> origin/i15/e00/w01-a-choice-line-declares
+2026-11-25T07:21:22.6476514Z  * [new branch]          i15/e00/w02-exactly-one-alternative-in   -> origin/i15/e00/w02-exactly-one-alternative-in
+2026-11-25T07:21:22.6477056Z  * [new branch]          i15/e00/w03-routing-pairs-route-quietly  -> origin/i15/e00/w03-routing-pairs-route-quietly
+2026-11-25T07:21:22.6477653Z  * [new branch]          i15/e00/w04-the-documentation-states-alternatives -> origin/i15/e00/w04-the-documentation-states-alternatives
+2026-11-25T07:21:22.6478226Z  * [new branch]          i15/e01/fix-guide-link-resolution        -> origin/i15/e01/fix-guide-link-resolution
+2026-11-25T07:21:22.6478708Z  * [new branch]          i15/e01/fix-instruction-markers          -> origin/i15/e01/fix-instruction-markers
+2026-11-25T07:21:22.6479195Z  * [new branch]          i15/e01/fix-instruction-source-reads     -> origin/i15/e01/fix-instruction-source-reads
+2026-11-25T07:21:22.6479631Z  * [new branch]          i15/e01/main                             -> origin/i15/e01/main
+2026-11-25T07:21:22.6480071Z  * [new branch]          i15/e01/w01-a-pick-tag-rides             -> origin/i15/e01/w01-a-pick-tag-rides
+2026-11-25T07:21:22.6480529Z  * [new branch]          i15/e01/w03-the-guide-states-the         -> origin/i15/e01/w03-the-guide-states-the
+2026-11-25T07:21:22.6481029Z  * [new branch]          i15/e01/w04-the-documentation-states-the -> origin/i15/e01/w04-the-documentation-states-the
+2026-11-25T07:21:22.6481761Z  * [new branch]          i15/e01/w05-an-agent-pick-eval           -> origin/i15/e01/w05-an-agent-pick-eval
+2026-11-25T07:21:22.6482320Z  * [new branch]          i15/e01/w06-a-measured-agent-pick        -> origin/i15/e01/w06-a-measured-agent-pick
+2026-11-25T07:21:22.6482922Z  * [new branch]          i15/e02/w00-agent-pick-scoring-accepts   -> origin/i15/e02/w00-agent-pick-scoring-accepts
+2026-11-25T07:21:22.6483515Z  * [new branch]          i17/e00/gantt-short-click                -> origin/i17/e00/gantt-short-click
+2026-11-25T07:21:22.6484024Z  * [new branch]          i17/e00/review-fixes                     -> origin/i17/e00/review-fixes
+2026-11-25T07:21:22.6484435Z  * [new branch]          i17/e00/review-fixes-2                   -> origin/i17/e00/review-fixes-2
+2026-11-25T07:21:22.6484942Z  * [new branch]          i17/e00/w00-the-v1-design-states         -> origin/i17/e00/w00-the-v1-design-states
+2026-11-25T07:21:22.6485427Z  * [new branch]          i17/e00/w01-click-tooltip-read-as        -> origin/i17/e00/w01-click-tooltip-read-as
+2026-11-25T07:21:22.6486065Z  * [new branch]          i17/e00/w03-the-documentation-states-click -> origin/i17/e00/w03-the-documentation-states-click
+2026-11-25T07:21:22.6486620Z  * [new branch]          i17/e01/w00-the-v1-design-states-engineering -> origin/i17/e01/w00-the-v1-design-states-engineering
+2026-11-25T07:21:22.6487198Z  * [new branch]          i17/e01/w01-pf-reads-a-published-main    -> origin/i17/e01/w01-pf-reads-a-published-main
+2026-11-25T07:21:22.6487969Z  * [new branch]          i17/e01/w04-documentation-states-one-invocation-main -> origin/i17/e01/w04-documentation-states-one-invocation-main
+2026-11-25T07:21:22.6488566Z  * [new branch]          i17/e02/w00-cutting-a-release-states     -> origin/i17/e02/w00-cutting-a-release-states
+2026-11-25T07:21:22.6488961Z  * [new branch]          main                                     -> origin/main
+2026-11-25T07:21:22.6489291Z  * [new branch]          release/v0.19.0                          -> origin/release/v0.19.0
+2026-11-25T07:21:22.6489652Z  * [new branch]          release/v0.20.0                          -> origin/release/v0.20.0
+2026-11-25T07:21:22.6490002Z  * [new branch]          release/v0.21.0                          -> origin/release/v0.21.0
+2026-11-25T07:21:22.6490352Z  * [new branch]          release/v0.22.0                          -> origin/release/v0.22.0
+2026-11-25T07:21:22.6490697Z  * [new branch]          release/v0.23.0                          -> origin/release/v0.23.0
+2026-11-25T07:21:22.6491042Z  * [new branch]          release/v0.24.0                          -> origin/release/v0.24.0
+2026-11-25T07:21:22.6491609Z  * [new branch]          release/v0.25.0                          -> origin/release/v0.25.0
+2026-11-25T07:21:22.6492048Z  * [new branch]          release/v0.26.0                          -> origin/release/v0.26.0
+2026-11-25T07:21:22.6492404Z  * [new branch]          release/v0.27.0                          -> origin/release/v0.27.0
+2026-11-25T07:21:22.6492745Z  * [new branch]          release/v0.28.0                          -> origin/release/v0.28.0
+2026-11-25T07:21:22.6493092Z  * [new branch]          release/v0.28.1                          -> origin/release/v0.28.1
+2026-11-25T07:21:22.6493439Z  * [new branch]          release/v0.28.2                          -> origin/release/v0.28.2
+2026-11-25T07:21:22.6493779Z  * [new branch]          release/v0.29.0                          -> origin/release/v0.29.0
+2026-11-25T07:21:22.6494117Z  * [new branch]          release/v0.29.1                          -> origin/release/v0.29.1
+2026-11-25T07:21:22.6494455Z  * [new branch]          release/v0.29.2                          -> origin/release/v0.29.2
+2026-11-25T07:21:22.6494802Z  * [new branch]          release/v0.30.0                          -> origin/release/v0.30.0
+2026-11-25T07:21:22.6495150Z  * [new branch]          release/v0.31.0                          -> origin/release/v0.31.0
+2026-11-25T07:21:22.6495482Z  * [new branch]          release/v0.32.0                          -> origin/release/v0.32.0
+2026-11-25T07:21:22.6495820Z  * [new branch]          release/v0.33.0                          -> origin/release/v0.33.0
+2026-11-25T07:21:22.6496146Z  * [new branch]          release/v0.34.0                          -> origin/release/v0.34.0
+2026-11-25T07:21:22.6496479Z  * [new branch]          workspace                                -> origin/workspace
+2026-11-25T07:21:22.6496868Z  * [new tag]             archive/example-work-planner             -> archive/example-work-planner
+2026-11-25T07:21:22.6497250Z  * [new tag]             contract/v0.10.0                         -> contract/v0.10.0
+2026-11-25T07:21:22.6497565Z  * [new tag]             contract/v0.11.0                         -> contract/v0.11.0
+2026-11-25T07:21:22.6497885Z  * [new tag]             contract/v0.12.0                         -> contract/v0.12.0
+2026-11-25T07:21:22.6498246Z  * [new tag]             contract/v0.13.0                         -> contract/v0.13.0
+2026-11-25T07:21:22.6498573Z  * [new tag]             contract/v0.14.0                         -> contract/v0.14.0
+2026-11-25T07:21:22.6498885Z  * [new tag]             contract/v0.15.0                         -> contract/v0.15.0
+2026-11-25T07:21:22.6499199Z  * [new tag]             contract/v0.17.0                         -> contract/v0.17.0
+2026-11-25T07:21:22.6499506Z  * [new tag]             contract/v0.18.0                         -> contract/v0.18.0
+2026-11-25T07:21:22.6499813Z  * [new tag]             contract/v0.19.0                         -> contract/v0.19.0
+2026-11-25T07:21:22.6500143Z  * [new tag]             contract/v0.20.0                         -> contract/v0.20.0
+2026-11-25T07:21:22.6500483Z  * [new tag]             contract/v0.21.0                         -> contract/v0.21.0
+2026-11-25T07:21:22.6500797Z  * [new tag]             contract/v0.22.0                         -> contract/v0.22.0
+2026-11-25T07:21:22.6501110Z  * [new tag]             contract/v0.23.0                         -> contract/v0.23.0
+2026-11-25T07:21:22.6501569Z  * [new tag]             contract/v0.24.0                         -> contract/v0.24.0
+2026-11-25T07:21:22.6501895Z  * [new tag]             contract/v0.25.0                         -> contract/v0.25.0
+2026-11-25T07:21:22.6502206Z  * [new tag]             contract/v0.26.0                         -> contract/v0.26.0
+2026-11-25T07:21:22.6502514Z  * [new tag]             contract/v0.27.0                         -> contract/v0.27.0
+2026-11-25T07:21:22.6502822Z  * [new tag]             contract/v0.28.0                         -> contract/v0.28.0
+2026-11-25T07:21:22.6503138Z  * [new tag]             contract/v0.28.1                         -> contract/v0.28.1
+2026-11-25T07:21:22.6503458Z  * [new tag]             contract/v0.28.2                         -> contract/v0.28.2
+2026-11-25T07:21:22.6503816Z  * [new tag]             contract/v0.29.0                         -> contract/v0.29.0
+2026-11-25T07:21:22.6504129Z  * [new tag]             contract/v0.29.1                         -> contract/v0.29.1
+2026-11-25T07:21:22.6504436Z  * [new tag]             contract/v0.29.2                         -> contract/v0.29.2
+2026-11-25T07:21:22.6504747Z  * [new tag]             contract/v0.30.0                         -> contract/v0.30.0
+2026-11-25T07:21:22.6505067Z  * [new tag]             contract/v0.31.0                         -> contract/v0.31.0
+2026-11-25T07:21:22.6505380Z  * [new tag]             contract/v0.32.0                         -> contract/v0.32.0
+2026-11-25T07:21:22.6505695Z  * [new tag]             contract/v0.33.0                         -> contract/v0.33.0
+2026-11-25T07:21:22.6506011Z  * [new tag]             contract/v0.34.0                         -> contract/v0.34.0
+2026-11-25T07:21:22.6506323Z  * [new tag]             contract/v0.9.0                          -> contract/v0.9.0
+2026-11-25T07:21:22.6506682Z  * [new tag]             demo/i02                                 -> demo/i02
+2026-11-25T07:21:22.6506994Z  * [new tag]             python/v0.10.0                           -> python/v0.10.0
+2026-11-25T07:21:22.6507313Z  * [new tag]             python/v0.11.0                           -> python/v0.11.0
+2026-11-25T07:21:22.6507626Z  * [new tag]             python/v0.12.0                           -> python/v0.12.0
+2026-11-25T07:21:22.6507936Z  * [new tag]             python/v0.13.0                           -> python/v0.13.0
+2026-11-25T07:21:22.6508252Z  * [new tag]             python/v0.14.0                           -> python/v0.14.0
+2026-11-25T07:21:22.6508556Z  * [new tag]             python/v0.15.0                           -> python/v0.15.0
+2026-11-25T07:21:22.6508863Z  * [new tag]             python/v0.17.0                           -> python/v0.17.0
+2026-11-25T07:21:22.6509170Z  * [new tag]             python/v0.18.0                           -> python/v0.18.0
+2026-11-25T07:21:22.6509478Z  * [new tag]             python/v0.19.0                           -> python/v0.19.0
+2026-11-25T07:21:22.6509883Z  * [new tag]             python/v0.20.0                           -> python/v0.20.0
+2026-11-25T07:21:22.6510183Z  * [new tag]             python/v0.21.0                           -> python/v0.21.0
+2026-11-25T07:21:22.6510483Z  * [new tag]             python/v0.22.0                           -> python/v0.22.0
+2026-11-25T07:21:22.6510792Z  * [new tag]             python/v0.23.0                           -> python/v0.23.0
+2026-11-25T07:21:22.6511104Z  * [new tag]             python/v0.24.0                           -> python/v0.24.0
+2026-11-25T07:21:22.6511584Z  * [new tag]             python/v0.25.0                           -> python/v0.25.0
+2026-11-25T07:21:22.6511891Z  * [new tag]             python/v0.26.0                           -> python/v0.26.0
+2026-11-25T07:21:22.6512201Z  * [new tag]             python/v0.27.0                           -> python/v0.27.0
+2026-11-25T07:21:22.6512513Z  * [new tag]             python/v0.28.0                           -> python/v0.28.0
+2026-11-25T07:21:22.6512824Z  * [new tag]             python/v0.28.1                           -> python/v0.28.1
+2026-11-25T07:21:22.6513139Z  * [new tag]             python/v0.28.2                           -> python/v0.28.2
+2026-11-25T07:21:22.6513441Z  * [new tag]             python/v0.29.0                           -> python/v0.29.0
+2026-11-25T07:21:22.6513744Z  * [new tag]             python/v0.29.1                           -> python/v0.29.1
+2026-11-25T07:21:22.6514041Z  * [new tag]             python/v0.29.2                           -> python/v0.29.2
+2026-11-25T07:21:22.6514344Z  * [new tag]             python/v0.30.0                           -> python/v0.30.0
+2026-11-25T07:21:22.6514652Z  * [new tag]             python/v0.31.0                           -> python/v0.31.0
+2026-11-25T07:21:22.6514957Z  * [new tag]             python/v0.32.0                           -> python/v0.32.0
+2026-11-25T07:21:22.6515322Z  * [new tag]             python/v0.33.0                           -> python/v0.33.0
+2026-11-25T07:21:22.6515623Z  * [new tag]             python/v0.34.0                           -> python/v0.34.0
+2026-11-25T07:21:22.6515926Z  * [new tag]             python/v0.9.0                            -> python/v0.9.0
+2026-11-25T07:21:22.6516324Z  * [new ref]             2b30fea7fe0821c3808b1f74f325701e20d539ca -> pull/849/merge
+2026-11-25T07:21:22.6517167Z ##[endgroup]
+2026-11-25T07:21:22.6517469Z ##[group]Determining the checkout info
+2026-11-25T07:21:22.6517775Z ##[endgroup]
+2026-11-25T07:21:22.6517969Z [command]/usr/bin/git sparse-checkout disable
+2026-11-25T07:21:22.6527171Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-25T07:21:22.6552980Z ##[group]Checking out the ref
+2026-11-25T07:21:22.6556321Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/849/merge
+2026-11-25T07:21:22.7442822Z Note: switching to 'refs/remotes/pull/849/merge'.
+2026-11-25T07:21:22.7443062Z 
+2026-11-25T07:21:22.7443299Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-25T07:21:22.7443659Z changes and commit them, and you can discard any commits you make in this
+2026-11-25T07:21:22.7444059Z state without impacting any branches by switching back to a branch.
+2026-11-25T07:21:22.7444265Z 
+2026-11-25T07:21:22.7444401Z If you want to create a new branch to retain commits you create, you may
+2026-11-25T07:21:22.7444783Z do so (now or later) by using -c with the switch command. Example:
+2026-11-25T07:21:22.7444960Z 
+2026-11-25T07:21:22.7445049Z   git switch -c <new-branch-name>
+2026-11-25T07:21:22.7445174Z 
+2026-11-25T07:21:22.7445255Z Or undo this operation with:
+2026-11-25T07:21:22.7445396Z 
+2026-11-25T07:21:22.7445484Z   git switch -
+2026-11-25T07:21:22.7445582Z 
+2026-11-25T07:21:22.7445731Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-25T07:21:22.7445946Z 
+2026-11-25T07:21:22.7446246Z HEAD is now at 2b30fea7f Merge f41769e7cd7e763ad5182efc835b0e4d64cddaac into 684437c06aeb1ab9d7b118c62d36eddbc7a0078a
+2026-11-25T07:21:22.7456696Z ##[endgroup]
+2026-11-25T07:21:22.7503874Z [command]/usr/bin/git log -1 --format=%H
+2026-11-25T07:21:22.7522090Z 2b30fea7fe0821c3808b1f74f325701e20d539ca
+2026-11-25T07:21:22.7695324Z ##[group]Run set -f
+2026-11-25T07:21:22.7695564Z [36;1mset -f[0m
+2026-11-25T07:21:22.7695822Z [36;1m# A push is the merge commit and a dispatch is a revision asked for[0m
+2026-11-25T07:21:22.7696141Z [36;1m# by hand, so neither is scoped by what it changed.[0m
+2026-11-25T07:21:22.7696404Z [36;1mif [ "$EVENT" != pull_request ]; then[0m
+2026-11-25T07:21:22.7696646Z [36;1m  echo "checked=true" >> "$GITHUB_OUTPUT"[0m
+2026-11-25T07:21:22.7696863Z [36;1m  exit 0[0m
+2026-11-25T07:21:22.7697023Z [36;1mfi[0m
+2026-11-25T07:21:22.7697251Z [36;1mchanged=$(git diff --name-only "$BASE...$HEAD" -- $CHECKED_PATHS)[0m
+2026-11-25T07:21:22.7697537Z [36;1mif [ -n "$changed" ]; then[0m
+2026-11-25T07:21:22.7697763Z [36;1m  echo "checked=true" >> "$GITHUB_OUTPUT"[0m
+2026-11-25T07:21:22.7697987Z [36;1melse[0m
+2026-11-25T07:21:22.7698171Z [36;1m  echo "checked=false" >> "$GITHUB_OUTPUT"[0m
+2026-11-25T07:21:22.7698378Z [36;1mfi[0m
+2026-11-25T07:21:22.7720406Z shell: /usr/bin/bash -e {0}
+2026-11-25T07:21:22.7720622Z env:
+2026-11-25T07:21:22.7720784Z   EVENT: pull_request
+2026-11-25T07:21:22.7720989Z   BASE: 684437c06aeb1ab9d7b118c62d36eddbc7a0078a
+2026-11-25T07:21:22.7721238Z   HEAD: f41769e7cd7e763ad5182efc835b0e4d64cddaac
+2026-11-25T07:21:22.7721917Z   CHECKED_PATHS: :(glob)src/**
+:(glob)fixtures/**
+:(glob)checks/**
+:(glob)evals/**
+:(glob)scripts/**
+:(glob)docs/**
+:(glob)**/*.md
+Makefile
+.github/workflows/checks.yml
+
+2026-11-25T07:21:22.7722367Z ##[endgroup]
+2026-11-25T07:21:22.7922992Z ##[group]Run astral-sh/setup-uv@v10.3.0
+2026-11-25T07:21:22.7923215Z with:
+2026-11-25T07:21:22.7923429Z   version: 0.11.14
+2026-11-25T07:21:22.7923645Z   activate-environment: false
+2026-11-25T07:21:22.7923835Z   no-project: false
+2026-11-25T07:21:22.7924056Z   working-directory: /home/runner/work/prosiform/prosiform
+2026-11-25T07:21:22.7925942Z   github-token: ***
+2026-11-25T07:21:22.7926100Z   enable-cache: auto
+2026-11-25T07:21:22.7926498Z   cache-dependency-glob: **/*requirements*.txt
+**/*requirements*.in
+**/*constraints*.txt
+**/*constraints*.in
+**/pyproject.toml
+**/uv.lock
+**/*.py.lock
+
+2026-11-25T07:21:22.7926928Z   restore-cache: true
+2026-11-25T07:21:22.7927090Z   save-cache: auto
+2026-11-25T07:21:22.7927249Z   prune-cache: false
+2026-11-25T07:21:22.7927421Z   cache-python: false
+2026-11-25T07:21:22.7927601Z   ignore-nothing-to-cache: false
+2026-11-25T07:21:22.7927802Z   ignore-empty-workdir: false
+2026-11-25T07:21:22.7928005Z   download-from-astral-mirror: true
+2026-11-25T07:21:22.7928257Z   add-problem-matchers: true
+2026-11-25T07:21:22.7928438Z   quiet: false
+2026-11-25T07:21:22.7928600Z   resolution-strategy: highest
+2026-11-25T07:21:22.7928782Z ##[endgroup]
+2026-11-25T07:21:22.9616886Z Fetching manifest data from https://raw.githubusercontent.com/astral-sh/versions/main/v1/uv.ndjson ...
+2026-11-25T07:21:23.0420535Z Downloading uv from "https://releases.astral.sh/github/uv/releases/download/0.11.14/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+2026-11-25T07:21:23.3803536Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/6cd69897-3db6-465c-97c5-47b27ea3df8a -f /home/runner/work/_temp/72200e7a-0f93-47d0-bf52-178e5a55c6fb
+2026-11-25T07:21:23.6621525Z Added /home/runner/.local/bin to the path
+2026-11-25T07:21:23.6624060Z Added /opt/hostedtoolcache/uv/0.11.14/x86_64 to the path
+2026-11-25T07:21:23.6624583Z Set UV_PYTHON_INSTALL_DIR to /home/runner/work/_temp/uv-python-dir
+2026-11-25T07:21:23.6625049Z Added /home/runner/work/_temp/uv-python-dir to the path
+2026-11-25T07:21:23.6643500Z Set UV_CACHE_DIR to /home/runner/work/_temp/setup-uv-cache
+2026-11-25T07:21:23.6643873Z Successfully installed uv version 0.11.14
+2026-11-25T07:21:23.7362917Z Searching files using cache dependency glob: /home/runner/work/prosiform/prosiform/**/*requirements*.txt,/home/runner/work/prosiform/prosiform/**/*requirements*.in,/home/runner/work/prosiform/prosiform/**/*constraints*.txt,/home/runner/work/prosiform/prosiform/**/*constraints*.in,/home/runner/work/prosiform/prosiform/**/pyproject.toml,/home/runner/work/prosiform/prosiform/**/uv.lock,/home/runner/work/prosiform/prosiform/**/*.py.lock
+2026-11-25T07:21:24.0812759Z /home/runner/work/prosiform/prosiform/src/pyproject.toml
+2026-11-25T07:21:24.0848088Z /home/runner/work/prosiform/prosiform/src/uv.lock
+2026-11-25T07:21:24.0854937Z Found 2 files to hash.
+2026-11-25T07:21:24.0910293Z Trying to restore cache from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-26.04-3.14.4-2ac63ab4a72d6619a68986a7e1f3afc2393c192dea580d4df3e160be7eaa653d
+2026-11-25T07:21:24.3215975Z Cache hit for: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-26.04-3.14.4-2ac63ab4a72d6619a68986a7e1f3afc2393c192dea580d4df3e160be7eaa653d
+2026-11-25T07:21:25.6710743Z Received 191706 of 29551834 (0.6%), 0.2 MBs/sec
+2026-11-25T07:21:26.3171822Z Received 29551834 of 29551834 (100.0%), 17.1 MBs/sec
+2026-11-25T07:21:26.3172288Z Cache Size: ~28 MB (29551834 B)
+2026-11-25T07:21:26.3191745Z [command]/usr/bin/tar -xf /home/runner/work/_temp/38c7e7e9-3f59-4207-a7c6-c69cbe5a6519/cache.tzst -P -C /home/runner/work/prosiform/prosiform --use-compress-program unzstd
+2026-11-25T07:21:26.4312925Z Cache restored successfully
+2026-11-25T07:21:26.4327473Z cache restored from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-26.04-3.14.4-2ac63ab4a72d6619a68986a7e1f3afc2393c192dea580d4df3e160be7eaa653d
+2026-11-25T07:21:26.5465718Z ##[group]Run make check
+2026-11-25T07:21:26.5465950Z [36;1mmake check[0m
+2026-11-25T07:21:26.5487233Z shell: /usr/bin/bash -e {0}
+2026-11-25T07:21:26.5487448Z env:
+2026-11-25T07:21:26.5487676Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+2026-11-25T07:21:26.5487987Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+2026-11-25T07:21:26.5488445Z   GH_TOKEN: ***
+2026-11-25T07:21:26.5488737Z   PROSIFORM_BUILD: uv run --project /home/runner/work/prosiform/prosiform/src --frozen pf
+2026-11-25T07:21:26.5489092Z ##[endgroup]
+2026-11-25T07:21:26.5874995Z cd src && uv lock --check
+2026-11-25T07:21:26.7066358Z Downloading cpython-3.13.13-linux-x86_64-gnu (download) (33.2MiB)
+2026-11-25T07:21:27.2222209Z  Downloaded cpython-3.13.13-linux-x86_64-gnu (download)
+2026-11-25T07:21:27.3411795Z Using CPython 3.13.13
+2026-11-25T07:21:27.3430431Z Resolved 24 packages in 0.63ms
+2026-11-25T07:21:27.3447061Z uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
+2026-11-25T07:21:27.4806137Z Using CPython 3.13.13
+2026-11-25T07:21:27.4806519Z Creating virtual environment at: src/.venv
+2026-11-25T07:21:27.4837394Z    Building prosiform @ file:///home/runner/work/prosiform/prosiform/src
+2026-11-25T07:21:28.0520570Z       Built prosiform @ file:///home/runner/work/prosiform/prosiform/src
+2026-11-25T07:21:28.1035821Z Installed 23 packages in 50ms
+2026-11-25T07:21:28.1368517Z All checks passed!
+2026-11-25T07:21:28.1412111Z uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
+2026-11-25T07:21:28.2220636Z 513 files already formatted
+2026-11-25T07:21:28.2238498Z uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
+2026-11-25T07:21:31.3073667Z Success: no issues found in 103 source files
+2026-11-25T07:21:31.3151688Z cd src && uv run --frozen pytest
+2026-11-25T07:21:33.0003799Z ........................................................................ [  3%]
+2026-11-25T07:21:33.1458874Z ........................................................................ [  6%]
+2026-11-25T07:21:33.2246469Z ........................................................................ [  9%]
+2026-11-25T07:21:33.3147734Z ........................................................................ [ 12%]
+2026-11-25T07:21:33.4659109Z ........................................................................ [ 15%]
+2026-11-25T07:21:33.8758376Z ........................................................................ [ 18%]
+2026-11-25T07:21:34.2766966Z ........................................................................ [ 21%]
+2026-11-25T07:21:34.5773876Z ........................................................................ [ 24%]
+2026-11-25T07:21:34.8542482Z ........................................................................ [ 27%]
+2026-11-25T07:21:35.3169762Z ........................................................................ [ 30%]
+2026-11-25T07:21:35.5301157Z ........................................................................ [ 34%]
+2026-11-25T07:21:35.5521977Z ........................................................................ [ 37%]
+2026-11-25T07:21:35.5775578Z ........................................................................ [ 40%]
+2026-11-25T07:21:35.6054429Z ........................................................................ [ 43%]
+2026-11-25T07:21:36.9305599Z ........................................................................ [ 46%]
+2026-11-25T07:21:37.1890009Z ........................................................................ [ 49%]
+2026-11-25T07:21:37.9031190Z ........................................................................ [ 52%]
+2026-11-25T07:21:38.3888398Z ........................................................................ [ 55%]
+2026-11-25T07:21:40.6673662Z ........................................................................ [ 58%]
+2026-11-25T07:21:42.0420635Z ........................................................................ [ 61%]
+2026-11-25T07:21:42.2801519Z ........................................................................ [ 65%]
+2026-11-25T07:21:43.0681868Z ........................................................................ [ 68%]
+2026-11-25T07:21:43.1042391Z ........................................................................ [ 71%]
+2026-11-25T07:21:43.1348796Z ........................................................................ [ 74%]
+2026-11-25T07:21:43.1764825Z ........................................................................ [ 77%]
+2026-11-25T07:21:43.2035931Z ........................................................................ [ 80%]
+2026-11-25T07:21:43.2298868Z ........................................................................ [ 83%]
+2026-11-25T07:21:43.2601092Z ........................................................................ [ 86%]
+2026-11-25T07:21:43.2855687Z ........................................................................ [ 89%]
+2026-11-25T07:21:43.3138910Z ........................................................................ [ 92%]
+2026-11-25T07:21:43.4771769Z ........................................................................ [ 96%]
+2026-11-25T07:21:43.8126764Z ........................................................................ [ 99%]
+2026-11-25T07:21:43.9153452Z ....................                                                     [100%]
+2026-11-25T07:21:43.9154123Z 2324 passed in 12.20s
+2026-11-25T07:21:43.9982664Z uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests
+2026-11-25T07:21:44.8857592Z .F...................................................................... [  6%]
+2026-11-25T07:21:44.9344980Z ........................................................................ [ 12%]
+2026-11-25T07:21:44.9810180Z ........................................................................ [ 18%]
+2026-11-25T07:21:45.0286222Z ........................................................................ [ 24%]
+2026-11-25T07:21:45.0775501Z ........................................................................ [ 31%]
+2026-11-25T07:21:45.1254168Z ........................................................................ [ 37%]
+2026-11-25T07:21:45.1714781Z ........................................................................ [ 43%]
+2026-11-25T07:21:45.2210850Z ........................................................................ [ 49%]
+2026-11-25T07:21:45.2670869Z ........................................................................ [ 56%]
+2026-11-25T07:21:45.3132138Z ........................................................................ [ 62%]
+2026-11-25T07:21:45.4384055Z ........................................................................ [ 68%]
+2026-11-25T07:21:47.2228019Z ........................................................................ [ 74%]
+2026-11-25T07:21:54.3444145Z ........................................................................ [ 81%]
+2026-11-25T07:21:54.3852634Z ........................................................................ [ 87%]
+2026-11-25T07:21:54.5183311Z ........................................................................ [ 93%]
+2026-11-25T07:21:54.8904162Z ........................................................................ [ 99%]
+2026-11-25T07:21:54.9230491Z ...                                                                      [100%]
+2026-11-25T07:21:54.9230933Z =================================== FAILURES ===================================
+2026-11-25T07:21:54.9231615Z _______ test_active_guidance_recommends_hyphens_rather_than_underscores ________
+2026-11-25T07:21:54.9231925Z 
+2026-11-25T07:21:54.9232181Z     def test_active_guidance_recommends_hyphens_rather_than_underscores() -> None:
+2026-11-25T07:21:54.9232500Z         for path in SURFACES:
+2026-11-25T07:21:54.9232798Z >           assert HYPHENS in path.read_text(encoding="utf-8"), path.relative_to(ROOT)
+2026-11-25T07:21:54.9233390Z E           AssertionError: PosixPath('README.md')
+2026-11-25T07:21:54.9234217Z E           assert 'hyphens rather than underscores' in '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...taining the entry\'s bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.\n'
+2026-11-25T07:21:54.9237253Z E            +  where '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...taining the entry\'s bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.\n' = read_text(encoding='utf-8')
+2026-11-25T07:21:54.9238417Z E            +    where read_text = PosixPath('/home/runner/work/prosiform/prosiform/README.md').read_text
+2026-11-25T07:21:54.9238759Z 
+2026-11-25T07:21:54.9238897Z checks/tests/test_authoring.py:124: AssertionError
+2026-11-25T07:21:54.9239287Z =========================== short test summary info ============================
+2026-11-25T07:21:54.9240050Z FAILED checks/tests/test_authoring.py::test_active_guidance_recommends_hyphens_rather_than_underscores - AssertionError: PosixPath('README.md')
+2026-11-25T07:21:54.9241528Z assert 'hyphens rather than underscores' in '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...taining the entry\'s bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.\n'
+2026-11-25T07:21:54.9243266Z  +  where '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...taining the entry\'s bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.\n' = read_text(encoding='utf-8')
+2026-11-25T07:21:54.9244426Z  +    where read_text = PosixPath('/home/runner/work/prosiform/prosiform/README.md').read_text
+2026-11-25T07:21:54.9244901Z 1 failed, 1154 passed in 10.79s
+2026-11-25T07:21:54.9836975Z make: *** [Makefile:84: harness] Error 1
+2026-11-25T07:21:54.9850668Z ##[error]Process completed with exit code 2.
+2026-11-25T07:21:54.9965626Z Post job cleanup.
+2026-11-25T07:21:55.0642248Z [command]/usr/bin/git version
+2026-11-25T07:21:55.0671995Z git version 2.56.1
+2026-11-25T07:21:55.0704997Z Temporarily overriding HOME='/home/runner/work/_temp/ac4d1f9e-dc49-425f-90bb-1f13c523c7eb' before making global git config changes
+2026-11-25T07:21:55.0705879Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-25T07:21:55.0706799Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/prosiform/prosiform
+2026-11-25T07:21:55.0721714Z Removing SSH command configuration
+2026-11-25T07:21:55.0726535Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-25T07:21:55.0752324Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-25T07:21:55.0942729Z Removing HTTP extra header
+2026-11-25T07:21:55.0946696Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-25T07:21:55.0989392Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-25T07:21:55.1177682Z Removing includeIf entries pointing to credentials config files
+2026-11-25T07:21:55.1182717Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-25T07:21:55.1201749Z includeif.gitdir:/home/runner/work/prosiform/prosiform/.git.path
+2026-11-25T07:21:55.1202353Z includeif.gitdir:/home/runner/work/prosiform/prosiform/.git/worktrees/*.path
+2026-11-25T07:21:55.1202784Z includeif.gitdir:/github/workspace/.git.path
+2026-11-25T07:21:55.1203189Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-25T07:21:55.1212612Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/prosiform/prosiform/.git.path
+2026-11-25T07:21:55.1234323Z /home/runner/work/_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:55.1254705Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/prosiform/prosiform/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-71d54b53\-4e64\-42e9\-a469\-80f77758871d\.config
+2026-11-25T07:21:55.1270006Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/prosiform/prosiform/.git/worktrees/*.path
+2026-11-25T07:21:55.1286455Z /home/runner/work/_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:55.1294056Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/prosiform/prosiform/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-71d54b53\-4e64\-42e9\-a469\-80f77758871d\.config
+2026-11-25T07:21:55.1316861Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-25T07:21:55.1334026Z /github/runner_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:55.1338847Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-71d54b53\-4e64\-42e9\-a469\-80f77758871d\.config
+2026-11-25T07:21:55.1361833Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-25T07:21:55.1378967Z /github/runner_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config
+2026-11-25T07:21:55.1383121Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-71d54b53\-4e64\-42e9\-a469\-80f77758871d\.config
+2026-11-25T07:21:55.1406736Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-25T07:21:55.1584279Z Removing credentials config '/home/runner/work/_temp/git-credentials-71d54b53-4e64-42e9-a469-80f77758871d.config'
+2026-11-25T07:21:55.1699137Z Cleaning up orphan processes
+2026-11-25T07:21:55.1924720Z Terminate orphan process: pid (2907) (sleep)
