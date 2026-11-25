@@ -2083,8 +2083,8 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
 ) -> None:
     """AC9: the forms differ in where the brief stands against the dispatch.
 
-    The briefed bundle publishes each brief's lead content in a `⇉ <text>`
-    sub-section ahead of the dispatch link it carries, and the step's link
+    The briefed bundle publishes each brief's lead content in a sub-section
+    headed by the dispatch's text, ahead of the `⇉` link it carries; the step's link
     names that sub-section; the bundle composes the same section
     after the step that dispatches. Neither target's own bundle carries its
     brief.
@@ -2118,16 +2118,17 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
         assert positions[BUNDLE_SET_FORM][0] > positions[BUNDLE_SET_FORM][1]
         text = (bundles[BRIEFED_FORM] / workflow.entry_bundle).read_text()
         sections = bundled_sections(text)
+        dispatching = workflow.sections[BRIEFED_FORM][scenario.path[2]]
+        name = markdown_links(dispatching.body)[0].label.removeprefix("⇉ ")
         [lifted] = [
             section
             for section in sections.values()
-            if section.title.startswith("⇉ ") and linked in section.text
+            if section.title == name and linked in section.text
         ]
+        assert f"[⇉ {name}]{linked[1:]}" in lifted.text
         assert lead in lifted.text and lifted.text.index(lead) < lifted.text.index(
             linked
         )
-        dispatching = workflow.sections[BRIEFED_FORM][scenario.path[2]]
-        assert lifted.title == f"⇉ {markdown_links(dispatching.body)[0].label[2:]}"
         state = next(
             section
             for section in sections.values()
@@ -2151,8 +2152,8 @@ def subtree(sections: dict[str, BundledSection], root: str) -> list[BundledSecti
 def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
     """AC9: a brief's lead content links the children lifted beside it.
 
-    In the briefed entry bundle, the `⇉ <text>` sub-section holds the
-    brief's lead content, then its dispatch line, then the brief's child
+    In the briefed entry bundle, the sub-section headed by the dispatch's text
+    holds the brief's lead content, then its `⇉` line, then the brief's child
     sections one level below the sub-section's heading. Each link the lead
     makes to a child names the lifted copy inside the sub-section, so a
     dispatching agent following it reads the child before dispatching.
@@ -2174,7 +2175,7 @@ def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
         [lifted] = [
             section
             for section in sections.values()
-            if section.title.startswith("⇉ ") and dispatch in section.text
+            if f"[⇉ {section.title}]{dispatch}" in section.text
         ]
         inner = subtree(sections, lifted.fragment)
         assert [(section.level, section.title) for section in inner] == [
@@ -2183,7 +2184,7 @@ def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
         heading = BUNDLE_HEADING.search(lifted.text)
         head = lifted.text[: heading.start() if heading else None].strip()
         paragraphs = head.split("\n\n")
-        line = f"[{lifted.title}]{dispatch}"
+        line = f"[⇉ {lifted.title}]{dispatch}"
         assert paragraphs[-1] == line, (scenario.name, paragraphs)
         assert len(paragraphs) == len(lead.split("\n\n")) + 1, scenario.name
         targets = [
