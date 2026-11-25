@@ -29,8 +29,8 @@ from run import (
     AUTHORED_SET,
     BOOTSTRAP_SET,
     BUNDLE,
+    BUNDLE_SET,
     BUNDLED,
-    COMPILED_SET,
     FORMS,
     LINKED_TREE,
     PROSE_BUNDLE,
@@ -63,11 +63,11 @@ from score import (
 )
 from stub_agent import recognised
 from workflow import (
-    COMPILED_FORM,
+    BUNDLE_SET_FORM,
     ENTRY,
     LINKED_FORM,
-    Compile,
     CorpusError,
+    StatedRun,
     workflows,
 )
 
@@ -82,7 +82,7 @@ CALLER_VARIABLES = (
     "ANTHROPIC_BASE_URL",
 )
 DISPATCHING = ("dispatch-beside", "dispatch-chain", "dispatch-question", "dispatch-set")
-DISPATCH_FORMS = (COMPILED_SET, AUTHORED_SET)
+DISPATCH_FORMS = (BUNDLE_SET, AUTHORED_SET)
 DISPATCH_SCENARIOS = tuple(
     scenario.name for name in DISPATCHING for scenario in CORPUS[name].scenarios
 )
@@ -153,7 +153,7 @@ def test_the_stub_recognises_the_workflow_holding_the_most_states() -> None:
 def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
     """A scenario whose trace outruns the path's own starts is beyond Cursor."""
     corpus = list(CORPUS.values())
-    forms = [COMPILED_SET, AUTHORED_SET]
+    forms = [BUNDLE_SET, AUTHORED_SET]
     cursor = matrix(corpus, ["m"], forms, 1, HARNESSES["cursor"])
     claude = matrix(corpus, ["m"], forms, 1, HARNESSES["claude"])
     assert len(cursor) < len(claude)
@@ -161,7 +161,7 @@ def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
     assert any(item.workflow == "dispatch-chain" for item in claude)
     workflow = CORPUS["dispatch-set"]
     scenario = workflow.scenarios[0]
-    assert observable(workflow, scenario, COMPILED_SET, HARNESSES["cursor"]) is True
+    assert observable(workflow, scenario, BUNDLE_SET, HARNESSES["cursor"]) is True
 
 
 def test_the_cursor_harness_completes_a_matrix_over_the_default_forms() -> None:
@@ -185,7 +185,7 @@ def test_the_cursor_harness_completes_a_matrix_over_the_default_forms() -> None:
     assert reached <= offered
     assert {("linear", BUNDLE), ("linear", TREE)} <= reached
     assert {("branching", PROSE_BUNDLE), ("branching", LINKED_TREE)} <= reached
-    assert {("dispatch-chain", COMPILED_SET)}.isdisjoint(reached)
+    assert {("dispatch-chain", BUNDLE_SET)}.isdisjoint(reached)
 
 
 @pytest.fixture
@@ -332,10 +332,10 @@ def test_the_readme_states_every_form_the_runner_offers_and_its_default() -> Non
     assert options(["--budget-tokens", "1"]).forms == ",".join(FORMS)
 
 
-def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
+def test_a_bundle_set_session_receives_its_sources_the_bundle_set_and_the_build(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """AC2: the compiled bundle set, its sources, and the build as `pf` on its path.
+    """AC2: the bundle set, its sources, and the build as `pf` on its path.
 
     The set sits in the folder `pf` writes it to, beside the sources a `↳`
     line names its target from, and the instruction names the entry's bundle
@@ -346,10 +346,10 @@ def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
     eval_run(
         tmp_path,
         *("--harness", "cursor", "--workflows", "dispatch-set"),
-        *("--forms", COMPILED_SET, "--repetitions", "1", "--budget-tokens", "4000"),
+        *("--forms", BUNDLE_SET, "--repetitions", "1", "--budget-tokens", "4000"),
     )
     workflow = CORPUS["dispatch-set"]
-    bundles = bundles_of(workflow, COMPILED_SET)
+    bundles = bundles_of(workflow, BUNDLE_SET)
     [entry] = seen(log)
     workspace = Path(entry["workspace"])
     folder = workflow.entry_bundle.parent
@@ -361,32 +361,32 @@ def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
     assert "Run each pf command from this directory." in entry["prompt"]
 
 
-def test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports() -> None:
-    """AC3, AC26: every compiled scenario reaches Claude; a nested one no other.
+def test_a_run_gives_each_harness_the_bundle_set_scenarios_its_stream_reports() -> None:
+    """AC3, AC26: every bundle-set scenario reaches Claude; a nested one no other.
 
     Cursor and opencode report no sub-agent's own calls, so they are given
-    the compiled scenarios whose starts and runs the session makes itself,
+    the bundle-set scenarios whose starts and runs the session makes itself,
     `subagent-first-run`'s none, since each states a sub-agent's run, and no
     `dispatch-chain` or `dispatch-depth` scenario, whose sub-agents dispatch.
-    Claude's compiled session carries a shell and its stream reports every
-    sub-agent's calls, so it is given every compiled scenario, the nested
+    Claude's bundle-set session carries a shell and its stream reports every
+    sub-agent's calls, so it is given every bundle-set scenario, the nested
     ones among them.
     """
     corpus = list(CORPUS.values())
     for harness in (Cursor(), Opencode()):
-        given = matrix(corpus, ["m"], [COMPILED_SET], 1, harness)
+        given = matrix(corpus, ["m"], [BUNDLE_SET], 1, harness)
         assert {item.workflow for item in given} == {
             workflow.name
             for workflow in corpus
-            if COMPILED_FORM in workflow.forms
+            if BUNDLE_SET_FORM in workflow.forms
             and workflow.name
             not in ("dispatch-chain", "dispatch-depth", "subagent-first-run")
         }
-    claude = matrix(corpus, ["m"], [COMPILED_SET], 1, Claude())
+    claude = matrix(corpus, ["m"], [BUNDLE_SET], 1, Claude())
     assert {(item.workflow, item.scenario) for item in claude} == {
         (workflow.name, scenario.name)
         for workflow in corpus
-        if COMPILED_FORM in workflow.forms
+        if BUNDLE_SET_FORM in workflow.forms
         for scenario in workflow.scenarios
     }
     assert {
@@ -400,7 +400,7 @@ def test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports() ->
 def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> None:
     """AC22, AC26: a scenario stating a sub-agent's `pf` run needs its commands.
 
-    Claude reports them in the compiled form, whose session carries a shell,
+    Claude reports them in the bundle-set form, whose session carries a shell,
     and in no form whose session carries none. Neither Cursor's stream nor
     opencode's carries a sub-agent's own calls. Codex exposes child starts
     while its start records carry no child commands. A harness reporting
@@ -408,23 +408,23 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
     """
     workflow = CORPUS["dispatch-set"]
     [scenario] = workflow.scenarios
-    by_sub_agent = replace(scenario, compile=(Compile("review#tests"),))
-    by_session = replace(scenario, compile=(Compile(None),))
-    assert observable(workflow, by_sub_agent, COMPILED_SET, Claude())
+    by_sub_agent = replace(scenario, runs=(StatedRun("review#tests"),))
+    by_session = replace(scenario, runs=(StatedRun(None),))
+    assert observable(workflow, by_sub_agent, BUNDLE_SET, Claude())
     assert not observable(workflow, by_sub_agent, AUTHORED_SET, Claude())
     for harness in (Cursor(), Opencode(), Codex()):
-        assert not observable(workflow, by_sub_agent, COMPILED_SET, harness)
+        assert not observable(workflow, by_sub_agent, BUNDLE_SET, harness)
     assert observable(
         workflow,
         by_sub_agent,
-        COMPILED_SET,
+        BUNDLE_SET,
         replace(Opencode(), nested_starts=True, nested_commands=True),
     )
-    assert observable(workflow, by_session, COMPILED_SET, Opencode())
-    assert observable(workflow, by_session, COMPILED_SET, Codex())
+    assert observable(workflow, by_session, BUNDLE_SET, Opencode())
+    assert observable(workflow, by_session, BUNDLE_SET, Codex())
     alone = replace(workflow, scenarios=(by_sub_agent,))
-    assert matrix([alone], ["m"], [COMPILED_SET], 1, Opencode()) == []
-    assert matrix([alone], ["m"], [COMPILED_SET], 1, Codex()) == []
+    assert matrix([alone], ["m"], [BUNDLE_SET], 1, Opencode()) == []
+    assert matrix([alone], ["m"], [BUNDLE_SET], 1, Codex()) == []
 
 
 def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> None:
@@ -432,9 +432,9 @@ def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> 
     reporting only the session's own starts observes them; a start a sub-agent
     makes, at any depth, it does not, nor a run a sub-agent makes.
     """
-    compiled = matrix(list(CORPUS.values()), ["m"], [COMPILED_SET], 1, Cursor())
-    given = {(item.workflow, item.scenario) for item in compiled}
-    assert ("deferred-dispatch", "deferred-dispatch-compiled") in given
+    bundled = matrix(list(CORPUS.values()), ["m"], [BUNDLE_SET], 1, Cursor())
+    given = {(item.workflow, item.scenario) for item in bundled}
+    assert ("deferred-dispatch", "deferred-dispatch-bundled") in given
     assert ("subagent-first-run", "first-hop-run") not in given
     assert ("subagent-first-run", "deep-hop-runs") not in given
     assert not any(workflow == "dispatch-depth" for workflow, _ in given)
@@ -448,7 +448,7 @@ def test_tagged_dispatch_workflow_runs_with_selection_qualified_traces(
         "--workflows",
         "deferred-dispatch",
         "--forms",
-        COMPILED_SET,
+        BUNDLE_SET,
         "--repetitions",
         "1",
         "--budget-tokens",
@@ -464,7 +464,7 @@ def test_tagged_dispatch_workflow_runs_with_selection_qualified_traces(
 def test_native_child_starts_admit_chains_with_no_child_command_requirement() -> None:
     """AC22: native chains are observable; per-child bundler runs need attribution."""
     corpus = [CORPUS["dispatch-depth"], CORPUS["subagent-first-run"]]
-    sessions = matrix(corpus, ["m"], [COMPILED_SET], 1, Codex())
+    sessions = matrix(corpus, ["m"], [BUNDLE_SET], 1, Codex())
     assert {session.workflow for session in sessions} == {"dispatch-depth"}
     assert {session.scenario for session in sessions} == {
         "three-hop-chain",
@@ -473,19 +473,19 @@ def test_native_child_starts_admit_chains_with_no_child_command_requirement() ->
     }
 
 
-def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
+def test_a_bundle_set_claude_run_scores_each_nested_scenario_on_its_starts_runs(
     tmp_path: Path, log: Path
 ) -> None:
     """AC26: nested scenarios take a Claude cell, scored on each start's runs.
 
-    The stub's compiled session carries `Bash`, so it makes each stated `pf`
+    The stub's bundle-set session carries `Bash`, so it makes each stated `pf`
     run under the start whose sub-agent makes it, and the record holds them
     there. Every cell passes, `deep-hop-runs` among them, and its review and
     ruling hold their own runs.
     """
     record = eval_run(
         tmp_path,
-        *("--workflows", "dispatch-depth,subagent-first-run", "--forms", COMPILED_SET),
+        *("--workflows", "dispatch-depth,subagent-first-run", "--forms", BUNDLE_SET),
         *("--repetitions", "1", "--budget-tokens", "100000"),
     )
     cells = {(item["workflow"], item["scenario"]) for item in records(tmp_path)}
@@ -507,7 +507,7 @@ def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
         / "stub-model"
         / "subagent-first-run"
         / "deep-hop-runs"
-        / COMPILED_SET
+        / BUNDLE_SET
         / "1"
     )
     assert [(start.target, start.commands) for start in read_starts(deep)] == [
@@ -550,8 +550,8 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
         assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
         assert Path(entry["pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
         assert not Path(entry["pf"]).is_relative_to(entry["workspace"])
-        compiled = "workflow.bundles/workflow.bundle.md"
-        named = compiled if compiled in entry["files"] else ENTRY
+        bundled = "workflow.bundles/workflow.bundle.md"
+        named = bundled if bundled in entry["files"] else ENTRY
         described = f"{named} describes a workflow" in entry["prompt"]
         assert described is (named in entry["files"])
         assert Path(entry["workspace"]).is_relative_to(workspaces)
@@ -590,7 +590,7 @@ def test_a_reused_run_id_is_refused_before_bundling_or_starting_a_session(
     assert not list(results.rglob(SESSION))
 
 
-def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
+def test_a_bundle_set_form_is_one_file_and_the_tree_its_sources(
     tmp_path: Path, log: Path
 ) -> None:
     """A bundled form gives its set, a tree form its source documents."""
@@ -615,16 +615,18 @@ def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
     assert len(tree_entries) == 2 * len(looping.scenarios)
 
 
-def test_a_compiled_form_gives_its_whole_bundle_set(tmp_path: Path, log: Path) -> None:
+def test_a_bundle_set_form_gives_its_whole_bundle_set(
+    tmp_path: Path, log: Path
+) -> None:
     """A dispatching bundle set reaches the session with every bundle it names."""
     eval_run(
         tmp_path,
-        *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
+        *("--workflows", "dispatch-chain", "--forms", BUNDLE_SET),
         *("--repetitions", "1", "--budget-tokens", "4000"),
     )
     [workflow] = [CORPUS["dispatch-chain"]]
     folder = workflow.entry_bundle.parent
-    expected = {str(folder / name) for name in bundles_of(workflow, COMPILED_SET)}
+    expected = {str(folder / name) for name in bundles_of(workflow, BUNDLE_SET)}
     for entry in seen(log):
         assert expected <= set(entry["files"])
 
@@ -1607,14 +1609,14 @@ def test_a_run_naming_every_carrying_session_starts_its_sessions(
     [
         (workflow, form)
         for workflow in DISPATCHING
-        for form in (COMPILED_SET, AUTHORED_SET)
+        for form in (BUNDLE_SET, AUTHORED_SET)
     ],
     ids=lambda item: str(item),
 )
 def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
     tmp_path: Path, log: Path, workflow: str, form: str
 ) -> None:
-    """AC1: each dispatch scenario runs in its compiled and authored forms."""
+    """AC1: each dispatch scenario runs in its bundled and authored forms."""
     eval_run(
         tmp_path,
         *("--workflows", workflow, "--forms", form),
@@ -1645,7 +1647,7 @@ def test_the_report_gives_each_dispatch_scenarios_pass_rate_per_model_and_form(
     The run takes two models over the four dispatch scenarios in both
     forms, two repetitions each, the stub agent passing every session, so
     each cell reads two sessions and a pass rate of one. A second run over
-    the compiled form stops its agent after one state, so its cells read a
+    the bundle-set form stops its agent after one state, so its cells read a
     run that did not complete, and the report's per-scenario cells separate
     the rates the two forms give.
     """
@@ -1666,7 +1668,7 @@ def test_the_report_gives_each_dispatch_scenarios_pass_rate_per_model_and_form(
     for workflow in DISPATCHING:
         [scenario] = CORPUS[workflow].scenarios
         for model in ("stub-a", "stub-b"):
-            for form in (COMPILED_SET, AUTHORED_SET):
+            for form in (BUNDLE_SET, AUTHORED_SET):
                 cell = cells[(model, form, workflow, scenario.name)]
                 assert (cell["sessions"], cell["passed"]) == (2, 2)
                 assert cell["pass_rate"] == 1.0
@@ -1701,7 +1703,7 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-question"),
-        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--forms", BUNDLE_SET, "--repetitions", "1"),
         *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
@@ -1763,7 +1765,7 @@ def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
     The session's instruction tells it to hand each sub-agent the name
     `keep()` reads, and the stub's sub-agent writes only the trace its prompt
     names. So the kept traces are those the instruction caused, in the
-    compiled and the authored form alike, beside the session's own path.
+    bundled and the authored form alike, beside the session's own path.
     """
     eval_run(
         tmp_path,
@@ -1831,7 +1833,7 @@ def test_a_run_starting_no_sub_agent_is_undispatched(
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-chain"),
-        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--forms", BUNDLE_SET, "--repetitions", "1"),
         *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
@@ -1848,7 +1850,7 @@ def test_a_run_that_ran_a_set_in_sequence_is_sequential_set(
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-set"),
-        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--forms", BUNDLE_SET, "--repetitions", "1"),
         *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
@@ -1883,7 +1885,7 @@ def test_a_dispatch_run_that_stopped_short_is_unfinished(
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-chain"),
-        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--forms", BUNDLE_SET, "--repetitions", "1"),
         *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
@@ -1957,38 +1959,38 @@ def test_a_clean_run_passes_every_dispatch_cell(tmp_path: Path, log: Path) -> No
         assert verdict["actual"] == verdict["expected"]
 
 
-def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
+def test_a_bundle_set_session_runs_pf_bare_and_bundles_a_composition_line(
     tmp_path: Path,
 ) -> None:
-    """AC12: the build under test is `pf` on a compiled session's path.
+    """AC12: the build under test is `pf` on a bundle-set session's path.
 
-    The shell the session gets runs bare `pf` for the guide and compiles a
+    The shell the session gets runs bare `pf` for the guide and bundles a
     `↳` line, which a bundle set alone cannot do.
     """
     workflow = CORPUS["dispatch-chain"]
     scenario = workflow.scenarios[0]
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    sets = {(workflow.name, COMPILED_SET): bundles_of(workflow, COMPILED_SET)}
-    prepare(workspace, workflow, scenario, COMPILED_SET, sets)
+    sets = {(workflow.name, BUNDLE_SET): bundles_of(workflow, BUNDLE_SET)}
+    prepare(workspace, workflow, scenario, BUNDLE_SET, sets)
     assert not (workspace / "bin" / "pf").exists()
     pf = "pf"
     guide = subprocess.run([pf], capture_output=True, text=True, check=False)
-    assert guide.stdout.startswith("pf compiles"), guide.stdout
+    assert guide.stdout.startswith("pf bundles"), guide.stdout
     (workspace / "guide.md").write_text(
         "---\nprosiform: {}\n---\n# Guide\n\n## Run\n\nDo [↳ Steps](plan.md#steps).\n"
     )
     (workspace / "plan.md").write_text(
         "---\nprosiform: {}\n---\n# Plan\n\n## Steps\n\nCount the files.\n"
     )
-    compiled = subprocess.run(
+    bundled = subprocess.run(
         [pf, "guide.md", "-o", str(tmp_path / "out")],
         cwd=workspace,
         capture_output=True,
         text=True,
         check=False,
     )
-    assert compiled.returncode == 0, compiled.stderr
+    assert bundled.returncode == 0, bundled.stderr
     [written] = (tmp_path / "out").glob("*.bundles/guide.bundle.md")
     assert "Count the files." in written.read_text()
 
@@ -2018,7 +2020,7 @@ def test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it(
 def test_a_run_naming_the_staged_form_is_refused_as_an_unknown_form(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC18: one `compiled` form, and `staged` names none."""
+    """AC18: one `bundle-set` form, and `staged` names none."""
     assert "staged" not in FORMS
     with pytest.raises(CorpusError, match="unknown form staged"):
         eval_run(tmp_path, "--forms", "staged", "--budget-tokens", "4000")
@@ -2031,7 +2033,7 @@ AGENT_PICK_DEPARTURES: dict[str, tuple[dict[str, str], Failure | None]] = {
     "source-read": ({"STUB_AGENT_READ": "reference/work-kind.md"}, Failure.READ_SOURCE),
     "pick-unmade": (
         {"STUB_AGENT_LISTING": "1", "STUB_AGENT_RUNS": "1"},
-        Failure.UNCOMPILED,
+        Failure.MISSED_RUN,
     ),
 }
 """Each agent-pick departure the stub states: its script and its class.
@@ -2055,21 +2057,21 @@ def test_a_stub_run_of_each_agent_pick_scenario_passes_only_its_own_pick(
     departure: str,
     path: str,
 ) -> None:
-    """AC2: a compiled session passes by either path to its pick, which it names.
+    """AC2: a bundle-set session passes by either path to its pick, which it names.
 
     The stub walks each scenario's path and makes the guide run and its
     stated pick, on the link's first run or after the listing `?` draws. A
     passing session names the path its pick took. A session taking another
     kind's path and runs fails its branch, one reading the router's source
     fails `read_source`, and one never rerunning the listing leaves its pick
-    uncompiled.
+    missed_run.
     """
     scripts, failure = AGENT_PICK_DEPARTURES[departure]
     for script, value in {**AGENT_PICK_PATHS[path], **scripts}.items():
         monkeypatch.setenv(script, value)
     eval_run(
         tmp_path,
-        *("--workflows", "agent-pick", "--forms", COMPILED_SET),
+        *("--workflows", "agent-pick", "--forms", BUNDLE_SET),
         *("--repetitions", "1", "--budget-tokens", "4000"),
     )
     cells = {record["scenario"]: record["verdict"] for record in records(tmp_path)}

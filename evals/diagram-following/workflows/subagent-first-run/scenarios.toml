@@ -5,7 +5,7 @@
 # and the actions it does: each a file under actions/ and the value it holds.
 #
 # Every bundle opens with the run-pf line, so a sub-agent reads the guide
-# before it meets a deferred line, and only the material pf compiles on that
+# before it meets a deferred line, and only the material pf bundles on that
 # line states the sub-agent's action. Each sub-agent's own pf run is stated by the
 # section it follows, and the action that run's material states shows it on a
 # harness reporting no sub-agent's commands.
@@ -19,13 +19,13 @@ inputs = { "reach.txt" = "near" }
 dispatch = "hop/ledger#balance"
 action = { file = "closing.txt", value = "closed" }
 
-[[scenario.compile]]
+[[scenario.run]]
 by = "hop/ledger#balance"
 entry = "steps/closing.md#close"
 
-# The review, at the second hop, compiles the weighing rules its line names;
+# The review, at the second hop, bundles the weighing rules its line names;
 # their bundle states its action and dispatches the ruling, whose bundle, at
-# the third hop, carries a line its own run compiles.
+# the third hop, carries a line its own run bundles.
 
 [[scenario]]
 name = "deep-hop-runs"
@@ -43,10 +43,10 @@ action = { file = "weighing.txt", value = "weighed" }
 dispatch = "steps/ruling#rule"
 action = { file = "ruling.txt", value = "ruled" }
 
-[[scenario.compile]]
+[[scenario.run]]
 by = "hop/review#scan"
 entry = "steps/weighing.md#weigh"
 
-[[scenario.compile]]
+[[scenario.run]]
 by = "steps/ruling#rule"
 entry = "steps/recording.md#file"

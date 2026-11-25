@@ -17,7 +17,7 @@ path = [
 ]
 inputs = { "work.txt" = "test", "stage.txt" = "build" }
 
-# Package, which Compile links, stands in a group inside Compile's division,
+# Package, which Bundle links, stands in a group inside Bundle's division,
 # and Sign, which Package links, in a group composed inside Package's.
 [[scenario]]
 name = "nested-intermediate"
@@ -25,7 +25,7 @@ path = [
     "Entry",
     "Scope",
     "Stage",
-    "Compile",
+    "Bundle",
     "Package",
     "Sign",
     "Release",

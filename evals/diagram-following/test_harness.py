@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 from harness import HARNESSES, Claude, Codex, Cursor, Opencode, Start, harness_named
 from run import BOOTSTRAP_SET, prepare
-from workflow import AUTHORED_FORM, COMPILED_FORM, workflows
+from workflow import AUTHORED_FORM, BUNDLE_SET_FORM, workflows
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -466,7 +466,7 @@ def test_an_absent_transcript_names_no_start(tmp_path: Path) -> None:
 def test_a_start_reads_its_prompt_when_its_description_names_another_section(
     name: str, tmp_path: Path
 ) -> None:
-    """A call's compiled file determines its target, whatever its description."""
+    """A call's bundled file determines its target, whatever its description."""
     prompt = "Follow review__check.bundle.md and write actions/check.txt."
     if name == "claude":
         event = claude_call("a", prompt)
@@ -494,9 +494,9 @@ def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
 ) -> None:
     """AC5, AC26: a `Bash` call belongs to the session or its parent start.
 
-    The session runs `pf` on its line, the review's sub-agent compiles its
-    line and starts the ruling, and the ruling's sub-agent compiles its own
-    line. A compiled session records the session's command list; one in a
+    The session runs `pf` on its line, the review's sub-agent bundles its
+    line and starts the ruling, and the ruling's sub-agent bundles its own
+    line. A bundle-set session records the session's command list; one in a
     form carrying no shell records none.
     """
     from score import read_commands, read_starts, record_calls
@@ -528,11 +528,11 @@ def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
             ("pf -o out steps/recording.md#file",),
         ),
     )
-    compiled = tmp_path / "compiled"
-    compiled.mkdir()
-    record_calls(held, compiled, Claude(), COMPILED_FORM)
-    assert read_commands(compiled) == ("pf reference/loading.md#crew",)
-    assert read_starts(compiled) == Claude().starts(held)
+    bundled = tmp_path / "bundle-set"
+    bundled.mkdir()
+    record_calls(held, bundled, Claude(), BUNDLE_SET_FORM)
+    assert read_commands(bundled) == ("pf reference/loading.md#crew",)
+    assert read_starts(bundled) == Claude().starts(held)
     authored = tmp_path / "authored"
     authored.mkdir()
     record_calls(held, authored, Claude(), AUTHORED_FORM)
@@ -884,7 +884,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
     )
     records = tmp_path / "claude"
     records.mkdir()
-    record_calls(held, records, Claude(), COMPILED_FORM)
+    record_calls(held, records, Claude(), BUNDLE_SET_FORM)
     written = json.loads((records / SUBAGENTS).read_text())
     assert written == {
         "commands": [],
@@ -934,12 +934,12 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
     )
     opencode = tmp_path / "opencode"
     opencode.mkdir()
-    shell = opencode_part(tool="bash", description="compile")
+    shell = opencode_part(tool="bash", description="bundle")
     shell["part"]["state"]["input"] = {"command": "pf"}  # type: ignore[index]
     stream = transcript(
         opencode, [shell, opencode_part(tool="task", description="plan#work")]
     )
-    record_calls(stream, opencode, Opencode(), COMPILED_FORM)
+    record_calls(stream, opencode, Opencode(), BUNDLE_SET_FORM)
     assert read_commands(opencode) == ("pf",)
     assert read_starts(opencode) == (Start("plan#work", "done", False),)
 

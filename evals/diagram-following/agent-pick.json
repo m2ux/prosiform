@@ -21,124 +21,124 @@
   "not_started": [],
   "failing": [
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/1",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/bundle-set/1",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, states/classify.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, states/classify.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/2",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/bundle-set/2",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, states/classify.md, reference/kind.md, reference/breakdown.md, states/breakdown.md, reference/charter.md, reference/change.md, reference/hold.md, states/entry.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, states/classify.md, reference/kind.md, reference/breakdown.md, states/breakdown.md, reference/charter.md, reference/change.md, reference/hold.md, states/entry.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/3",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/bundle-set/3",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, reference/kind.md, reference/breakdown.md, reference/charter.md, reference/change.md, reference/hold.md, states/classify.md, states/entry.md, states/exit.md, states/breakdown.md, states/charter.md, states/change.md, states/hold.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, reference/kind.md, reference/breakdown.md, reference/charter.md, reference/change.md, reference/hold.md, states/classify.md, states/entry.md, states/exit.md, states/breakdown.md, states/charter.md, states/change.md, states/hold.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/4",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/bundle-set/4",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, reference/charter.md, reference/change.md, reference/breakdown.md, reference/hold.md, workflow.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, reference/charter.md, reference/change.md, reference/breakdown.md, reference/hold.md, workflow.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/5",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/bundle-set/5",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, reference/charter.md, reference/breakdown.md, reference/change.md, reference/hold.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, reference/charter.md, reference/breakdown.md, reference/change.md, reference/hold.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/1",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/bundle-set/1",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, sources of the compiled form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/2",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/bundle-set/2",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, reference/charter.md, reference/breakdown.md, reference/hold.md, reference/change.md, states/classify.md, states/entry.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, reference/charter.md, reference/breakdown.md, reference/hold.md, reference/change.md, states/classify.md, states/entry.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/3",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/bundle-set/3",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, states/classify.md, workflow.md, states/charter.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, states/classify.md, workflow.md, states/charter.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/4",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/bundle-set/4",
+      "failure": "unstated_run",
       "disposition": "miss",
       "evidence": "the transcript's shell calls run pf on workflow.md, reference/work-kind.md without its fragment, states/classify.md, and states/classify.md with the initiative preset, none of which the bundle states on the path; it also made the listing and the rerun with initiative and traced the scenario's path"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/5",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/bundle-set/5",
+      "failure": "unstated_run",
       "disposition": "miss",
       "evidence": "after the stated listing the transcript's shell calls run pf on reference/kind.md and on reference/work-kind.md#route, each with the change preset, a transition's label rather than an alternative, before the rerun with initiative; the bundle states neither run"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/1",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/bundle-set/1",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open workflow.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, reference/work-kind.md, reference/charter.md, reference/change.md, reference/breakdown.md, reference/kind.md, reference/hold.md, sources of the compiled form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open workflow.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, reference/work-kind.md, reference/charter.md, reference/change.md, reference/breakdown.md, reference/kind.md, reference/hold.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/2",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/bundle-set/2",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, states/classify.md, states/entry.md, states/exit.md, reference/kind.md, sources of the compiled form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, states/classify.md, states/entry.md, states/exit.md, reference/kind.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/3",
-      "failure": "uncompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/bundle-set/3",
+      "failure": "missed_run",
       "disposition": "miss",
       "evidence": "the bundle's Classify states a \u21b3 Route line deferring reference/work-kind.md#route with title ? on the path; the transcript's shell calls make only the rerun with task, never the listing with ?, after its read calls opened reference/work-kind.md, the router's source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/4",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/bundle-set/4",
+      "failure": "unstated_run",
       "disposition": "miss",
       "evidence": "the transcript's shell calls run pf workflow.bundles/workflow.bundle.md, pf workflow.md, pf . and pf with the preset x and no entry before the stated listing and rerun with task; the bundle states none of those references"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/5",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/bundle-set/5",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, sources of the compiled form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/1",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/bundle-set/1",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, reference/charter.md, reference/hold.md, reference/breakdown.md, reference/change.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, reference/charter.md, reference/hold.md, reference/breakdown.md, reference/change.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/2",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/bundle-set/2",
+      "failure": "unstated_run",
       "disposition": "miss",
       "evidence": "between the stated listing and the rerun with other, the transcript's shell calls run pf states/classify.md, a reference the bundle states on no line of the path"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/3",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/bundle-set/3",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, workflow.md, states/classify.md, states/hold.md, reference/hold.md, reference/change.md, reference/charter.md, reference/breakdown.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, workflow.md, states/classify.md, states/hold.md, reference/hold.md, reference/change.md, reference/charter.md, reference/breakdown.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/4",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/bundle-set/4",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/charter.md, reference/change.md, reference/kind.md, reference/breakdown.md, reference/hold.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/charter.md, reference/change.md, reference/kind.md, reference/breakdown.md, reference/hold.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/5",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/bundle-set/5",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open reference/work-kind.md, states/classify.md, states/entry.md, reference/kind.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+      "evidence": "the transcript's read calls open reference/work-kind.md, states/classify.md, states/entry.md, reference/kind.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the bundle-set form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
     }
   ],
   "baseline": {
@@ -311,19 +311,19 @@
       },
       {
         "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-        "form": "compiled",
+        "form": "bundle-set",
         "workflow": "dispatch-beside",
         "scenario": "set-beside-a-dispatch"
       },
       {
         "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-        "form": "compiled",
+        "form": "bundle-set",
         "workflow": "dispatch-question",
         "scenario": "returned-question"
       },
       {
         "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-        "form": "compiled",
+        "form": "bundle-set",
         "workflow": "dispatch-set",
         "scenario": "parallel-set"
       },
@@ -607,7 +607,7 @@
   "cells": [
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "agent-pick",
       "scenario": "epic-picked",
       "sessions": 5,
@@ -624,9 +624,9 @@
         "undispatched": 0,
         "sequential_set": 0,
         "unrelayed_question": 0,
-        "uncompiled": 0,
-        "overcompiled": 0,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 0,
+        "misordered_run": 0,
         "read_source": 5,
         "errored": 0
       },
@@ -638,7 +638,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "agent-pick",
       "scenario": "initiative-picked",
       "sessions": 5,
@@ -655,9 +655,9 @@
         "undispatched": 0,
         "sequential_set": 0,
         "unrelayed_question": 0,
-        "uncompiled": 0,
-        "overcompiled": 2,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 2,
+        "misordered_run": 0,
         "read_source": 3,
         "errored": 0
       },
@@ -669,7 +669,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "agent-pick",
       "scenario": "task-picked",
       "sessions": 5,
@@ -686,9 +686,9 @@
         "undispatched": 0,
         "sequential_set": 0,
         "unrelayed_question": 0,
-        "uncompiled": 1,
-        "overcompiled": 1,
-        "misordered_compile": 0,
+        "missed_run": 1,
+        "unstated_run": 1,
+        "misordered_run": 0,
         "read_source": 3,
         "errored": 0
       },
@@ -700,7 +700,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "agent-pick",
       "scenario": "unknown-kind-held",
       "sessions": 5,
@@ -717,9 +717,9 @@
         "undispatched": 0,
         "sequential_set": 0,
         "unrelayed_question": 0,
-        "uncompiled": 0,
-        "overcompiled": 1,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 1,
+        "misordered_run": 0,
         "read_source": 4,
         "errored": 0
       },
@@ -733,7 +733,7 @@
   "by_form": [
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "sessions": 20,
       "passed": 0,
       "pass_rate": 0.0,
@@ -748,9 +748,9 @@
         "undispatched": 0,
         "sequential_set": 0,
         "unrelayed_question": 0,
-        "uncompiled": 1,
-        "overcompiled": 4,
-        "misordered_compile": 0,
+        "missed_run": 1,
+        "unstated_run": 4,
+        "misordered_run": 0,
         "read_source": 15,
         "errored": 0
       },
@@ -771,9 +771,9 @@
           "undispatched": -4,
           "sequential_set": 0,
           "unrelayed_question": 0,
-          "uncompiled": 1,
-          "overcompiled": 4,
-          "misordered_compile": 0,
+          "missed_run": 1,
+          "unstated_run": 4,
+          "misordered_run": 0,
           "read_source": 15,
           "errored": 0
         }
@@ -797,9 +797,9 @@
         "undispatched": 0,
         "sequential_set": 0,
         "unrelayed_question": 0,
-        "uncompiled": 1,
-        "overcompiled": 4,
-        "misordered_compile": 0,
+        "missed_run": 1,
+        "unstated_run": 4,
+        "misordered_run": 0,
         "read_source": 15,
         "errored": 0
       },
@@ -820,9 +820,9 @@
           "undispatched": -19,
           "sequential_set": 0,
           "unrelayed_question": 0,
-          "uncompiled": 1,
-          "overcompiled": 4,
-          "misordered_compile": 0,
+          "missed_run": 1,
+          "unstated_run": 4,
+          "misordered_run": 0,
           "read_source": 15,
           "errored": 0
         }

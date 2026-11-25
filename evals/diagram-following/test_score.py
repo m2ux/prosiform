@@ -23,7 +23,7 @@ from score import (
     Failure,
     Start,
     Verdict,
-    compiles,
+    bundles,
     names,
     pf_runs,
     read_reads,
@@ -34,9 +34,9 @@ from score import (
 )
 from workflow import (
     AUTHORED_FORM,
-    COMPILED_FORM,
-    Compile,
+    BUNDLE_SET_FORM,
     Scenario,
+    StatedRun,
     Workflow,
     entry_bundle,
     workflows,
@@ -789,7 +789,7 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
     )
     records = tmp_path / "records"
     records.mkdir()
-    record_calls(held, records, Claude(), COMPILED_FORM)
+    record_calls(held, records, Claude(), BUNDLE_SET_FORM)
     assert read_starts(records) == (
         Start("plan#work", "done", False),
         Start("review#source", "question", False),
@@ -834,7 +834,7 @@ def test_a_bundle_of_a_document_in_a_folder_names_its_section() -> None:
 def test_a_sub_agent_running_no_pf_on_its_line_misses_its_action(
     tmp_path: Path, name: str, undone: tuple[str, ...]
 ) -> None:
-    """AC17, AC18: only the line's compiled material states the sub-agent's action.
+    """AC17, AC18: only the line's bundled material states the sub-agent's action.
 
     Each start is recorded, and the session's path and its states' actions are
     done, so a sub-agent that ran no `pf` on its line leaves only the action
@@ -861,10 +861,10 @@ def test_a_sub_agent_never_started_is_undispatched_before_its_action(
     assert score(held, item, tmp_path).failure == Failure.UNDISPATCHED
 
 
-def test_a_start_naming_its_compiled_bundle_names_the_same_section(
+def test_a_start_naming_its_bundled_bundle_names_the_same_section(
     tmp_path: Path,
 ) -> None:
-    """A compiled form's call names `pf`'s bundle, which spells one section."""
+    """A bundle-set form's call names `pf`'s bundle, which spells one section."""
     verdict = dispatched(
         "dispatch-chain",
         [
@@ -881,7 +881,8 @@ def test_an_absent_transcript_records_no_start(tmp_path: Path) -> None:
     records = tmp_path / "records"
     records.mkdir()
     assert (
-        record_calls(tmp_path / "absent.jsonl", records, Claude(), COMPILED_FORM) == ()
+        record_calls(tmp_path / "absent.jsonl", records, Claude(), BUNDLE_SET_FORM)
+        == ()
     )
     assert read_starts(records) == ()
     assert read_starts(tmp_path / "unwritten") == ()
@@ -936,7 +937,7 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
     records.mkdir()
     workspace(records, corpus, list(item.path))
     done_by_sub_agents(records, item)
-    record_calls(held, records, Opencode(), COMPILED_FORM)
+    record_calls(held, records, Opencode(), BUNDLE_SET_FORM)
     assert [start.returned for start in read_starts(records)] == [
         "question",
         "done",
@@ -946,19 +947,19 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
 
 
 STATED_RUNS = (
-    Compile(None),
-    Compile(None, "fetch.md#implementation"),
-    Compile("review#tests"),
-    Compile("review#tests", "net.md#retry"),
+    StatedRun(None),
+    StatedRun(None, "fetch.md#implementation"),
+    StatedRun("review#tests"),
+    StatedRun("review#tests", "net.md#retry"),
 )
-"""Runs a compiled scenario states: the session's two, then a sub-agent's two."""
+"""Runs a bundle-set scenario states: the session's two, then a sub-agent's two."""
 
 
-def compiling(
+def bundling(
     tmp_path: Path,
     session: list[str] | None,
     sub_agent: list[str],
-    runs: tuple[Compile, ...] = STATED_RUNS,
+    runs: tuple[StatedRun, ...] = STATED_RUNS,
 ) -> Verdict:
     """The verdict on a correct walk of `dispatch-set` whose record holds commands.
 
@@ -967,7 +968,7 @@ def compiling(
     `sub_agent`.
     """
     workflow = CORPUS["dispatch-set"]
-    item = replace(scenario("dispatch-set", "parallel-set"), compile=runs)
+    item = replace(scenario("dispatch-set", "parallel-set"), runs=runs)
     held = workspace(tmp_path, workflow, list(item.path))
     done_by_sub_agents(held, item)
     starts = [
@@ -990,36 +991,36 @@ CORRECT_SUB_AGENT = ["pf && pf -o out 'net.md#retry'"]
 
 def test_a_session_making_its_stated_runs_passes(tmp_path: Path) -> None:
     """AC4: the stated runs, each by its agent and in order, pass."""
-    verdict = compiling(tmp_path, CORRECT_SESSION, CORRECT_SUB_AGENT)
+    verdict = bundling(tmp_path, CORRECT_SESSION, CORRECT_SUB_AGENT)
     assert (verdict.passed, verdict.failure) == (True, None)
 
 
 @pytest.mark.parametrize(
     ("session", "sub_agent", "failure"),
     [
-        (["pf"], CORRECT_SUB_AGENT, Failure.UNCOMPILED),
-        (CORRECT_SESSION, ["pf"], Failure.UNCOMPILED),
+        (["pf"], CORRECT_SUB_AGENT, Failure.MISSED_RUN),
+        (CORRECT_SESSION, ["pf"], Failure.MISSED_RUN),
         (
             [*CORRECT_SESSION, "pf -o out net.md#retry"],
             CORRECT_SUB_AGENT,
-            Failure.OVERCOMPILED,
+            Failure.UNSTATED_RUN,
         ),
         (
             CORRECT_SESSION,
             [*CORRECT_SUB_AGENT, "cd . ; pf fetch.md#implementation"],
-            Failure.OVERCOMPILED,
+            Failure.UNSTATED_RUN,
         ),
         (
             list(reversed(CORRECT_SESSION)),
             CORRECT_SUB_AGENT,
-            Failure.MISORDERED_COMPILE,
+            Failure.MISORDERED_RUN,
         ),
         (
             CORRECT_SESSION,
             ["pf net.md#retry", "pf"],
-            Failure.MISORDERED_COMPILE,
+            Failure.MISORDERED_RUN,
         ),
-        (["pf other.md"], ["pf"], Failure.UNCOMPILED),
+        (["pf other.md"], ["pf"], Failure.MISSED_RUN),
     ],
     ids=[
         "session-omits",
@@ -1035,7 +1036,7 @@ def test_a_session_departing_from_its_stated_runs_fails_with_its_class(
     tmp_path: Path, session: list[str], sub_agent: list[str], failure: Failure
 ) -> None:
     """AC4: a run omitted, added or out of order fails the walk that passed."""
-    verdict = compiling(tmp_path, session, sub_agent)
+    verdict = bundling(tmp_path, session, sub_agent)
     assert (verdict.passed, verdict.failure, verdict.divergence) == (
         False,
         failure,
@@ -1043,28 +1044,28 @@ def test_a_session_departing_from_its_stated_runs_fails_with_its_class(
     )
 
 
-def test_a_run_on_a_line_no_scenario_states_is_overcompiled(tmp_path: Path) -> None:
-    """AC4: a scenario stating no run fails a session compiling a deferred line."""
-    verdict = compiling(tmp_path, ["pf -o out net.md#retry"], [], runs=())
-    assert verdict.failure == Failure.OVERCOMPILED
+def test_a_run_on_a_line_no_scenario_states_is_an_unstated_run(tmp_path: Path) -> None:
+    """AC4: a scenario stating no run fails a session bundling a deferred line."""
+    verdict = bundling(tmp_path, ["pf -o out net.md#retry"], [], runs=())
+    assert verdict.failure == Failure.UNSTATED_RUN
 
 
 def test_a_bare_pf_beyond_those_stated_is_no_departure(tmp_path: Path) -> None:
-    """A bare `pf` prints the guide and compiles nothing, so it adds no run."""
-    verdict = compiling(tmp_path, ["pf", *CORRECT_SESSION], CORRECT_SUB_AGENT)
+    """A bare `pf` prints the guide and bundles nothing, so it adds no run."""
+    verdict = bundling(tmp_path, ["pf", *CORRECT_SESSION], CORRECT_SUB_AGENT)
     assert verdict.passed is True
 
 
 def test_a_run_from_another_directory_names_the_same_document(tmp_path: Path) -> None:
     """A reference ending in the stated one names it, wherever `pf` ran from."""
-    runs = (Compile(None, "sources/workflow.md"),)
+    runs = (StatedRun(None, "sources/workflow.md"),)
     named = [
         ".claude/skills/audit/bin/pf -o build"
         " ./.claude/skills/audit/sources/workflow.md"
     ]
-    assert compiling(tmp_path, named, [], runs=runs).passed is True
-    assert compiling(tmp_path, ["pf other/workflow.md"], [], runs=runs).failure == (
-        Failure.UNCOMPILED
+    assert bundling(tmp_path, named, [], runs=runs).passed is True
+    assert bundling(tmp_path, ["pf other/workflow.md"], [], runs=runs).failure == (
+        Failure.MISSED_RUN
     )
 
 
@@ -1089,12 +1090,12 @@ def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, obj
     ],
     ids=["stated", "unstated-run", "no-run"],
 )
-def test_a_compiled_claude_record_holds_each_hops_runs(
+def test_a_bundle_set_claude_record_holds_each_hops_runs(
     tmp_path: Path, ruling: list[str], failure: str | None
 ) -> None:
     """AC26: `deep-hop-runs` is scored on each nested start's sub-agent runs.
 
-    The stream a compiled Claude session prints files each `Bash` call under
+    The stream a bundled Claude session prints files each `Bash` call under
     the `Agent` call its sub-agent runs under, so the ruling's runs, three
     hops down, are held to the one the scenario states by the ruling.
     """
@@ -1119,24 +1120,24 @@ def test_a_compiled_claude_record_holds_each_hops_runs(
         *(claude_message("c", bash(command)) for command in ruling),
     ]
     stream.write_text("".join(json.dumps(line) + "\n" for line in lines))
-    record_calls(stream, held, Claude(), COMPILED_FORM)
+    record_calls(stream, held, Claude(), BUNDLE_SET_FORM)
     expected = {
         None: None,
-        "over": Failure.OVERCOMPILED,
-        "un": Failure.UNCOMPILED,
+        "over": Failure.UNSTATED_RUN,
+        "un": Failure.MISSED_RUN,
     }[failure]
     assert score(workflow, item, held).failure == expected
 
 
 def test_a_harness_reporting_no_command_asks_no_run(tmp_path: Path) -> None:
     """A record naming no commands holds the session to none of its runs."""
-    assert compiling(tmp_path, None, []).passed is True
+    assert bundling(tmp_path, None, []).passed is True
 
 
 def test_the_run_checks_follow_the_dispatch_checks(tmp_path: Path) -> None:
     """A record failing a dispatch check takes it, whatever its runs."""
     workflow = CORPUS["dispatch-set"]
-    item = replace(scenario("dispatch-set", "parallel-set"), compile=STATED_RUNS)
+    item = replace(scenario("dispatch-set", "parallel-set"), runs=STATED_RUNS)
     held = workspace(tmp_path, workflow, list(item.path))
     (held / SUBAGENTS).write_text(json.dumps({"commands": [], "starts": []}))
     assert score(workflow, item, held).failure == Failure.UNDISPATCHED
@@ -1150,7 +1151,7 @@ def test_each_command_splits_into_the_pf_runs_it_makes() -> None:
             "cd build && ../bin/pf -o out -d json --budget files=9 a.md#b | cat",
             "echo pf; ls; pfx a.md || pf -c 'c d.md'",
         )
-    ) == [Compile(None), Compile(None, "a.md#b"), Compile(None, "c d.md")]
+    ) == [StatedRun(None), StatedRun(None, "a.md#b"), StatedRun(None, "c d.md")]
 
 
 @pytest.mark.parametrize(
@@ -1170,17 +1171,17 @@ def test_shell_redirects_do_not_change_the_bundler_selection(
     redirect: str,
     entry: str | None,
 ) -> None:
-    expected = Compile(None, entry)
+    expected = StatedRun(None, entry)
     command = "pf" + (" target.md" if entry else "") + " " + redirect
-    item = Scenario("redirected", {}, (), compile=(expected,))
+    item = Scenario("redirected", {}, (), runs=(expected,))
     assert pf_runs((command,)) == [expected]
-    assert compiles(item, (command,), ()) is None
+    assert bundles(item, (command,), ()) is None
 
 
-def test_codex_recorded_redirects_reach_the_same_selected_compile() -> None:
+def test_codex_recorded_redirects_reach_the_same_selected_bundle() -> None:
     from codex_agent import pf_command
 
-    expected = Compile(None, "target.md", frozenset({"checks"}))
+    expected = StatedRun(None, "target.md", frozenset({"checks"}))
     for append in (False, True):
         command = pf_command(
             {
@@ -1192,12 +1193,12 @@ def test_codex_recorded_redirects_reach_the_same_selected_compile() -> None:
             }
         )
         assert pf_runs((command,)) == [expected]
-        item = Scenario("recorded", {}, (), compile=(expected,))
-        assert compiles(item, (command,), ()) is None
+        item = Scenario("recorded", {}, (), runs=(expected,))
+        assert bundles(item, (command,), ()) is None
 
 
 def test_redirects_can_precede_or_interrupt_bundler_words() -> None:
-    expected = Compile(None, "target.md")
+    expected = StatedRun(None, "target.md")
     for command in (
         ">out pf target.md",
         "pf >out target.md",
@@ -1209,14 +1210,14 @@ def test_redirects_can_precede_or_interrupt_bundler_words() -> None:
 
 def test_quoted_shell_operators_remain_bundler_argument_text() -> None:
     assert pf_runs(("pf 'a>b.md' >out", """pf '[A>B](a.md "a&b,c|d")' >out""")) == [
-        Compile(None, "a>b.md"),
-        Compile(None, "a.md", frozenset({"a&b", "c|d"})),
+        StatedRun(None, "a>b.md"),
+        StatedRun(None, "a.md", frozenset({"a&b", "c|d"})),
     ]
-    assert pf_runs((r"pf a\>b.md",)) == [Compile(None, "a>b.md")]
+    assert pf_runs((r"pf a\>b.md",)) == [StatedRun(None, "a>b.md")]
     assert pf_runs(("pf a.md 2>&1 && pf >guide.log; pf b.md | cat",)) == [
-        Compile(None, "a.md"),
-        Compile(None),
-        Compile(None, "b.md"),
+        StatedRun(None, "a.md"),
+        StatedRun(None),
+        StatedRun(None, "b.md"),
     ]
 
 
@@ -1240,10 +1241,10 @@ def test_quoted_shell_operators_remain_bundler_argument_text() -> None:
         "pf --ent target.md",
     ],
 )
-def test_invalid_command_usage_satisfies_no_compile(command: str) -> None:
-    item = Scenario("one-entry", {}, (), compile=(Compile(None, "target.md"),))
+def test_invalid_command_usage_satisfies_no_bundle(command: str) -> None:
+    item = Scenario("one-entry", {}, (), runs=(StatedRun(None, "target.md"),))
     assert pf_runs((command,)) == [None]
-    assert compiles(item, (command,), ()) == Failure.UNCOMPILED
+    assert bundles(item, (command,), ()) == Failure.MISSED_RUN
 
 
 @pytest.mark.parametrize(
@@ -1257,10 +1258,10 @@ def test_invalid_command_usage_satisfies_no_compile(command: str) -> None:
     ],
 )
 def test_a_duplicated_descriptor_is_its_redirects_operand(command: str) -> None:
-    expected = Compile(None, "target.md")
-    item = Scenario("adjacent", {}, (), compile=(expected,))
+    expected = StatedRun(None, "target.md")
+    item = Scenario("adjacent", {}, (), runs=(expected,))
     assert pf_runs((command,)) == [expected]
-    assert compiles(item, (command,), ()) is None
+    assert bundles(item, (command,), ()) is None
 
 
 @pytest.mark.parametrize(
@@ -1275,10 +1276,10 @@ def test_a_duplicated_descriptor_is_its_redirects_operand(command: str) -> None:
         "pf target.md <<< >out",
     ],
 )
-def test_a_malformed_adjacent_redirection_satisfies_no_compile(command: str) -> None:
-    item = Scenario("adjacent", {}, (), compile=(Compile(None, "target.md"),))
+def test_a_malformed_adjacent_redirection_satisfies_no_bundle(command: str) -> None:
+    item = Scenario("adjacent", {}, (), runs=(StatedRun(None, "target.md"),))
     assert pf_runs((command,)) == [None]
-    assert compiles(item, (command,), ()) == Failure.UNCOMPILED
+    assert bundles(item, (command,), ()) == Failure.MISSED_RUN
 
 
 HEREDOC_BODY = "pf target.md\npf other.md 2>&1>out; pf\n"
@@ -1301,9 +1302,9 @@ HEREDOC_BODY = "pf target.md\npf other.md 2>&1>out; pf\n"
 )
 def test_a_heredoc_body_is_data_rather_than_commands(command: str) -> None:
     assert pf_runs((command,)) == []
-    stated = Scenario("heredoc", {}, (), compile=(Compile(None, "target.md"),))
-    assert compiles(stated, (command,), ()) == Failure.UNCOMPILED
-    assert compiles(Scenario("heredoc", {}, ()), (command,), ()) is None
+    stated = Scenario("heredoc", {}, (), runs=(StatedRun(None, "target.md"),))
+    assert bundles(stated, (command,), ()) == Failure.MISSED_RUN
+    assert bundles(Scenario("heredoc", {}, ()), (command,), ()) is None
 
 
 @pytest.mark.parametrize(
@@ -1316,11 +1317,10 @@ def test_a_heredoc_body_is_data_rather_than_commands(command: str) -> None:
     ],
 )
 def test_runs_beside_a_heredoc_stay_observable(command: str) -> None:
-    runs = [Compile(None, "a.md"), Compile(None, "b.md")]
+    runs = [StatedRun(None, "a.md"), StatedRun(None, "b.md")]
     assert pf_runs((command,)) == runs
     assert (
-        compiles(Scenario("heredoc", {}, (), compile=tuple(runs)), (command,), ())
-        is None
+        bundles(Scenario("heredoc", {}, (), runs=tuple(runs)), (command,), ()) is None
     )
 
 
@@ -1332,11 +1332,11 @@ def test_runs_beside_a_heredoc_stay_observable(command: str) -> None:
     ],
 )
 def test_an_unterminated_heredoc_invalidates_its_segment(
-    command: str, runs: list[Compile | None]
+    command: str, runs: list[StatedRun | None]
 ) -> None:
     assert pf_runs((command,)) == runs
-    item = Scenario("heredoc", {}, (), compile=(Compile(None, "a.md"),))
-    assert compiles(item, (command,), ()) is not None
+    item = Scenario("heredoc", {}, (), runs=(StatedRun(None, "a.md"),))
+    assert bundles(item, (command,), ()) is not None
 
 
 @pytest.mark.parametrize(
@@ -1352,26 +1352,29 @@ def test_an_unterminated_heredoc_invalidates_its_segment(
 def test_a_malformed_command_running_no_pf_passes_the_run_checks(
     commands: tuple[str, ...],
 ) -> None:
-    assert pf_runs(commands) == [Compile(None, "a.md")]
-    item = Scenario("malformed", {}, (), compile=(Compile(None, "a.md"),))
-    assert compiles(item, commands, ()) is None
+    assert pf_runs(commands) == [StatedRun(None, "a.md")]
+    item = Scenario("malformed", {}, (), runs=(StatedRun(None, "a.md"),))
+    assert bundles(item, commands, ()) is None
 
 
 @pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
-def test_information_satisfies_neither_guide_nor_compile(option: str) -> None:
+def test_information_satisfies_neither_guide_nor_bundle(option: str) -> None:
     tagged = f"""pf {option} '[Target](target.md "checks")'"""
     assert pf_runs((f"pf {option}", tagged)) == []
-    for expected in (Compile(None), Compile(None, "target.md", frozenset({"checks"}))):
-        item = Scenario("one-run", {}, (), compile=(expected,))
-        assert compiles(item, (tagged,), ()) == Failure.UNCOMPILED
+    for expected in (
+        StatedRun(None),
+        StatedRun(None, "target.md", frozenset({"checks"})),
+    ):
+        item = Scenario("one-run", {}, (), runs=(expected,))
+        assert bundles(item, (tagged,), ()) == Failure.MISSED_RUN
 
 
 @pytest.mark.parametrize(
     ("presets", "failure"),
     [
-        (None, Failure.UNCOMPILED),
-        ("other", Failure.UNCOMPILED),
-        ("checks", Failure.UNCOMPILED),
+        (None, Failure.MISSED_RUN),
+        ("other", Failure.MISSED_RUN),
+        ("checks", Failure.MISSED_RUN),
         ("checks,draft", None),
         (" DRAFT,checks,CHECKS,missing,default ", None),
     ],
@@ -1388,21 +1391,21 @@ def test_run_checks_match_effective_declared_presets(
         "selected",
         {},
         (),
-        compile=(Compile(None, "target.md", frozenset({"checks", "draft"})),),
+        runs=(StatedRun(None, "target.md", frozenset({"checks", "draft"})),),
     )
     command = (
         f"""pf '[Target](target.md "{presets}")'"""
         if presets is not None
         else "pf target.md"
     )
-    assert compiles(item, (command,), (), root=tmp_path) == failure
+    assert bundles(item, (command,), (), root=tmp_path) == failure
 
 
 def test_unknown_names_share_default_selection(tmp_path: Path) -> None:
     (tmp_path / "target.md").write_text("---\nprosiform: {checks: {}}\n---\n# Target\n")
-    item = Scenario("default", {}, (), compile=(Compile(None, "target.md"),))
+    item = Scenario("default", {}, (), runs=(StatedRun(None, "target.md"),))
     assert (
-        compiles(
+        bundles(
             item,
             ("""pf '[Target](target.md "unknown,default")'""",),
             (),
@@ -1411,16 +1414,16 @@ def test_unknown_names_share_default_selection(tmp_path: Path) -> None:
         is None
     )
     assert (
-        compiles(item, ("""pf '[Target](target.md "checks")'""",), (), root=tmp_path)
-        == Failure.UNCOMPILED
+        bundles(item, ("""pf '[Target](target.md "checks")'""",), (), root=tmp_path)
+        == Failure.MISSED_RUN
     )
 
 
 @pytest.mark.parametrize(
     ("presets", "failure"),
     [
-        (None, Failure.UNCOMPILED),
-        ("strap", Failure.UNCOMPILED),
+        (None, Failure.MISSED_RUN),
+        ("strap", Failure.MISSED_RUN),
         ("mirror", None),
         ("UNKNOWN, MIRROR,mirror,default", None),
     ],
@@ -1469,7 +1472,7 @@ def test_dispatch_workflow_requires_both_selected_bundles(
 
 def test_quoted_title_separators_and_leading_dashes_are_values() -> None:
     assert pf_runs(("""pf '[G](guide.md "-checks,semi;colon,pipe|name")'""",)) == [
-        Compile(None, "guide.md", frozenset({"-checks", "semi;colon", "pipe|name"}))
+        StatedRun(None, "guide.md", frozenset({"-checks", "semi;colon", "pipe|name"}))
     ]
 
 
@@ -1484,12 +1487,12 @@ def test_quoted_title_separators_and_leading_dashes_are_values() -> None:
 )
 def test_a_published_link_runs_its_destination_under_its_title(command: str) -> None:
     """A link entry's destination is the run's reference; its marks are not read."""
-    assert pf_runs((command,)) == [Compile(None, "target.md", frozenset({"checks"}))]
+    assert pf_runs((command,)) == [StatedRun(None, "target.md", frozenset({"checks"}))]
 
 
 def test_a_pick_stands_where_the_pick_token_stands() -> None:
     [run] = pf_runs(("""pf '[Target](target.md "checks,?")' --pick Draft""",))
-    assert run == Compile(None, "target.md", frozenset({"checks", "draft"}))
+    assert run == StatedRun(None, "target.md", frozenset({"checks", "draft"}))
 
 
 ROUTE = """'[Route](reference/work-kind.md#route "?")'"""
@@ -1507,7 +1510,7 @@ PICKED = picked("task")
 AGENT_PICKS = [
     (item.name, pick)
     for item in CORPUS["agent-pick"].scenarios
-    for pick in (item.compile[0].pick,)
+    for pick in (item.runs[0].pick,)
     if pick is not None
 ]
 """Each agent-pick scenario beside the alternative its input picks."""
@@ -1559,15 +1562,15 @@ def picking(
         (PICKED, ["/eval/ws/reference/work-kind.md"], Failure.READ_SOURCE),
         (PICKED, ["./states/classify.md"], Failure.READ_SOURCE),
         (PICKED, ["reference/change.md"], Failure.READ_SOURCE),
-        (PICKED[:2], [], Failure.UNCOMPILED),
-        (picked("epic", listed=False), [], Failure.UNCOMPILED),
+        (PICKED[:2], [], Failure.MISSED_RUN),
+        (picked("epic", listed=False), [], Failure.MISSED_RUN),
         (
             (*PICKED[:2], f"pf {ROUTE} --pick epic", PICKED[2]),
             [],
-            Failure.OVERCOMPILED,
+            Failure.UNSTATED_RUN,
         ),
-        ((PICKED[0], PICKED[2], PICKED[1]), [], Failure.MISORDERED_COMPILE),
-        (PICKED[:2], ["/eval/ws/reference/work-kind.md"], Failure.UNCOMPILED),
+        ((PICKED[0], PICKED[2], PICKED[1]), [], Failure.MISORDERED_RUN),
+        (PICKED[:2], ["/eval/ws/reference/work-kind.md"], Failure.MISSED_RUN),
     ],
     ids=[
         "picked-after-listing",
@@ -1606,7 +1609,7 @@ def test_an_agent_pick_session_is_held_to_its_runs_and_its_reads(
 def test_each_agent_pick_scenario_passes_by_either_path_and_names_it(
     tmp_path: Path, name: str, pick: str, listed: bool, path: str
 ) -> None:
-    """AC2: each scenario's pick scores as compiled by either path, named in the
+    """AC2: each scenario's pick scores as bundled by either path, named in the
     verdict, and fails a session picking another alternative or reading a source.
     """
     verdict = picking(tmp_path / "picked", picked(pick, listed), [], name=name)
@@ -1614,7 +1617,7 @@ def test_each_agent_pick_scenario_passes_by_either_path_and_names_it(
     assert verdict.record()["picks"] == [path]
     other = next(alternative for _, alternative in AGENT_PICKS if alternative != pick)
     wrong = picking(tmp_path / "other", picked(other, listed), [], name=name)
-    assert (wrong.failure, wrong.picks) == (Failure.UNCOMPILED, ())
+    assert (wrong.failure, wrong.picks) == (Failure.MISSED_RUN, ())
     read = picking(
         tmp_path / "read", picked(pick, listed), ["reference/work-kind.md"], name=name
     )
@@ -1649,10 +1652,10 @@ def test_the_record_holds_the_files_a_shell_session_read(tmp_path: Path) -> None
         claude_message(None, {"id": "g", "name": "Grep", "input": {"pattern": "c"}}),
     ]
     stream.write_text("".join(json.dumps(line) + "\n" for line in lines))
-    compiled = tmp_path / "compiled"
-    compiled.mkdir()
-    record_calls(stream, compiled, Claude(), COMPILED_FORM)
-    assert read_reads(compiled) == ("a", "b")
+    bundled = tmp_path / "bundle-set"
+    bundled.mkdir()
+    record_calls(stream, bundled, Claude(), BUNDLE_SET_FORM)
+    assert read_reads(bundled) == ("a", "b")
     authored = tmp_path / "authored"
     authored.mkdir()
     record_calls(stream, authored, Claude(), AUTHORED_FORM)

@@ -19,22 +19,22 @@ case and headed with the state's name.
   branch enters, so the edge a branch takes is reachable only by following
   the link, and it is held to an edge the diagram draws out of the deciding
   state all the same.
-- `compiled/` and `authored/` hold the same workflow with its states
+- `bundle-set/` and `authored/` hold the same workflow with its states
   dispatching targets of their own, so a state's section names a step that
-  hands another document to a sub-agent. `compiled/` writes the step with
+  hands another document to a sub-agent. `bundle-set/` writes the step with
   the dispatch operator the `pf` guide states, `⇉` for one target and `⫽`
-  for a set of them, so `pf` compiles each target into a bundle of its own.
+  for a set of them, so `pf` bundles each target into a bundle of its own.
   `authored/` writes the same step with the protocol as prose and only
   ordinary links, so it publishes one bundle and the protocol an agent
-  reads is the corpus's text rather than the profile's. A compiled
-  session receives the bundle set `pf` compiles from `compiled/` beside the
-  sources and the build, so a `↳` line its bundle carries is compiled where
+  reads is the corpus's text rather than the profile's. A bundled
+  session receives the bundle set `pf` bundles from `bundle-set/` beside the
+  sources and the build, so a `↳` line its bundle carries is bundled where
   it stands.
-- `briefed/` holds a compiled form whose dispatched targets declare the
-  section their dispatching agent acts on as a `brief`, where `compiled/`
+- `briefed/` holds a bundle-set form whose dispatched targets declare the
+  section their dispatching agent acts on as a `brief`, where `bundle-set/`
   composes that section with a `↳` line beside the dispatch, so `pf`
   publishes the section ahead of the dispatch rather than after it. A
-  briefed session receives what a compiled one does.
+  briefed session receives what a bundle-set one does.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
@@ -53,7 +53,7 @@ name inputs and a path, and the path is held to the edges parsed here.
 value, and the path a correct run walks. A dispatch form's scenario also
 lists the trace a correct run produces: one `[[scenario.trace]]` table per
 sub-agent start, in the order the walk dispatches them, naming the section
-the sub-agent follows as the document and heading it was compiled from,
+the sub-agent follows as the document and heading it was bundled from,
 `presets` for the effective declared names selecting its bundle,
 `together` on each entry of a set started at once, the `brief` its
 dispatching agent acts on before starting it, and the `action` its
@@ -65,10 +65,10 @@ newline, and a condition reads the file with surrounding whitespace removed.
 
 A trace entry may also list the actions its sub-agent does, each a file
 under `actions/` and the value it holds, which only the material a `pf`
-run on a deferred line of its bundle compiles states.
+run on a deferred line of its bundle bundles states.
 
 A scenario also lists the `pf` runs a correct run makes: one
-`[[scenario.compile]]` table per run, in the order the walk makes them,
+`[[scenario.run]]` table per run, in the order the walk makes them,
 naming in `by` the section of the trace whose sub-agent makes it, absent
 for the session's own, in `entry` its one reference, in `presets` the
 comma-separated names of the title of the link it runs, and in `pick` the
@@ -103,15 +103,15 @@ redirected through `subst` is what that section holds. A scenario's path
 is held to that walk as well as to the sources', so a workflow built on a
 feature states the path its bundle states.
 
-A compiled form's bundle states a path and runs of its own: a deferred
+A bundle-set form's bundle states a path and runs of its own: a deferred
 composition, `[¬↳ <title>](<path>#<section>)`, is published as a link to a
 sub-section holding the `[↳ <title>](<path>#<section>)` line, a step opening
 with a condition reaches its lines only where the condition holds, and the
 walk runs `pf` on each line a step it takes reaches, reading what the run
-writes as part of that state. Material a line compiles may dispatch, and the
+writes as part of that state. Material a line bundles may dispatch, and the
 bundle that run writes links the bundles of its targets, so the agent that
 ran it starts them. A state may defer its transition, so its document writes
-no transition paragraph and the material its deferral compiles states the
+no transition paragraph and the material its deferral bundles states the
 edge taken.
 
 A deferral whose title carries the pick token `?` leaves the pick among its
@@ -169,7 +169,7 @@ they are measured by their own run, committed per harness beside the baseline.
 """
 INSTRUCTION = ROOT / "instruction.md"
 INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
-INSTRUCTION_COMPILED = ROOT / "instruction-compiled.md"
+INSTRUCTION_BUNDLE_SET = ROOT / "instruction-bundle-set.md"
 
 ENTRY = "workflow.md"
 RUN_PF_LINE = "Run `pf`, then follow the guidance it prints."
@@ -181,7 +181,7 @@ SCENARIOS = "scenarios.toml"
 DIAGRAM = "diagram"
 PROSE = "prose"
 LINKED_FORM = "linked"
-COMPILED_FORM = "compiled"
+BUNDLE_SET_FORM = "bundle-set"
 BRIEFED_FORM = "briefed"
 AUTHORED_FORM = "authored"
 BOOTSTRAP = "bootstrap"
@@ -189,7 +189,7 @@ FORMS = (
     DIAGRAM,
     PROSE,
     LINKED_FORM,
-    COMPILED_FORM,
+    BUNDLE_SET_FORM,
     BRIEFED_FORM,
     AUTHORED_FORM,
     BOOTSTRAP,
@@ -205,22 +205,22 @@ FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
 
 A bootstrap form's tree is its skill, which carries the documents it names.
 """
-MARKED_FORMS = (COMPILED_FORM, BRIEFED_FORM, BOOTSTRAP)
+MARKED_FORMS = (BUNDLE_SET_FORM, BRIEFED_FORM, BOOTSTRAP)
 """The forms whose dispatch steps are written as marked links and no prose.
 
-A bootstrap skill's documents are the ones its compiled bundle carries, so a
+A bootstrap skill's documents are the ones its bundle carries, so a
 step states its dispatch by its marks in each.
 """
-SHELL_FORMS = (COMPILED_FORM, BRIEFED_FORM, BOOTSTRAP)
+SHELL_FORMS = (BUNDLE_SET_FORM, BRIEFED_FORM, BOOTSTRAP)
 """The forms whose session is given the build under test as `pf` and a shell."""
-SOURCE_FORMS = (COMPILED_FORM, BRIEFED_FORM)
-"""The forms whose session receives its sources beside the bundle set `pf` compiles.
+SOURCE_FORMS = (BUNDLE_SET_FORM, BRIEFED_FORM)
+"""The forms whose session receives its sources beside the bundle set `pf` bundles.
 
 A `↳` line such a bundle carries names its target from the directory `pf`
-ran in, so the sources stand where they were compiled from.
+ran in, so the sources stand where they were bundled from.
 """
 
-DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
+DISPATCH_FORMS = (BUNDLE_SET_FORM, AUTHORED_FORM)
 UNDRAWN = (PROSE,)
 """The forms whose entry document draws no diagram.
 
@@ -236,19 +236,19 @@ label on the entry's flowchart would let a session choose the branch without
 opening the rule, and the form would no longer measure whether a decision is
 resolved by following its link.
 """
-DRAWN = (DIAGRAM, COMPILED_FORM)
+DRAWN = (DIAGRAM, BUNDLE_SET_FORM)
 """The forms whose entry documents draw the workflow, in the order they are tried.
 
 A workflow drawing a diagram form holds it there; one written in the two
-dispatch forms holds the same diagram in its compiled form's entry, since
-both forms draw the workflow and only the compiled one's entry dispatches.
+dispatch forms holds the same diagram in its bundle-set form's entry, since
+both forms draw the workflow and only the bundle-set one's entry dispatches.
 """
 
 TRANSITION = {
     DIAGRAM: DIAGRAM,
     PROSE: PROSE,
     LINKED_FORM: LINKED_FORM,
-    COMPILED_FORM: DIAGRAM,
+    BUNDLE_SET_FORM: DIAGRAM,
     BRIEFED_FORM: DIAGRAM,
     AUTHORED_FORM: DIAGRAM,
     BOOTSTRAP: DIAGRAM,
@@ -312,25 +312,25 @@ LINK_TARGET = re.compile(
 )
 """One link a step writes, with its text, document and heading.
 
-The link's text may open with a dispatch operator, which the compiled form
+The link's text may open with a dispatch operator, which the bundle-set form
 writes and the authored form does not, so both forms' steps read alike.
 """
 LINKS = r"((?:\[[^\]]*\]\([^)]*\))(?:\s+and\s+\[[^\]]*\]\([^)]*\))*)\."
 """One step's links, joined by `and` where a set states several."""
 OPERATOR_LINK_SRC = rf"\[(?:{DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\("
-"""A link of a compiled step that states its operator."""
-COMPILED_STEP = re.compile(rf"^\d+\. .*(?:{OPERATOR_LINK_SRC})")
-"""A compiled step: a numbered step whose links carry the operator it dispatches by.
+"""A link of a bundle-set step that states its operator."""
+BUNDLE_SET_STEP = re.compile(rf"^\d+\. .*(?:{OPERATOR_LINK_SRC})")
+"""A bundle-set step: a numbered step whose links carry the operator it dispatches by.
 
-The compiled form's steps state no dispatch in prose, since the operator a
+The bundle-set form's steps state no dispatch in prose, since the operator a
 link carries and the protocol `pf` publishes from it are the statement. A
 step may carry instruction beyond its links; what it may not do is say what
 the operator says.
 """
 OPERATOR_LINK = re.compile(rf"\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\(")
-"""Every link of a compiled step that states its operator, with the operator."""
+"""Every link of a bundle-set step that states its operator, with the operator."""
 RESTATES = ("sub-agent", "together", "from the question it returned")
-"""The words a compiled step may not use, since its protocol states them.
+"""The words a bundle-set step may not use, since its protocol states them.
 
 The `Dispatch` protocol says a dispatched run returns each question
 unanswered, that the dispatching session puts it to the user and dispatches
@@ -342,7 +342,7 @@ the ambiguity the two forms are meant to isolate.
 
 
 def restated(line: str) -> str:
-    """The protocol text a compiled step states again, or nothing.
+    """The protocol text a bundle-set step states again, or nothing.
 
     A step states its dispatch by its operators. What a protocol says a
     dispatch does belongs to the protocol, so a step repeating it leaves the
@@ -367,7 +367,7 @@ LABELLED_EDGE = re.compile(r"^Take the transition labelled `([^`]+)`\.$")
 """A transition taking one labelled edge, as material a deferral activates states.
 
 A state deferring its transition names no condition, so the material its
-deferral compiles, a preset's stand-in among them, states the one edge taken.
+deferral bundles, a preset's stand-in among them, states the one edge taken.
 """
 DECISION = {
     DIAGRAM: _DIAGRAM_DECISION,
@@ -452,7 +452,7 @@ def deferred_links(text: str) -> list[Link]:
 
 
 def inline_lines(text: str) -> list[Link]:
-    """Standalone composition links an agent compiles where reached."""
+    """Standalone composition links an agent bundles where reached."""
     return [
         replace(link, label=link.label.removeprefix("↳ "))
         for line in text.splitlines()
@@ -609,12 +609,12 @@ class Dispatch:
 
     `section` is the document and heading the sub-agent follows, as
     `<document>#<heading>`, since an author and the profile both name the
-    target's section rather than the bundle it compiles to. `together` marks
+    target's section rather than the bundle it bundles to. `together` marks
     an entry of a set started beside the entry above it. `action` is the
     file under `actions/` the section has the sub-agent write and the value
     it holds; a section stating no action carries none, and nothing is
     checked for it. The action a deferred composition activates is stated
-    here too, since only the material a run on that line compiles states it.
+    here too, since only the material a run on that line bundles states it.
     `brief` is the file and value the target's brief section has the
     dispatching agent write before the start, or nothing for a target
     stating no brief.
@@ -629,7 +629,7 @@ class Dispatch:
 
 
 @dataclass(frozen=True)
-class Compile:
+class StatedRun:
     """One `pf` run a correct run makes.
 
     `by` is the section of the trace whose sub-agent makes the run, as
@@ -675,7 +675,7 @@ class Compile:
         return self.by, self.entry, effective_presets(root, self)
 
 
-def effective_presets(root: Path, run: Compile) -> frozenset[str]:
+def effective_presets(root: Path, run: StatedRun) -> frozenset[str]:
     """Declared named presets selected by one explicit request."""
     if run.entry is None or not run.tags:
         return frozenset()
@@ -688,7 +688,7 @@ def effective_presets(root: Path, run: Compile) -> frozenset[str]:
 class Scenario:
     """One run's inputs, the path a correct run walks, its trace and its runs.
 
-    `trace` is empty for a form that dispatches nothing, and `compile` for a
+    `trace` is empty for a form that dispatches nothing, and `bundle` for a
     scenario whose correct run runs no `pf`. `answers` is what a run writes
     to `answers.txt`, the user's answers to a question a sub-agent returns;
     it is empty where no sub-agent asks, and no file is written.
@@ -698,7 +698,7 @@ class Scenario:
     inputs: dict[str, str]
     path: tuple[str, ...]
     trace: tuple[Dispatch, ...] = ()
-    compile: tuple[Compile, ...] = ()
+    runs: tuple[StatedRun, ...] = ()
     answers: str = ""
 
 
@@ -721,7 +721,7 @@ class Workflow:
     """Each criterion a nested chart states, read from the section holding it."""
 
     entry: str = ENTRY
-    """The reference every form is compiled from: the entry document or one section."""
+    """The reference every form is bundled from: the entry document or one section."""
 
     warnings: frozenset[str] = frozenset()
     """The warning codes `pf` reports bundling this workflow, as it declares them."""
@@ -735,7 +735,7 @@ class Workflow:
         """The directory holding one form's source tree.
 
         A bootstrap form's documents sit under the skill's `sources`, since
-        the skill hands over a directory it compiles rather than a tree it
+        the skill hands over a directory it bundles rather than a tree it
         hands over whole.
         """
         return form_directory(self.directory, form)
@@ -746,18 +746,18 @@ class Workflow:
         return tuple(form for form in FORMS if self.form(form).is_dir())
 
     @property
-    def compile_root(self) -> Path | None:
+    def run_root(self) -> Path | None:
         """The directory a session's `pf` runs resolve their references from.
 
         A bootstrap session runs `pf` from the skill's directory, as the guide
-        states, and a compiled session from its workspace, which holds the
-        compiled form's sources as they stand. A workflow written in neither
+        states, and a bundle-set session from its workspace, which holds the
+        bundle-set form's sources as they stand. A workflow written in neither
         form runs `pf` nowhere.
         """
         if BOOTSTRAP in self.forms:
             return self.directory / BOOTSTRAP_DIR
-        if COMPILED_FORM in self.forms:
-            return self.form(COMPILED_FORM)
+        if BUNDLE_SET_FORM in self.forms:
+            return self.form(BUNDLE_SET_FORM)
         return None
 
     @property
@@ -765,7 +765,7 @@ class Workflow:
         """The sections a run of the workflow walks, for its states' actions.
 
         A workflow drawing a diagram form walks that form's sections; one
-        written in the dispatch forms walks the compiled form's, whose
+        written in the dispatch forms walks the bundle-set form's, whose
         sections are the diagram's with the step handing a target added. A
         bootstrap workflow walks the skill it hands over, which is the only
         tree its sessions receive.
@@ -1038,8 +1038,8 @@ def read_warnings(path: Path) -> frozenset[str]:
         return frozenset(tomllib.load(handle).get("warnings", ()))
 
 
-def read_compile(row: dict[str, object], named: str) -> Compile:
-    """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+def read_run(row: dict[str, object], named: str) -> StatedRun:
+    """One stated `pf` run, as a `[[scenario.run]]` table writes it."""
     by = row.get("by")
     entry = row.get("entry")
     presets = row.get("presets")
@@ -1056,7 +1056,7 @@ def read_compile(row: dict[str, object], named: str) -> Compile:
         raise CorpusError(f"{named}: a run's pick needs presets carrying {PICK}")
     if set(row) - {"by", "entry", "presets", "pick"}:
         raise CorpusError(f"{named}: a run's fields are entry, presets, pick and by")
-    return Compile(by, entry, read_tags(presets), pick)
+    return StatedRun(by, entry, read_tags(presets), pick)
 
 
 def read_action(
@@ -1104,28 +1104,28 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
             dict(entry["inputs"]),
             tuple(entry["path"]),
             tuple(read_dispatch(row, entry["name"]) for row in entry.get("trace", ())),
-            tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+            tuple(read_run(row, entry["name"]) for row in entry.get("run", ())),
             entry.get("answers", ""),
         )
         for entry in entries
     )
 
 
-def compile_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
+def run_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
     """How a scenario's stated runs fail to name what its workflow holds.
 
     A run is made by the session or by a sub-agent its trace starts, and
     each reference it names is a document under the directory `pf` runs in.
     A workflow written in no shell form gives no session a command to run.
     """
-    if not scenario.compile:
+    if not scenario.runs:
         return []
-    root = workflow.compile_root
+    root = workflow.run_root
     if root is None:
         return [f"{scenario.name}: it states a pf run, and no form runs one"]
     sections = {entry.section for entry in scenario.trace}
     faults = []
-    for run in scenario.compile:
+    for run in scenario.runs:
         if run.by is not None and run.by not in sections:
             faults.append(f"{scenario.name}: a run by {run.by} is by no start")
         if (arg := run.entry) is not None:
@@ -1141,7 +1141,7 @@ def form_directory(workflow_directory: Path, form: str) -> Path:
     """The directory one form's documents sit in.
 
     A bootstrap form's tree is its skill, and its documents sit inside it, so
-    a session receives one skill that names the material it compiles.
+    a session receives one skill that names the material it bundles.
     """
     directory = workflow_directory / FORM_DIR[form]
     return directory / SOURCE_DIR if form == BOOTSTRAP else directory
@@ -1201,13 +1201,13 @@ def instruction(entry: str, form: str = "") -> str:
 
     A bootstrap session is given its own text, which names the skill it reads
     rather than a bundle, since that form's document is a skill that states a
-    compile rather than a workflow to follow. A session given its sources
+    bundle rather than a workflow to follow. A session given its sources
     beside the bundle set is given its own too, naming the entry's bundle and
     the `pf` beside it.
     """
     source = {
         BOOTSTRAP: INSTRUCTION_BOOTSTRAP,
-        **dict.fromkeys(SOURCE_FORMS, INSTRUCTION_COMPILED),
+        **dict.fromkeys(SOURCE_FORMS, INSTRUCTION_BUNDLE_SET),
     }.get(form, INSTRUCTION)
     blocks: list[str] = [
         body for kind, body in FENCE.findall(source.read_text()) if kind == "text"
@@ -1226,11 +1226,13 @@ def bundle(
     succeeds, and every other bundle the run writes sits beside it in the
     same folder.
     """
-    return compile_reference(workflow.form(form), Compile(None, workflow.entry), output)
+    return bundle_reference(
+        workflow.form(form), StatedRun(None, workflow.entry), output
+    )
 
 
-def compile_reference(
-    root: Path, run: Compile, output: Path
+def bundle_reference(
+    root: Path, run: StatedRun, output: Path
 ) -> subprocess.CompletedProcess[bytes]:
     """The `pf` run one stated run makes from `root` under `output`.
 
@@ -1360,7 +1362,7 @@ def bundled_sections(bundle_text: str) -> dict[str, BundledSection]:
 
 def reached_lines(
     bundle_text: str, scope: str, inputs: dict[str, str], trace: list[str]
-) -> list[Compile]:
+) -> list[StatedRun]:
     """The references of the deferred lines a scope's steps reach, in step order.
 
     A deferred composition is published as a link to the heading its `↳` line
@@ -1369,7 +1371,7 @@ def reached_lines(
     holds.
     """
     sections = bundled_sections(bundle_text)
-    found: list[Compile] = []
+    found: list[StatedRun] = []
     for line in scope.splitlines():
         # The line `pf` opens a bundle with names the document's own heading,
         # which is where a reader starts rather than a step the walk takes.
@@ -1388,7 +1390,7 @@ def reached_lines(
             continue
         for section in linked:
             found += [
-                Compile(None, link.destination, link.tags)
+                StatedRun(None, link.destination, link.tags)
                 for link in inline_lines(section.text)
             ]
     return found
@@ -1399,19 +1401,19 @@ def activated(
     scope: str,
     inputs: dict[str, str],
     trace: list[str],
-    activate: Callable[[Compile], str],
+    activate: Callable[[StatedRun], str],
 ) -> str:
-    """The text the runs on a scope's reached `↳` lines compile, in run order.
+    """The text the runs on a scope's reached `↳` lines bundle, in run order.
 
-    An activated bundle's own steps may reach further lines, each compiled
+    An activated bundle's own steps may reach further lines, each bundled
     after the run that wrote it, so the text holds every level a walk needs.
     """
     texts: list[str] = []
     for reference in reached_lines(bundle_text, scope, inputs, trace):
-        compiled = activate(reference)
+        bundled = activate(reference)
         texts += [
-            compiled,
-            activated(compiled, compiled, inputs, trace, activate),
+            bundled,
+            activated(bundled, bundled, inputs, trace, activate),
         ]
     return "".join(texts)
 
@@ -1420,7 +1422,7 @@ def bundle_walk(
     workflow: Workflow,
     bundle_text: str,
     inputs: dict[str, str],
-    activate: Callable[[Compile], str] | None = None,
+    activate: Callable[[StatedRun], str] | None = None,
 ) -> tuple[tuple[str, ...], list[str]]:
     """The path a diagram form's bundle states for the inputs, and its faults.
 
@@ -1435,9 +1437,9 @@ def bundle_walk(
     whose bundled action is not the one its source states is a fault, since
     the scorer holds a session to the source's.
 
-    Given `activate`, which compiles a `↳` line's reference and returns the
+    Given `activate`, which bundles a `↳` line's reference and returns the
     bundle it writes, a state's section also holds what the runs on the
-    lines its steps reach compile, so a transition stated there is followed.
+    lines its steps reach bundle, so a transition stated there is followed.
     """
     diagram = read_diagram_text(mermaid_text(bundle_text), named="the bundle")
     sections = bundled_sections(bundle_text)
@@ -1535,16 +1537,16 @@ def bundle_walk(
         )
 
 
-def compiled_walk(
+def bundle_set_walk(
     workflow: Workflow,
     inputs: dict[str, str],
     output: Path,
-    form: str = COMPILED_FORM,
-) -> tuple[tuple[str, ...], tuple[Compile, ...], list[str]]:
+    form: str = BUNDLE_SET_FORM,
+) -> tuple[tuple[str, ...], tuple[StatedRun, ...], list[str]]:
     """The path and the session's runs one source form's bundles state, and faults.
 
     `form` is one of `SOURCE_FORMS`. The walk reads the entry's bundle `pf`
-    compiles from that form's sources,
+    bundles from that form's sources,
     and runs `pf` from them on each `↳` line a state's steps reach, as a
     session does, so the runs are the ones a correct
     session makes and the path is the one the bundles they write state. A
@@ -1557,19 +1559,19 @@ def compiled_walk(
     run = bundle(workflow, form, entry)
     if run.returncode != 0:
         return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
-    runs: list[Compile] = []
+    runs: list[StatedRun] = []
     root = workflow.form(form)
 
-    def compiled(request: Compile) -> subprocess.CompletedProcess[bytes]:
+    def bundled(request: StatedRun) -> subprocess.CompletedProcess[bytes]:
         runs.append(request)
         assert request.entry is not None
-        return compile_reference(root, request, output / f"run-{len(runs)}")
+        return bundle_reference(root, request, output / f"run-{len(runs)}")
 
-    def activate(request: Compile) -> str:
-        made = compiled(request)
+    def activate(request: StatedRun) -> str:
+        made = bundled(request)
         if picks(request.presets):
             request = replace(request, pick=picked(request, made, inputs))
-            made = compiled(request)
+            made = bundled(request)
         reference = request.entry
         assert reference is not None
         folder = output / f"run-{len(runs)}"
@@ -1591,7 +1593,7 @@ def compiled_walk(
 
 
 def picked(
-    request: Compile, made: subprocess.CompletedProcess[bytes], inputs: dict[str, str]
+    request: StatedRun, made: subprocess.CompletedProcess[bytes], inputs: dict[str, str]
 ) -> str:
     """The alternative a run on a `?` line leaves to the agent, as its inputs pick.
 
@@ -1659,12 +1661,12 @@ def dispatched(
     their own, so the pair says whether the step's targets form one set. A
     target is named as `<document>#<heading>`, the section a sub-agent
     follows, since both forms name the section and neither names the bundle
-    it compiles to. The document is named from the form's root, `root`,
+    it bundles to. The document is named from the form's root, `root`,
     though the step writes its link from `directory`, the directory of the
     section writing it. A link resolving to no document, or to a document
     holding no such heading, is a fault.
 
-    A compiled step is read from its operators alone: its links are the
+    A bundle-set step is read from its operators alone: its links are the
     statement, so a sentence beside them states the dispatch a second time
     and is a fault. An authored step is read from its prose, which is the
     form's only statement of the dispatch.
@@ -1672,7 +1674,7 @@ def dispatched(
     steps: list[tuple[bool, list[str]]] = []
     for line in body.splitlines():
         if form in MARKED_FORMS:
-            if COMPILED_STEP.match(line) is None:
+            if BUNDLE_SET_STEP.match(line) is None:
                 continue
             named = [
                 (link.label, *link.destination.partition("#")[::2])
@@ -1680,10 +1682,12 @@ def dispatched(
             ]
             marks = OPERATOR_LINK.findall(line)
             if len(marks) != len(named):
-                raise CorpusError(f"a compiled step carries an unmarked link: {line!r}")
+                raise CorpusError(
+                    f"a bundle-set step carries an unmarked link: {line!r}"
+                )
             if stated := restated(line):
                 raise CorpusError(
-                    f"a compiled step states {stated!r}, which its protocol states,"
+                    f"a bundle-set step states {stated!r}, which its protocol states,"
                     f" rather than its operators alone: {line!r}"
                 )
             together = PARALLEL_OPERATOR in marks
@@ -1784,7 +1788,7 @@ def dispatch_starts(
     and a dispatched section dispatches its own targets in turn, so the walk
     is the source's statement of which sub-agents start, in what order, and
     which of them start together. A deferred composition a step reaches,
-    where its condition holds, is compiled by the agent following that step,
+    where its condition holds, is bundled by the agent following that step,
     and the bundle that run writes dispatches the target's own targets, so
     they start from that agent. Each start carries its depth: 0 for one the session
     makes itself, one more for each sub-agent between. What each returns is

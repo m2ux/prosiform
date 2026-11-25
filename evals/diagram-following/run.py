@@ -11,13 +11,13 @@ forms are:
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
 - `prose`: the prose form bundled by `pf`, as one file;
 - `linked`: the linked form's source tree as it is, entered at `workflow.md`;
-- `compiled`: the compiled form's sources, with the entry's bundle set
+- `bundle-set`: the bundle-set form's sources, with the entry's bundle set
   in the folder `pf` writes it to and the build under test as `pf` on the
   session's path;
-- `briefed`: the briefed form's sources, laid out as `compiled`'s are;
+- `briefed`: the briefed form's sources, laid out as `bundle-set`'s are;
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
-  it compiles.
+  it bundles.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
@@ -154,7 +154,7 @@ from workflow import (
     BOOTSTRAP,
     BOOTSTRAP_DIR,
     BRIEFED_FORM,
-    COMPILED_FORM,
+    BUNDLE_SET_FORM,
     DIAGRAM,
     ENTRY,
     LINKED_FORM,
@@ -190,7 +190,7 @@ BUNDLE = "bundle"
 TREE = "tree"
 PROSE_BUNDLE = "prose"
 LINKED_TREE = "linked"
-COMPILED_SET = "compiled"
+BUNDLE_SET = "bundle-set"
 BRIEFED_SET = "briefed"
 AUTHORED_SET = "authored"
 BOOTSTRAP_SET = "bootstrap"
@@ -199,21 +199,21 @@ FORMS = {
     TREE: DIAGRAM,
     PROSE_BUNDLE: PROSE,
     LINKED_TREE: LINKED_FORM,
-    COMPILED_SET: COMPILED_FORM,
+    BUNDLE_SET: BUNDLE_SET_FORM,
     BRIEFED_SET: BRIEFED_FORM,
     AUTHORED_SET: AUTHORED_FORM,
     BOOTSTRAP_SET: BOOTSTRAP,
 }
-BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, BRIEFED_SET, AUTHORED_SET}
+BUNDLED = {BUNDLE, PROSE_BUNDLE, BUNDLE_SET, BRIEFED_SET, AUTHORED_SET}
 PF_SETS = {form for form, written in FORMS.items() if written in SHELL_FORMS}
 """The forms whose session runs the build under test as `pf`."""
 SOURCE_SETS = {form for form, written in FORMS.items() if written in SOURCE_FORMS}
 """The forms whose session receives its sources beside its bundle set."""
 BUILD = "build"
-"""The existing folder a bootstrapping session compiles into."""
+"""The existing folder a bootstrapping session bundles into."""
 SKILL = "SKILL.md"
 SKILL_FILES = (SKILL,)
-"""The files a bootstrap skill carries beside the documents it compiles."""
+"""The files a bootstrap skill carries beside the documents it bundles."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
 DEFAULT_MODELS = ("openrouter/deepseek/deepseek-v4.1-flash-1017",)
@@ -384,7 +384,7 @@ def observable(
     A trace names one start per dispatch a correct run makes, nested ones
     included. A harness that does not surface a sub-agent's own calls can
     report only the starts the session makes itself, those the path's own
-    sections and the material its `↳` lines compile start, so a scenario
+    sections and the material its `↳` lines bundle start, so a scenario
     whose trace outruns that count is beyond it. A stated run a sub-agent makes is
     read from that sub-agent's commands, which requires a shell form and the
     harness's declared per-child command evidence.
@@ -392,7 +392,7 @@ def observable(
     The corpus names its forms by what they hold, so the runner's form is
     read as the corpus form it carries before its sections are asked for.
     """
-    if any(run.by is not None for run in scenario.compile) and not (
+    if any(run.by is not None for run in scenario.runs) and not (
         form in PF_SETS and harness.nested_commands
     ):
         return False
@@ -659,7 +659,7 @@ def entry_named(workflow: Workflow, form: str) -> str:
     """The document a session's instruction names.
 
     A session of one of `SOURCE_SETS` reads the entry's bundle where `pf`
-    wrote it, beside the sources it was compiled from; every other form's
+    wrote it, beside the sources it was bundled from; every other form's
     entry is `workflow.md`.
     """
     return workflow.entry_bundle.as_posix() if form in SOURCE_SETS else ENTRY
