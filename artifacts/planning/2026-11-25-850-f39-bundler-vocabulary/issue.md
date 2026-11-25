@@ -45,4 +45,4 @@ Target: `main`
 
 - **R1.** [Glossary](https://github.com/m2ux/prosiform/blob/main/docs/glossary.md) — States "It bundles; what it produces is a bundle" and lists the terms deliberately not used.
 - **R2.** [Versioning](https://github.com/m2ux/prosiform/blob/main/docs/versioning.md#what-the-numbers-mean) — Below 1.0.0, a release whose previous corpus fails against it moves the minor.
-- **R3.** [Planning record](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-bundler-term/README.md) — Scope measured on `main` at 684437c06, the vocabulary mapping and the commit layers.
+- **R3.** [Planning record](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/README.md) — Scope measured on `main` at 684437c06, the vocabulary mapping and the commit layers.

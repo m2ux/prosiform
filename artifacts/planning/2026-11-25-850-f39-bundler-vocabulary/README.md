@@ -4,7 +4,7 @@
 
 Prosiform is a bundler and a run bundles: one word names the tool, the act and the output across the product description, the guide and diagnostics `pf` emits, the documentation, the fixtures, the eval and the contract design. The glossary records "compiler" and "compile" as terms deliberately not used.
 
-The feature is proposed and not yet registered. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as one pull request to `main` with one commit per layer. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
+[F39, issue #850](https://github.com/m2ux/prosiform/issues/850) holds the feature and stands In Progress on Python board 18. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as one draft pull request to `main` with one commit per layer, at head 20bd147152b8ee9f2f68e299a35bee7a225ba0c8. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. The pull request awaits review and is not merged; [test-results.md](test-results.md) records the validation and the two failures `main` already carries. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
 
 ## Decisions
 
@@ -61,31 +61,45 @@ These are bytes a fixture or an agent observes, so they change with their expect
 
 ## Layers
 
-Each layer is one commit that passes `make check`, in this order.
+Each layer is one commit, in this order. The build, the corpus and the documentation share one commit, because `make invocation` holds the documented invocation to the build's help text and `make conformance` holds the fixtures to the design the documentation pins.
 
-1. **Design.** On `engineering`: the design's statements and section headings. The revision is the one the shipped links pin.
-2. **Noun.** The product description, the avoided-terms rows, and every "compiler" in prose and identifiers. No emitted output changes.
-3. **Build and corpus.** Emitted text, docstrings and identifiers in `src/prosiform`, its tests, and the fixtures: folder names, manifests, quoted design headings, sample prose with expected bundles, and the re-pinned design links.
-4. **Documentation and tools.** `docs/`, `invocation.md`, the READMEs, `checks/` and `scripts/`, with the images re-rendered.
-5. **Eval.** The form, the classes, the scenario table, the folders, the identifiers, the tests and the committed records.
+| Layer | Commit | Holds |
+| --- | --- | --- |
+| Design | c394f23056ad69400277b008fdd2ccd8841ded5e on `engineering` | The design's statements, section headings and guide text. The shipped links pin this revision. |
+| Noun | 0c88cef34 | The product description, the avoided-terms row, and every "compiler" in prose and identifiers. No emitted output changes. |
+| Build, corpus and documentation | a07763564 | Emitted text, docstrings and identifiers in `src/prosiform`, its tests, the fixtures, `docs/`, `invocation.md`, the READMEs, `checks/` and `scripts/`, the re-rendered images and the re-pinned design links. |
+| Eval | 20bd14715 | The form, the classes, the scenario table, the folders, the identifiers, the tests and the committed records. |
+
+## Names Chosen in Delivery
+
+| Present | Becomes | Why |
+| --- | --- | --- |
+| `cli.compiled` | `cli.bundle_one` | `bundled` is a local name in the same module. |
+| `cli.Compiled` | `cli.Bundled` | One bundle with its run evidence. |
+| The eval's `Compile` | `StatedRun` | One `pf` run a scenario states. |
+| `Scenario.compile` | `Scenario.runs` | The runs a scenario states. |
+| `COMPILED_SET` | `BUNDLE_SET` | The session form given a bundle set. |
+| `compile_root`, `compile_faults`, `read_compile` | `run_root`, `run_faults`, `read_run` | Each concerns stated runs. |
 
 ## Tasks
 
-- [ ] Register F39 from [issue.md](issue.md) on board 18.
-- [ ] Revise the design on `engineering` and record the revision to pin.
-- [ ] Cut `f39-bundler-vocabulary` from `main` in a worktree.
-- [ ] Land the noun layer.
-- [ ] Land the build and corpus layer.
-- [ ] Land the documentation and tools layer.
-- [ ] Land the eval layer.
-- [ ] Run the search of AC1, the previous contract tag's corpus against the build, `make eval-harness` and `make check`, and record the results here.
-- [ ] Open the pull request to `main`, link it to F39 through Development, and verify each criterion at the merge revision.
+- [x] Register F39 from [issue.md](issue.md) on board 18.
+- [x] Revise the design on `engineering` and record the revision to pin.
+- [x] Cut `f39-bundler-vocabulary` from `main` in a worktree.
+- [x] Land the noun layer.
+- [x] Land the build, corpus and documentation layer.
+- [x] Land the eval layer.
+- [x] Run the search of AC1, the previous corpus against the build, `make eval-harness` and every target of `make check`, and record the results.
+- [x] Open the draft pull request to `main` and link it to F39 through Development.
+- [ ] Review the pull request, verify each criterion at the merge revision, merge and record delivery.
 
 ## Artifacts
 
 | Artifact | Purpose |
 | --- | --- |
-| [issue.md](issue.md) | Proposed body of F39, with its acceptance criteria. |
+| [issue.md](issue.md) | Body of F39, issue #850, with its acceptance criteria. |
+| [pull-request.md](pull-request.md) | Body of the delivering pull request. |
+| [test-results.md](test-results.md) | The validation observed at the pull request's head. |
 
 ## Links
 
