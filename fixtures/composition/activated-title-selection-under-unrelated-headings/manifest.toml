@@ -13,5 +13,5 @@ arguments = ["[Material](library/material.md#instructions \" release candidate,C
 
 [expected]
 exit_status = 0
-bundles = ["expected/library_material__instructions--p-013a885a09022b8f2fe76bef3c9c86751ab9a7e73ec21bb04727f5bf145ccd5c.bundle.md"]
+bundles = ["expected/library_material__instructions--p-013a885a0902.bundle.md"]
 diagnostics = []

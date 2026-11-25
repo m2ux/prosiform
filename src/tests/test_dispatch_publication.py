@@ -1,10 +1,14 @@
 """Dispatch occurrences publish the bundle for their effective preset selection."""
 
+import re
+from io import StringIO
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from test_cli import DECLARED, invoke, written
 
+from prosiform import cli
 from prosiform.cli import GUIDE
 from prosiform.dispatch import PARALLEL
 
@@ -61,9 +65,47 @@ def test_inline_dispatches_of_one_target_point_to_their_selected_contents(
     checked = next(name for name, body in run.bundles.items() if "CHECKED_BODY" in body)
     drafted = next(name for name, body in run.bundles.items() if "DRAFTED_BODY" in body)
     assert checked != drafted
+    assert re.fullmatch(r"task--p-[0-9a-f]{12}\.bundle\.md", checked)
+    assert re.fullmatch(r"task--p-[0-9a-f]{12}\.bundle\.md", drafted)
     assert f'[⇉ Checks]({checked} "checks")' in run.bundle
     assert f'[⇉ Draft]({drafted} "draft")' in run.bundle
     assert len(run.bundles) == 3
+
+
+def test_a_short_preset_collision_preserves_the_published_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    task(tmp_path)
+    written(
+        tmp_path,
+        "guide.md",
+        DECLARED + '# Guide\n\n[⇉ Checks](task.md "checks")\n\n'
+        '[⇉ Draft](task.md "draft")\n',
+    )
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["-o", "out", "guide.md"], StringIO(), StringIO()) == 0
+    published = {
+        str(path.relative_to(tmp_path)): path.read_bytes()
+        for path in (tmp_path / "out").rglob("*")
+        if path.is_file()
+    }
+    sha256 = cli.hashlib.sha256
+    monkeypatch.setattr(
+        cli.hashlib,
+        "sha256",
+        lambda data: SimpleNamespace(
+            hexdigest=lambda: "0" * 12 + sha256(data).hexdigest()[12:]
+        ),
+    )
+    errors = StringIO()
+    assert cli.main(["-o", "out", "guide.md"], StringIO(), errors) == 3
+    assert "E_PUBLICATION_FAILED" in errors.getvalue()
+    assert "checks" in errors.getvalue() and "draft" in errors.getvalue()
+    assert published == {
+        str(path.relative_to(tmp_path)): path.read_bytes()
+        for path in (tmp_path / "out").rglob("*")
+        if path.is_file()
+    }
 
 
 @pytest.mark.parametrize(

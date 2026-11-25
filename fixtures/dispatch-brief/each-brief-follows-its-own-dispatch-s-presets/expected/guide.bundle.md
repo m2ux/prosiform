@@ -12,7 +12,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Write the case number as [the rules](#tests) say.
 
-[⇉ Investigate](investigate--p-9aae63ebb71992854bd7a2a3c1b43c39a44ce2599fc6c4121ab823a94d703892.bundle.md)
+[⇉ Investigate](investigate--p-9aae63ebb719.bundle.md)
 
 ## Review
 

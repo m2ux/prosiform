@@ -13,7 +13,7 @@ arguments = ["guide.md"]
 exit_status = 0
 bundles = [
   "expected/guide.bundle.md",
-  "expected/stages_decide--p-3bcbdbfeabe66919ef169526ed028d2172dda37348ee1e2e7ea3a45e7727d1b3.bundle.md",
+  "expected/stages_decide--p-3bcbdbfeabe6.bundle.md",
   "expected/stages_gather.bundle.md",
   "expected/stages_plain.bundle.md",
 ]

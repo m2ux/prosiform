@@ -4353,7 +4353,7 @@ def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
 
 
 def selection_name(selection: BundleSelection) -> str:
-    """One effective selection's path, fragment and canonical preset qualifier."""
+    """Path and fragment with the first 12 SHA-256 hex digits of canonical presets."""
     name = str(Path(selection.path).with_suffix("")).replace(os.sep, "_")
     if selection.fragment is not None:
         name += "__" + selection.fragment
@@ -4361,7 +4361,7 @@ def selection_name(selection: BundleSelection) -> str:
         encoded = json.dumps(
             sorted(selection.presets), ensure_ascii=False, separators=(",", ":")
         ).encode("utf-8")
-        name += "--p-" + hashlib.sha256(encoded).hexdigest()
+        name += "--p-" + hashlib.sha256(encoded).hexdigest()[:12]
     return name
 
 

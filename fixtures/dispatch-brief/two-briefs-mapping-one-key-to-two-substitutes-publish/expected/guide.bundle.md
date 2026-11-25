@@ -12,7 +12,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Write the case number as [the rules](#tests) say.
 
-[⇉ Investigate](investigate--p-72f1e703251fa57f8324cba88c4f7b009508daae368aa72e14651056588c24e7.bundle.md)
+[⇉ Investigate](investigate--p-72f1e703251f.bundle.md)
 
 ## Review
 
@@ -22,7 +22,7 @@ Write the case number as [the rules](#tests) say.
 
 Write the case number as [the rules](#tests-1) say.
 
-[⇉ Recheck](investigate--p-bd35bffa0b662a50ff50739a42ab07411bf492e3665a097206e9a05cdb9b8d98.bundle.md)
+[⇉ Recheck](investigate--p-bd35bffa0b66.bundle.md)
 
 # First Rules
 

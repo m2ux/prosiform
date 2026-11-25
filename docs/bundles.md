@@ -25,7 +25,7 @@ flowchart TD
 
 A selection's name is its path relative to the working directory, without the Markdown suffix, with each separator written as `_`. A section adds `__` and the fragment.
 
-A selection includes the effective named presets its destination declares. A nonempty set appends `--p-` and the lowercase SHA-256 digest of its canonical serialization: a UTF-8 JSON array of distinct matched names, preserving declaration spelling, sorted by Unicode code point, with no whitespace and without ASCII escaping. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier.
+A selection includes the effective named presets its destination declares. A nonempty set appends `--p-` and the first 12 lowercase hexadecimal characters of the SHA-256 digest of its canonical serialization: a UTF-8 JSON array of distinct matched names, preserving declaration spelling, sorted by Unicode code point, with no whitespace and without ASCII escaping. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier. Two distinct selections producing the same name fail before publication.
 
 The entry name with `.bundles` appended names the run folder; with `.bundle.md` appended it names the entry bundle. Each dispatched selection uses its own name inside that same folder.
 
