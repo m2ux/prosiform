@@ -15,9 +15,9 @@ A bundler for instruction sets written as linked Markdown. Give it a document or
 
 Agent skills are authored as collections of linked documents. Reaching the complete context for one operation means resolving that graph at read time. Prosiform moves that work into a bundling step, so retrieval stops being part of the reasoning task.
 
-### Why?
-
 Authors can maintain shared content in a canonical home and reuse it across skills. The agent receives the selected material in one continuous document, with repeated content included once and links pointing to the relevant sections. Each bundle is validated before publication; invalid content produces an explicit failure. Completeness follows the links to declared sources.
+
+### Why?
 
 Leaving retrieval to the agent costs:
 
