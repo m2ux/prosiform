@@ -89,6 +89,7 @@ from workflow import (
     read_run,
     read_workflow,
     reported,
+    rooted,
     run_faults,
     section_body,
     slug,
@@ -510,10 +511,14 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
 
 
 def bundle_text(workflow: Workflow, output: Path) -> str:
-    """The entry bundle `pf` bundles from a workflow's diagram form."""
+    """The entry bundle `pf` bundles from a workflow's diagram form.
+
+    The bundle's `↳` lines are read from the form's root, as `rooted` states.
+    """
     run = bundle(workflow, DIAGRAM, output)
     assert run.returncode == 0, run.stderr.decode()
-    return (output / workflow.entry_bundle).read_text()
+    opened = output / workflow.entry_bundle
+    return rooted(opened.read_text(), opened.parent, workflow.form(DIAGRAM))
 
 
 def bundle_path_faults(
@@ -592,9 +597,8 @@ def sub_agent_faults(
         root = workflow.form(form)
         made = bundle_reference(root, request, folder)
         assert made.returncode == 0, made.stderr.decode()
-        return (
-            folder / entry_bundle(reference, effective_presets(root, request))
-        ).read_text()
+        written = folder / entry_bundle(reference, effective_presets(root, request))
+        return rooted(written.read_text(), written.parent, root)
 
     for entry in scenario.trace:
         # `pf` writes every target's bundle beside the entry that dispatches
@@ -605,7 +609,7 @@ def sub_agent_faults(
         if not written:
             faults.append(f"no run writes the bundle {entry.section} follows")
             continue
-        text = written[0].read_text()
+        text = rooted(written[0].read_text(), written[0].parent, workflow.form(form))
         followed[wanted] = written[0].resolve()
         if not opens_with_run_pf(text):
             faults.append(f"{entry.section}'s bundle opens with no run-pf line")
@@ -1471,9 +1475,8 @@ def test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action(
     workflow = next(item for item in CORPUS if item.name == "subagent-first-run")
     first = next(item for item in workflow.scenarios if item.name == "first-hop-run")
     bundled_entry(workflow, tmp_path)
-    ledger = (
-        tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
-    ).read_text()
+    opened = tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
+    ledger = rooted(opened.read_text(), opened.parent, workflow.form(BUNDLE_SET_FORM))
     assert opens_with_run_pf(ledger)
     assert [(link.label, link.destination) for link in inline_lines(ledger)] == [
         ("Close", "steps/closing.md#close")
@@ -1529,10 +1532,15 @@ def test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault(
 
 
 def bundled_entry(workflow: Workflow, output: Path) -> tuple[str, bytes]:
-    """The entry bundle `pf` bundles from the bundle-set form, and its stderr."""
+    """The entry bundle `pf` bundles from the bundle-set form, and its stderr.
+
+    The bundle's `↳` lines are read from the form's root, as `rooted` states.
+    """
     run = bundle(workflow, BUNDLE_SET_FORM, output)
     assert run.returncode == 0, run.stderr.decode()
-    return (output / workflow.entry_bundle).read_text(), run.stderr
+    opened = output / workflow.entry_bundle
+    root = workflow.form(BUNDLE_SET_FORM)
+    return rooted(opened.read_text(), opened.parent, root), run.stderr
 
 
 def test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds(
@@ -2075,8 +2083,8 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
 ) -> None:
     """AC9: the forms differ in where the brief stands against the dispatch.
 
-    The briefed bundle publishes each brief's lead content in a `⇉ <text>`
-    sub-section ahead of the dispatch link it carries, and the step's link
+    The briefed bundle publishes each brief's lead content in a sub-section
+    headed by the dispatch's text, ahead of the `⇉` link it carries; the step's link
     names that sub-section; the bundle composes the same section
     after the step that dispatches. Neither target's own bundle carries its
     brief.
@@ -2110,16 +2118,17 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
         assert positions[BUNDLE_SET_FORM][0] > positions[BUNDLE_SET_FORM][1]
         text = (bundles[BRIEFED_FORM] / workflow.entry_bundle).read_text()
         sections = bundled_sections(text)
+        dispatching = workflow.sections[BRIEFED_FORM][scenario.path[2]]
+        name = markdown_links(dispatching.body)[0].label.removeprefix("⇉ ")
         [lifted] = [
             section
             for section in sections.values()
-            if section.title.startswith("⇉ ") and linked in section.text
+            if section.title == name and linked in section.text
         ]
+        assert f"[⇉ {name}]{linked[1:]}" in lifted.text
         assert lead in lifted.text and lifted.text.index(lead) < lifted.text.index(
             linked
         )
-        dispatching = workflow.sections[BRIEFED_FORM][scenario.path[2]]
-        assert lifted.title == f"⇉ {markdown_links(dispatching.body)[0].label[2:]}"
         state = next(
             section
             for section in sections.values()
@@ -2143,8 +2152,8 @@ def subtree(sections: dict[str, BundledSection], root: str) -> list[BundledSecti
 def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
     """AC9: a brief's lead content links the children lifted beside it.
 
-    In the briefed entry bundle, the `⇉ <text>` sub-section holds the
-    brief's lead content, then its dispatch line, then the brief's child
+    In the briefed entry bundle, the sub-section headed by the dispatch's text
+    holds the brief's lead content, then its `⇉` line, then the brief's child
     sections one level below the sub-section's heading. Each link the lead
     makes to a child names the lifted copy inside the sub-section, so a
     dispatching agent following it reads the child before dispatching.
@@ -2166,7 +2175,7 @@ def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
         [lifted] = [
             section
             for section in sections.values()
-            if section.title.startswith("⇉ ") and dispatch in section.text
+            if f"[⇉ {section.title}]{dispatch}" in section.text
         ]
         inner = subtree(sections, lifted.fragment)
         assert [(section.level, section.title) for section in inner] == [
@@ -2175,7 +2184,7 @@ def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
         heading = BUNDLE_HEADING.search(lifted.text)
         head = lifted.text[: heading.start() if heading else None].strip()
         paragraphs = head.split("\n\n")
-        line = f"[{lifted.title}]{dispatch}"
+        line = f"[⇉ {lifted.title}]{dispatch}"
         assert paragraphs[-1] == line, (scenario.name, paragraphs)
         assert len(paragraphs) == len(lead.split("\n\n")) + 1, scenario.name
         targets = [

@@ -71,6 +71,8 @@ from workflow import (
     workflows,
 )
 
+from prosiform.cli import GUIDE
+
 STUB = Path(__file__).resolve().parent / "stub_agent.py"
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 CALLER_VARIABLES = (
@@ -1976,7 +1978,7 @@ def test_a_bundle_set_session_runs_pf_bare_and_bundles_a_composition_line(
     assert not (workspace / "bin" / "pf").exists()
     pf = "pf"
     guide = subprocess.run([pf], capture_output=True, text=True, check=False)
-    assert guide.stdout.startswith("pf bundles"), guide.stdout
+    assert guide.stdout == GUIDE, guide.stdout
     (workspace / "guide.md").write_text(
         "---\nprosiform: {}\n---\n# Guide\n\n## Run\n\nDo [↳ Steps](plan.md#steps).\n"
     )

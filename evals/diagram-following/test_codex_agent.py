@@ -28,6 +28,8 @@ from workflow import (
     workflows,
 )
 
+from prosiform.cli import GUIDE
+
 
 def event(
     method: str, thread: str = "root", turn_id: str = "turn-root", **held: Any
@@ -491,7 +493,7 @@ def test_the_bridge_drives_native_stdio_and_sandboxed_pf_without_a_model(
         if json.loads(line).get("type") == "pf"
     )
     assert (executed["threadId"], executed["callId"]) == ("root", "pf-1")
-    assert (tmp_path / "guide.txt").read_text().startswith("pf bundles")
+    assert (tmp_path / "guide.txt").read_text() == GUIDE
     thread = json.loads((tmp_path / "thread-request.json").read_text())
     turn = json.loads((tmp_path / "turn-request.json").read_text())
     command = json.loads((tmp_path / "command-request.json").read_text())

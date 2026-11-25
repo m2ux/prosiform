@@ -130,6 +130,7 @@ other document declares.
 
 import hashlib
 import json
+import os
 import re
 import shlex
 import shutil
@@ -138,6 +139,7 @@ import tomllib
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 from markdown_it import MarkdownIt
 
@@ -459,6 +461,34 @@ def inline_lines(text: str) -> list[Link]:
         for link in markdown_links(line)
         if line.startswith("[↳ ") and link.label.startswith("↳ ")
     ]
+
+
+def named_from(destination: str, folder: Path, root: Path) -> str:
+    """A destination written from `folder`, naming the same target from `root`."""
+    path, mark, fragment = destination.partition("#")
+    target = os.path.normpath(folder.resolve() / unquote(path))
+    named = Path(os.path.relpath(target, root.resolve())).as_posix()
+    return quote(named) + mark + fragment
+
+
+def rooted(text: str, folder: Path, root: Path) -> str:
+    """A bundle's text with each `↳` line naming its target from `root`.
+
+    A bundle in `folder` names each `↳` line's target from that folder, as the
+    guide states. A stated run names its target from the form's root, and the
+    walk runs `pf` there, so each line is read from the root: the same target,
+    by the name a scenario states.
+    """
+    lines = []
+    for line in text.splitlines(keepends=True):
+        if line.startswith("[↳ "):
+            for link in markdown_links(line):
+                written = f"]({link.destination}"
+                line = line.replace(
+                    written, f"]({named_from(link.destination, folder, root)}", 1
+                )
+        lines.append(line)
+    return "".join(lines)
 
 
 CONDITIONAL_STEP = re.compile(r"^If (`inputs/[^`]+` reads `[^`]*`), ")
@@ -1579,13 +1609,13 @@ def bundle_set_walk(
             raise CorpusError(
                 f"pf {reference} exited {made.returncode}: {made.stderr.decode()}"
             )
-        return (
-            folder / entry_bundle(reference, effective_presets(root, request))
-        ).read_text()
+        written = folder / entry_bundle(reference, effective_presets(root, request))
+        return rooted(written.read_text(), written.parent, root)
 
+    opened = entry / workflow.entry_bundle
     try:
         path, faults = bundle_walk(
-            workflow, (entry / workflow.entry_bundle).read_text(), inputs, activate
+            workflow, rooted(opened.read_text(), opened.parent, root), inputs, activate
         )
     except CorpusError as error:
         return (), tuple(runs), [str(error)]
