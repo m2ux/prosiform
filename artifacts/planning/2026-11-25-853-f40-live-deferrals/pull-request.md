@@ -39,3 +39,4 @@ A bundle names each deferred line's target from the folder it is in, and the eva
 - **R1.** [#819](https://github.com/m2ux/prosiform/pull/819) — Publishes deferrals from the folder each bundle is in.
 - **R2.** [Invocation](https://github.com/m2ux/prosiform/blob/main/invocation.md) — Run a link in a bundle as written, from the folder that bundle is in.
 - **R3.** [Planning record](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-853-f40-live-deferrals/README.md) — The decision on where a session runs a line, and the validation.
+- **R4.** [Agent review](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-853-f40-live-deferrals/agent-review.json) — The review of head fe3bb30ef against `main`, with no finding.

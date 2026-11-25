@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/856",
+    "head": "fe3bb30ef41a575855f57f94896cf7549fb300d2",
+    "base": "1c71522ce31eeecfc36d25bb4aa7472b41c3e55e",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-853-f40-live-deferrals/agent-review.json",
+    "reviewer": "Claude Opus 5.5",
+    "reviewed_at": "2026-11-25T00:00:00Z",
+    "scope": "The full main-to-head diff: bundles_of in run.py and its caller run(); prepare(), which lays the set beside the copied sources; instruction-bundle-set.md and workflow.instruction(); Claude.argv and Opencode.permission in harness.py; the Codex pf tool's cwd in codex_agent.py; score.pf_runs, _commands and _names, which read a cd-prefixed line and match its bundle-relative destination by suffix; stub_agent.py shell_runs, published_line, admitted, made_run and main; the new and changed tests in test_run.py and test_harness.py; the eval README.md. main moved from 6a6b78410 to 1c71522ce by a root README.md edit, which touches nothing the change reads. Rejected as speculative: a run on a line inside a bundle written by an earlier run is printed, not executed, by the stub, as every run was before; a cd outside the workspace adds no reach beyond the pf -o the rule already admits.",
+    "criteria": "AC1: test_a_deferred_line_in_a_prepared_workspace_names_a_document_there fails at main's run.py and passes at the head. AC2: test_a_stub_session_bundles_a_deferred_line_from_its_bundles_folder makes cd workflow.bundles && pf on the deferred-dispatch line under Bash(cd *),Bash(pf *), its result not an error, and fails at main's run.py. AC3: test_the_instruction_guide_and_harnesses_agree_where_a_line_runs and the harness permission tests; the eval README states the folder and the rules. AC4: make eval-harness and make check.",
+    "validation": "make eval-harness: 861 passed, 0 failed. make check with PROSIFORM_BUILD naming the worktree's pf: exit 0, 2,330 build tests, 1,155 harness tests, 708 corpus fixtures. Reproduced on main: the deferred-dispatch line fails with E_TARGET_NOT_FOUND from the workspace and the bundle folder; bundled in place it exits 0 from the bundle folder.",
+    "findings": []
+  }
+]

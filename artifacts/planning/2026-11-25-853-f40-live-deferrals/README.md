@@ -38,3 +38,4 @@ A live session in the eval's `bundle-set` and `briefed` forms bundles the deferr
 | [issue.md](issue.md) | Body of issue #853, with its acceptance criteria. |
 | [pull-request.md](pull-request.md) | Body of the delivering pull request. |
 | [test-results.md](test-results.md) | The validation at the head. |
+| [agent-review.json](agent-review.json) | The agent review of the delivering pull request. |
