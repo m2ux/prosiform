@@ -1166,7 +1166,7 @@ def test_each_command_splits_into_the_pf_runs_it_makes() -> None:
     ],
 )
 @pytest.mark.parametrize("entry", [None, "target.md"])
-def test_shell_redirects_do_not_change_the_compiler_selection(
+def test_shell_redirects_do_not_change_the_bundler_selection(
     redirect: str,
     entry: str | None,
 ) -> None:
@@ -1196,7 +1196,7 @@ def test_codex_recorded_redirects_reach_the_same_selected_compile() -> None:
         assert compiles(item, (command,), ()) is None
 
 
-def test_redirects_can_precede_or_interrupt_compiler_words() -> None:
+def test_redirects_can_precede_or_interrupt_bundler_words() -> None:
     expected = Compile(None, "target.md")
     for command in (
         ">out pf target.md",
@@ -1207,7 +1207,7 @@ def test_redirects_can_precede_or_interrupt_compiler_words() -> None:
         assert pf_runs((command,)) == [expected]
 
 
-def test_quoted_shell_operators_remain_compiler_argument_text() -> None:
+def test_quoted_shell_operators_remain_bundler_argument_text() -> None:
     assert pf_runs(("pf 'a>b.md' >out", """pf '[A>B](a.md "a&b,c|d")' >out""")) == [
         Compile(None, "a>b.md"),
         Compile(None, "a.md", frozenset({"a&b", "c|d"})),

@@ -55,7 +55,7 @@ A pull request that touches none of those paths is reported as not checked: the 
 - **Diagnostic codes.** Each catalogue of diagnostic codes is exactly the set the design declares.
 - **Runner.** The runner decides a fixture's result from its manifest and files alone.
 - **Check readings.** Each check parses its own input correctly on cases written to be misread, and the heading-slug rule generates the anchors GitHub generated for a captured document.
-- **Authoring guidance.** Each worked compile command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the compiler's grammar; the architecture lists every package module. Both guides recommend hyphens rather than underscores in names.
+- **Authoring guidance.** Each worked compile command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the bundler's grammar; the architecture lists every package module. Both guides recommend hyphens rather than underscores in names.
 
 #### The Eval Harness
 

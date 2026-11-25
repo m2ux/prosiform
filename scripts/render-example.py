@@ -375,7 +375,7 @@ def draw(
     right = []
     right_at = SOURCE_Y
     if not bundles:
-        title = "Diagnostics" if diagnostics.strip() else "Compiler output"
+        title = "Diagnostics" if diagnostics.strip() else "Bundler output"
         body = diagnostics.strip() or "nothing published"
         block, height = card(OUTPUT_X, right_at, PANEL_WIDTH, title, body)
         right.append(block)

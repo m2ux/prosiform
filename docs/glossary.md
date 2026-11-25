@@ -73,7 +73,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **scope** | The section holding a composition directive, at the heading the bundle emits for it. A directive in a preamble, or in a heading the bundle emits as text alone, has none and is refused. |
 | **destination section** | The section a scope gains, one level below it, for each heading title its directives' targets carry, headed by that title; directives in one scope naming same-titled targets share one. |
 | **contribution** | What one composition directive places in its destination section: a heading naming the target's immediate parent, one level further down, then the target's body and subsections at their relative depth. The directive's link points at that heading. |
-| **title case** | The spelling every heading the bundle generates carries: each word of the name capitalized, every separator the name carries kept. It changes letters and not structure, and it reaches what the compiler writes and nothing else. |
+| **title case** | The spelling every heading the bundle generates carries: each word of the name capitalized, every separator the name carries kept. It changes letters and not structure, and it reaches what the bundler writes and nothing else. |
 
 ## Addressing
 
@@ -100,6 +100,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 | Avoided | Why |
 | --- | --- |
+| **compiler** | A compiler translates one language into another. A run resolves, consolidates and rewrites within one. |
 | **compositor** | A compositor sets type. It arranges; it resolves nothing. |
 | **scaffold** | Scaffolding is removed when building finishes. A structural ancestor is permanent in the bundle. |
 | **cohort** | Imported from demography, and earns nothing group membership does not already say. |

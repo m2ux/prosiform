@@ -159,7 +159,7 @@ def test_worked_commands_compile_from_their_documented_directory(
         r"```toml\n(.*?)```", (ROOT / "fixtures/README.md").read_text(), re.DOTALL
     ),
 )
-def test_documented_manifest_invocations_use_the_compiler_grammar(block: str) -> None:
+def test_documented_manifest_invocations_use_the_bundler_grammar(block: str) -> None:
     """The fixture-authoring templates must reach compilation, not usage refusal."""
     invocation = tomllib.loads(block).get("invocation")
     if invocation is None:

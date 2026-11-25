@@ -462,7 +462,7 @@ def test_tagged_dispatch_workflow_runs_with_selection_qualified_traces(
 
 
 def test_native_child_starts_admit_chains_with_no_child_command_requirement() -> None:
-    """AC22: native chains are observable; per-child compiler runs need attribution."""
+    """AC22: native chains are observable; per-child bundler runs need attribution."""
     corpus = [CORPUS["dispatch-depth"], CORPUS["subagent-first-run"]]
     sessions = matrix(corpus, ["m"], [COMPILED_SET], 1, Codex())
     assert {session.workflow for session in sessions} == {"dispatch-depth"}

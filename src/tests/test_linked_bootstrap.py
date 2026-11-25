@@ -2,7 +2,7 @@
 
 The suite builds the wheel, installs it outside the repository, and invokes
 that command by name. It reads a skill entry from disk, compiles each linked
-target as its own process, and retains the sources, command, compiler
+target as its own process, and retains the sources, command, bundler
 revision, diagnostics and bundle of every run. An entry is a path relative
 to the invocation directory. A leading slash names a path the source root
 cannot contain, so a target outside the caller directory is reached by a
@@ -47,7 +47,7 @@ SKILL = (
     "fragment when present. A failed "
     "command leaves that document's instructions unavailable; report its "
     "diagnostics and stop. SKILL.md is the entry point the agent already "
-    "read, not a compiler input. These bundles are loaded once for this "
+    "read, not a bundler input. These bundles are loaded once for this "
     "invocation.\n"
     "\n"
     "- [Assemble](modes/assemble.md)\n"
@@ -150,7 +150,7 @@ class Installation:
                 f"{version.stdout!r} {version.stderr!r}"
             )
         self.version = version.stdout
-        (artifacts / "compiler.json").write_text(
+        (artifacts / "bundler.json").write_text(
             json.dumps(
                 {
                     "command": COMMAND,
@@ -191,10 +191,10 @@ class Installation:
             "# Artifact Inventory",
             "",
             "Each row is one installed-command run. "
-            f"The compiler is `{self.version.strip()}`, "
+            f"The bundler is `{self.version.strip()}`, "
             f"wheel `{self.wheel}`, source commit `{self.revision}`.",
             "",
-            "Compiler identity: [compiler.json](compiler.json).",
+            "Bundler identity: [bundler.json](bundler.json).",
             "",
             "| Run | Source tree | Command | Diagnostics | Bundle |",
             "| --- | --- | --- | --- | --- |",
@@ -324,7 +324,7 @@ class Stack:
         """The skill's links, read from the entry the agent reads directly."""
         text = self.skill.read_text(encoding="utf-8")
         assert "Read this entry point directly" in text
-        assert "not a compiler input" in text
+        assert "not a bundler input" in text
         links = LINK.findall(text)
         assert [label for label, _target in links] == ["Assemble", "Review", "Defaults"]
         return {
@@ -427,7 +427,7 @@ class Stack:
             ) == "not produced\n"
             assert not (record / "bundle.md").exists()
         identity = json.loads(
-            (self.installation.artifacts / "compiler.json").read_text(encoding="utf-8")
+            (self.installation.artifacts / "bundler.json").read_text(encoding="utf-8")
         )
         assert identity["source_commit"] == self.installation.revision
         assert identity["installed_outside_repository"] is True
@@ -439,7 +439,7 @@ class Stack:
         assert f"]({relative}/sources/)" in inventory
         assert f"]({relative}/command.json)" in inventory
         assert f"]({relative}/stderr.jsonl)" in inventory
-        assert "compiler.json" in inventory
+        assert "bundler.json" in inventory
         assert self.installation.revision in inventory
 
     def compiled(self, *arguments: str, cwd: Path | None = None) -> str:
@@ -804,13 +804,13 @@ def test_invalid_metadata_publishes_nothing(stack: Stack, depth: Any) -> None:
 
 
 def test_inventory_links_each_retained_run(stack: Stack) -> None:
-    """The published inventory links the compiler revision and one run's files."""
+    """The published inventory links the bundler revision and one run's files."""
     stack.compiled(stack.entry("Defaults"))
     inventory = (stack.installation.artifacts / "inventory.md").read_text(
         encoding="utf-8"
     )
     identity = json.loads(
-        (stack.installation.artifacts / "compiler.json").read_text(encoding="utf-8")
+        (stack.installation.artifacts / "bundler.json").read_text(encoding="utf-8")
     )
     assert identity["source_commit"] in inventory
     assert identity["wheel"] in inventory

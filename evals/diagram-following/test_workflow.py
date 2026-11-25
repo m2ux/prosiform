@@ -1283,7 +1283,7 @@ def test_an_agent_pick_input_holding_two_choice_lines_is_a_fault(
 def test_compile_reference_selects_declared_presets_and_reads_qualified_output(
     tmp_path: Path,
 ) -> None:
-    """The eval's real compiler call preserves title tags and effective naming."""
+    """The eval's real bundler call preserves title tags and effective naming."""
     (tmp_path / "entry.md").write_text(
         "---\nprosiform:\n  Checks:\n    subst: [{old.md: new.md}]\n---\n"
         "# Entry\n\n[Read](old.md)\n"

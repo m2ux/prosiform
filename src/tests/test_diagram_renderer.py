@@ -200,7 +200,7 @@ def test_body_content_is_indented_beyond_its_containing_heading() -> None:
         "Body text\n#### Tick Criteria\n[Tick State](#tick)\n"
         "## Next Area\n[Next Link](#next)\n"
     )
-    markup, _ = module.card(0, 0, 880, "Compiler output", body, True)
+    markup, _ = module.card(0, 0, 880, "Bundler output", body, True)
     root = ElementTree.fromstring("<svg>" + markup + "</svg>")
     positions = {node.text: float(node.attrib["x"]) for node in root.iter("text")}
     assert positions["Readiness"] == positions["Verify Criteria"] + 12

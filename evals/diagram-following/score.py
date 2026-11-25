@@ -72,11 +72,11 @@ wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
 own sub-agent ran. A command is a `pf` run in each segment `;`, `&&`,
 `||`, `|`, `&` or a newline separate whose first word is `pf` or a path
-ending `/pf`. The compiler's own grammar and entry reader read its one
+ending `/pf`. The bundler's own grammar and entry reader read its one
 positional entry, a published link or a plain path, and an optional
 `--pick`: a link's destination is the run's reference and its title the
 names it selects, the pick standing where `?` stands, and a plain path
-selects none. A run the compiler refuses, a stray or repeated `--pick`
+selects none. A run the bundler refuses, a stray or repeated `--pick`
 among them, or one in a segment that does not split whole, is malformed
 and compiles nothing. A reference names a stated one when it is
 that reference or ends `/` and that reference, and its effective matching
@@ -493,7 +493,7 @@ def _commands(command: str) -> list[tuple[list[str], bool]]:
     """Read literal shell words and redirects without evaluating shell input.
 
     Redirection operators and their one operand belong to the shell, not
-    the compiler grammar; a duplication carries its descriptor as its
+    the bundler grammar; a duplication carries its descriptor as its
     operand. A heredoc's delimiter is its operand, and its body, the lines
     after the next newline up to the delimiter line, is data, never commands.
     Quoted or escaped operators remain argument text. Each segment is its
@@ -553,11 +553,11 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
     """The single-entry selections commands request; None marks invalid usage.
 
     A run is a command whose first word is `pf` or a path ending `/pf`, since
-    a command may name the build by a directory. The compiler's own grammar
+    a command may name the build by a directory. The bundler's own grammar
     reads its positional entry and its pick, and its own entry reader the
     link the entry publishes: the link's destination and title tags, or a
     plain path carrying none. A pick stands where `?` stands, the token
-    itself selecting nothing. An entry the compiler refuses, a pick beside
+    itself selecting nothing. An entry the bundler refuses, a pick beside
     an entry whose title carries no `?` among them, is invalid usage, as is
     a command that does not split whole and whose first word names `pf`.
     """

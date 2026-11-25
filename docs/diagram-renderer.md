@@ -32,7 +32,7 @@ Every case draws and reports the build's exit status, so a case meant to fail is
 
 `render-diagram.py` bundles one Markdown entry document and draws its opened source files beside the entry's bundle. Each call produces one diagram; a dispatched target's bundle is not drawn. Local Markdown dependencies are discovered by Prosiform.
 
-Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync --frozen --no-dev` to install the compiler. From the repository root, use that environment's Python:
+Use a clean Prosiform bundler checkout. In its `src/` directory, run `uv sync --frozen --no-dev` to install the bundler. From the repository root, use that environment's Python:
 
 ```bash
 /path/to/prosiform/src/.venv/bin/python scripts/render-diagram.py /path/to/skill/SKILL.md --output /tmp/skill-diagram
@@ -44,12 +44,12 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | `--output PREFIX` | Required output path prefix. Existing files with this prefix are overwritten; a prefix that would overwrite a source document is refused. |
 | `--cwd DIR` | Invocation working directory; defaults to the entry document's directory. |
 | `--section FRAGMENT` | Bundle one section of the entry document. |
-| `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |
+| `--max-output-bytes N` | Bundler output-size budget in bytes; use a positive integer. |
 | `--compact` | Retain headings and links; omit other body content in both image panels. |
 | `--input-section-level N` | Input panels: show content through HN (1–6) and titles one level deeper. Defaults to all content. |
 | `--compiled-section-level N` | Compiled panel: same cutoff, independently selected. Defaults to all content. |
-| `--branch NAME` | Compiler branch; required for a detached checkout. Must point to its current commit. |
-| `--revision SHA` | Require an exact compiler commit. |
+| `--branch NAME` | Bundler branch; required for a detached checkout. Must point to its current commit. |
+| `--revision SHA` | Require an exact bundler commit. |
 
 Grouping comes from each source file's [conversion metadata](../invocation.md#conversion-metadata). Call the tool again for another entry, using a different output prefix.
 
@@ -63,8 +63,8 @@ Use `--compact --input-section-level 2 --compiled-section-level 2` to show H3 ti
 
 Each prefix produces `.svg`, `.review.md`, `.bundle.md`, `.stderr.txt`, `.command.txt` and `.run.json`.
 
-The image header contains only the compiler branch and commit. The review Markdown carries the command, image, exit status and diagnostics. The run record pins the compiler revision and hashes the source bytes and output.
+The image header contains only the bundler branch and commit. The review Markdown carries the command, image, exit status and diagnostics. The run record pins the bundler revision and hashes the source bytes and output.
 
 Body content and links are indented one step beyond their containing heading in both panels.
 
-The tool returns the compiler's exit status. A rejected bundle still produces review artifacts; a source file appears only if the compiler opened it. Deferred targets may be displayed without contributing content. The SVG simplifies Markdown formatting; consult `.bundle.md` for exact content and link destinations.
+The tool returns the bundler's exit status. A rejected bundle still produces review artifacts; a source file appears only if the bundler opened it. Deferred targets may be displayed without contributing content. The SVG simplifies Markdown formatting; consult `.bundle.md` for exact content and link destinations.

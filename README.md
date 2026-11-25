@@ -4,7 +4,7 @@
 [![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
-A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and the linked sources it reaches as validated bundles.
+A deterministic bundler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and the linked sources it reaches as validated bundles.
 
 ---
 **[Invocation](invocation.md)** • **[Architecture](docs/architecture.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Docs](docs/README.md)** • **[Engineering](https://github.com/users/m2ux/projects/18/views/4)** • **[Examples](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner-compact.review.md)**
