@@ -20,6 +20,14 @@ Each cluster's tests were run at the parent of the merge that introduced its cau
 
 `make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lint, format, types, 2,323 build tests, 1,155 harness tests and 708 corpus fixtures.
 
+## Main After Merge
+
+#854 merged as f890d8522, directly after #849. `make eval-harness` on `main` at f890d8522: 843 passed, 15 failed. Each failure looks for a bundle file under the full SHA256 preset qualifier the eval's `entry_bundle` derived, which #849 replaced with the preset names.
+
+## Bundle Names
+
+At `852-bundle-names` head d546772c2, based on f890d8522, `entry_bundle` takes `prosiform.cli.selection_name`. `make eval-harness`: 858 passed. `make check` exits 0.
+
 ## Live Layout
 
 The tests now resolve each deferred line, but a workspace laid out as the runner lays one out still cannot. In the `deferred-dispatch` workflow's `bundle-set` workspace, the entry bundle's deferred line names its target from the temporary folder the runner bundled in, and `pf` on it fails with `E_TARGET_NOT_FOUND` from both the workspace and the bundle's folder. [F40, issue #853](https://github.com/m2ux/prosiform/issues/853) holds that defect.
