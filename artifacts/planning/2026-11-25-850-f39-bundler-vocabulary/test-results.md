@@ -1,6 +1,6 @@
 # Test Results
 
-Validation observed at `f39-bundler-vocabulary` head 20bd147152b8ee9f2f68e299a35bee7a225ba0c8, based on `main` at 684437c06, with the design pinned at c394f23056ad69400277b008fdd2ccd8841ded5e.
+Validation observed at `f39-bundler-vocabulary` head 6b8d5a6cb1edaabb8f7e86a4f6e459b19ad63073, based on `main` at 684437c06, with the design pinned at c394f23056ad69400277b008fdd2ccd8841ded5e.
 
 ## Vocabulary Search
 
@@ -28,11 +28,13 @@ The corpus of `contract/v0.34.0`, run against this build: 697 pass, 11 fail. Nin
 
 ## Checks Harness
 
-`make harness`: 1,154 passed, 1 failed. The failure, `checks/tests/test_authoring.py::test_active_guidance_recommends_hyphens_rather_than_underscores`, fails identically on `main` at 684437c06: `README.md` there lacks the sentence recommending hyphens. It stops `make check` at `harness`, so every later target was run with `make -k check`.
+`make harness`: 1,155 passed. `make check` exits 0, every target passing in order.
+
+On `main` at 684437c06 the harness fails `test_active_guidance_recommends_hyphens_rather_than_underscores`, because `README.md` there states its usage without the sentence recommending hyphens. The branch's last commit holds that recommendation to the invocation guide, which owns it.
 
 ## Eval Harness
 
-`make eval-harness`: 819 passed, 39 failed. `main` at 684437c06 gives 819 passed, 39 failed, and the failing tests are the same 39 once their names are read in the new vocabulary. No paid agent session ran.
+`make eval-harness`, at 20bd14715, which the last commit leaves untouched: 819 passed, 39 failed. `main` at 684437c06 gives 819 passed, 39 failed, and the failing tests are the same 39 once their names are read in the new vocabulary. No paid agent session ran.
 
 ## Recorded Figures
 

@@ -4,7 +4,7 @@
 
 Prosiform is a bundler and a run bundles: one word names the tool, the act and the output across the product description, the guide and diagnostics `pf` emits, the documentation, the fixtures, the eval and the contract design. The glossary records "compiler" and "compile" as terms deliberately not used.
 
-[F39, issue #850](https://github.com/m2ux/prosiform/issues/850) holds the feature and stands In Progress on Python board 18. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as one draft pull request to `main` with one commit per layer, at head 20bd147152b8ee9f2f68e299a35bee7a225ba0c8. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. The pull request awaits review and is not merged; [test-results.md](test-results.md) records the validation and the two failures `main` already carries. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
+[F39, issue #850](https://github.com/m2ux/prosiform/issues/850) holds the feature and stands In Progress on Python board 18. It is delivered on one branch, `f39-bundler-vocabulary`, cut from `main` at 684437c06 (0.34.0), as draft [pull request #851](https://github.com/m2ux/prosiform/pull/851) to `main` with one commit per layer, at head 6b8d5a6cb1edaabb8f7e86a4f6e459b19ad63073. Emitted text changes, so the previous corpus fails against the build and the release that carries it is 0.35.0. The pull request awaits review and is not merged; [test-results.md](test-results.md) records the validation, a passing `make check` and the eval-harness failures `main` already carries. F38, issue #848, is in flight as pull request #849 and changes fixture bundle names, so whichever merges second rebases.
 
 ## Decisions
 
@@ -69,6 +69,7 @@ Each layer is one commit, in this order. The build, the corpus and the documenta
 | Noun | 0c88cef34 | The product description, the avoided-terms row, and every "compiler" in prose and identifiers. No emitted output changes. |
 | Build, corpus and documentation | a07763564 | Emitted text, docstrings and identifiers in `src/prosiform`, its tests, the fixtures, `docs/`, `invocation.md`, the READMEs, `checks/` and `scripts/`, the re-rendered images and the re-pinned design links. |
 | Eval | 20bd14715 | The form, the classes, the scenario table, the folders, the identifiers, the tests and the committed records. |
+| Checks | 6b8d5a6cb | The hyphens recommendation is held to the invocation guide, at the user's direction, so `make check` passes over the README as `main` states it. |
 
 ## Names Chosen in Delivery
 

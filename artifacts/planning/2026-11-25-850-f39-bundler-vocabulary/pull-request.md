@@ -36,6 +36,11 @@ Prosiform is a bundler and a run bundles. The product description, the guide and
 - **`StatedRun`.**
   The eval's record of one stated `pf` run, held by `Scenario.runs`.
 
+### Checks
+
+- **Hyphens recommendation.**
+  The authoring check reads the recommendation from the invocation guide, which owns it. `README.md` on `main` states its usage without that sentence, which failed `make harness` there.
+
 ## Test Plan
 
 | Test | Description | Coverage | Pass |
@@ -46,10 +51,10 @@ Prosiform is a bundler and a run bundles. The product description, the guide and
 | T4 | Links, vocabulary, invocation, conformance and re-rendered images | AC3, AC5, AC8 | [Pass](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md#source-and-documentation) |
 | T5 | Eval harness against the stub agent, compared with `main` | AC6 | [39 failures, the same 39 as `main`](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md#eval-harness) |
 | T6 | Recorded figures compared with `main` | AC7 | [Pass](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md#recorded-figures) |
-| T7 | `make check` | AC10 | [1 failure, already on `main`](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md#checks-harness) |
+| T7 | `make check` | AC10 | [Pass](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md#checks-harness) |
 
 ## References
 
-- **R1.** [Test results](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md) — The validation observed at head 20bd14715, with the failures `main` already carries.
+- **R1.** [Test results](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/test-results.md) — The validation observed at head 6b8d5a6cb, with the eval-harness failures `main` already carries.
 - **R2.** [Planning record](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-25-850-f39-bundler-vocabulary/README.md) — The vocabulary mapping, the decisions and the commit layers.
 - **R3.** [Design revision](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md) — The contract stated in the bundler vocabulary, which the shipped links pin.
