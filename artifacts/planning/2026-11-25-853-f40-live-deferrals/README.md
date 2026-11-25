@@ -29,7 +29,7 @@ A live session in the eval's `bundle-set` and `briefed` forms bundles the deferr
 - [x] Align the instruction and the harness permissions with the guide.
 - [x] Make the stub run the line, and hold AC1 to AC3 in tests that fail on the old layout.
 - [x] Run `make eval-harness` and `make check`.
-- [ ] Open, review and merge the draft pull request to `main`, and close #853.
+- [x] Open, review and merge the draft pull request to `main`, and close #853. [#856](https://github.com/m2ux/prosiform/pull/856) merged as e2d7d7e2f; #853 closed with AC1 to AC4 ticked.
 
 ## Artifacts
 
