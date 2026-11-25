@@ -1,4 +1,4 @@
-description = "A key naming a whole document and a key naming one of its sections both serve their references in one run, the narrower one taking the section it names and the wider one taking the document, so each link compiles the substitute its own key names and no real document is bundled."
+description = "A key naming a whole document and a key naming one of its sections both serve their references in one run, the narrower one taking the section it names and the wider one taking the document, so each link bundles the substitute its own key names and no real document is bundled."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

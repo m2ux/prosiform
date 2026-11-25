@@ -364,7 +364,7 @@ RECORDED = (
     Declaration(
         name="Agent delivery contract",
         reason=(
-            "it states what a successful compilation does and does not "
+            "it states what a successful bundling does and does not "
             "establish about a transport"
         ),
         observable=(

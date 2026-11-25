@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    dispatch: Each marked link is compiled by the sub-agent named in its text.
+    dispatch: Each marked link is bundled by the sub-agent named in its text.
 ---
 # Guide
 

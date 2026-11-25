@@ -1,4 +1,4 @@
-description = "A Mermaid click on a node whose text opens with the deferral mark, whose tooltip is the pick token, defers a document declaring alternatives, leaving the pick to the agent that compiles it in a later run: the click's destination is rewritten to the document's path and its tooltip is carried as written."
+description = "A Mermaid click on a node whose text opens with the deferral mark, whose tooltip is the pick token, defers a document declaring alternatives, leaving the pick to the agent that bundles it in a later run: the click's destination is rewritten to the document's path and its tooltip is carried as written."
 
 clauses = [
   "Link classification and resource handling — Examples",

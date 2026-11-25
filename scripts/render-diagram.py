@@ -168,7 +168,7 @@ def svg(
     revision,
     compact=False,
     input_section_level=None,
-    compiled_section_level=None,
+    bundled_section_level=None,
 ):
     blocks = []
     header = [txt(32, 48, branch_name + " " + revision[:12], 20, AMBER)]
@@ -205,11 +205,11 @@ def svg(
     if compact:
         bundle_body = compact_markdown(bundle_body)
     expected = (
-        limit_section_content(bundle_body, compiled_section_level)
+        limit_section_content(bundle_body, bundled_section_level)
         if bundle
         else "No bundle published."
     )
-    outblock, outh = card(1230, top, 880, "Compiler output", expected, True)
+    outblock, outh = card(1230, top, 880, "Bundler output", expected, True)
     blocks.append(outblock)
     middle = top + 100
     blocks.append(
@@ -220,8 +220,8 @@ def svg(
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="{height}" '
         f'viewBox="0 0 2142 {height}" role="img" aria-labelledby="title desc">'
-        '<title id="title">Source documents and compiled bundle</title>'
-        '<desc id="desc">Source documents and actual compiler output.</desc>'
+        '<title id="title">Source documents and their bundle</title>'
+        '<desc id="desc">Source documents and actual bundler output.</desc>'
         f'<rect width="2142" height="{height}" fill="{BG}"/>'
         f'<g font-family="{FONT}" xml:space="preserve">'
         + "".join(header + blocks)
@@ -245,7 +245,7 @@ def main():
         help="Invocation working directory; defaults to the document directory",
     )
     parser.add_argument("--section", help="Select a fragment of the entry document")
-    for panel in ("input", "compiled"):
+    for panel in ("input", "bundled"):
         parser.add_argument(
             f"--{panel}-section-level",
             type=int,
@@ -256,7 +256,7 @@ def main():
     parser.add_argument(
         "--max-output-bytes",
         type=int,
-        help="Compiler output-size budget; defaults to the compiler's limit",
+        help="Bundler output-size budget; defaults to the bundler's limit",
     )
     parser.add_argument(
         "--compact",
@@ -270,9 +270,9 @@ def main():
         help="Output prefix, such as /tmp/skill-diagram",
     )
     parser.add_argument(
-        "--branch", help="Compiler branch; required for a detached compiler checkout"
+        "--branch", help="Bundler branch; required for a detached bundler checkout"
     )
-    parser.add_argument("--revision", help="Require this full compiler commit SHA")
+    parser.add_argument("--revision", help="Require this full bundler commit SHA")
     options = parser.parse_args()
     checkout = Path(cli.__file__).resolve().parents[2]
 
@@ -283,14 +283,14 @@ def main():
 
     revision = git("rev-parse", "HEAD")
     if options.revision and revision != options.revision:
-        parser.error("Compiler revision does not match --revision")
+        parser.error("Bundler revision does not match --revision")
     if git("status", "--porcelain", "--untracked-files=no"):
-        parser.error("Compiler checkout must have clean tracked files")
+        parser.error("Bundler checkout must have clean tracked files")
     branch_name = options.branch or git("branch", "--show-current")
     if not branch_name:
-        parser.error("Detached compiler checkout: supply --branch")
+        parser.error("Detached bundler checkout: supply --branch")
     if git("rev-parse", "refs/heads/" + branch_name) != revision:
-        parser.error("Compiler branch must point to the checked-out commit")
+        parser.error("Bundler branch must point to the checked-out commit")
     document = options.document.absolute()
     root = (options.cwd or document.parent).absolute()
     try:
@@ -338,7 +338,7 @@ def main():
         revision,
         compact=options.compact,
         input_section_level=options.input_section_level,
-        compiled_section_level=options.compiled_section_level,
+        bundled_section_level=options.bundled_section_level,
     )
     ET.fromstring(rendered)
     output = options.output.absolute()
@@ -363,9 +363,9 @@ def main():
     review = [
         "# " + document.name,
         "",
-        "Compiler: " + branch_name + " " + revision,
+        "Bundler: " + branch_name + " " + revision,
         "",
-        "Source files opened by the compiler appear beside the bundle body. "
+        "Source files opened by the bundler appear beside the bundle body. "
         "Opened files can include deferred targets; "
         "their presence does not imply their content is bundled. Images simplify "
         "Markdown presentation; the bundle file preserves exact content and "
@@ -380,12 +380,12 @@ def main():
             f"H{level + 1} sections show titles only."
             for panel, level in (
                 ("Input", options.input_section_level),
-                ("Compiled", options.compiled_section_level),
+                ("Bundled", options.bundled_section_level),
             )
             if level is not None
         ),
         "",
-        "![Source documents and compiled bundle](" + destinations[".svg"].name + ")",
+        "![Source documents and their bundle](" + destinations[".svg"].name + ")",
         "",
         "### Command",
         "",
@@ -397,11 +397,11 @@ def main():
     if diagnostics:
         review.extend(["", fence + "text", diagnostics.rstrip(), fence])
     record_data = dict(
-        compiler_branch=branch_name,
-        compiler_revision=revision,
+        bundler_branch=branch_name,
+        bundler_revision=revision,
         compact=options.compact,
         input_section_level=options.input_section_level,
-        compiled_section_level=options.compiled_section_level,
+        bundled_section_level=options.bundled_section_level,
         command=command,
         exit_code=status,
         sources={

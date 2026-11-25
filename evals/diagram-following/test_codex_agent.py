@@ -491,7 +491,7 @@ def test_the_bridge_drives_native_stdio_and_sandboxed_pf_without_a_model(
         if json.loads(line).get("type") == "pf"
     )
     assert (executed["threadId"], executed["callId"]) == ("root", "pf-1")
-    assert (tmp_path / "guide.txt").read_text().startswith("pf compiles")
+    assert (tmp_path / "guide.txt").read_text().startswith("pf bundles")
     thread = json.loads((tmp_path / "thread-request.json").read_text())
     turn = json.loads((tmp_path / "turn-request.json").read_text())
     command = json.loads((tmp_path / "command-request.json").read_text())
@@ -509,7 +509,7 @@ def test_the_bridge_drives_native_stdio_and_sandboxed_pf_without_a_model(
     assert Path(command["command"][0]).name == "pf"
 
 
-def test_a_bootstrap_compile_runs_pf_from_the_skill_directory(
+def test_a_bootstrap_bundle_runs_pf_from_the_skill_directory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     workflow = next(item for item in workflows() if item.name == "bootstrap-audit")

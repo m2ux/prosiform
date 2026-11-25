@@ -22,93 +22,93 @@
   "failing": [
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/briefed/4",
-      "failure": "overcompiled",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o /tmp/opencode/pfout 'workflow.bundles/ledger__steps.bundle.md#ledger'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o /tmp/opencode/pfout 'workflow.bundles/ledger__steps.bundle.md#ledger'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/briefed/5",
-      "failure": "overcompiled",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o workflow.bundles 'workflow.md#trace'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o workflow.bundles 'workflow.md#trace'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/1",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/bundle-set/1",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md'] beside the bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/2",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/bundle-set/2",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/4",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/bundle-set/4",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o . workflow.bundles/workflow.bundle.md`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o . workflow.bundles/workflow.bundle.md`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/5",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/bundle-set/5",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf .`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf .`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/1",
-      "failure": "overcompiled",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o . 'workflow.bundles/workflow.bundle.md'`, `pf -o out '[\u21c9 Payroll](payroll__steps.bundle.md)'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o . 'workflow.bundles/workflow.bundle.md'`, `pf -o out '[\u21c9 Payroll](payroll__steps.bundle.md)'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/2",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/3",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/4",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open the source documents ['payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+      "evidence": "the transcript's read calls open the source documents ['payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'workflow.md'] beside the bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/5",
-      "failure": "overcompiled",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o out 'payroll__steps.bundle.md'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o out 'payroll__steps.bundle.md'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/1",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/bundle-set/1",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o . 2>/dev/null \\|\\| true`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o . 2>/dev/null \\|\\| true`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/2",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/bundle-set/2",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o . '[\u21c9 Payroll](payroll__steps.bundle.md)'`, `pf -o . 'workflow.bundles/payroll__steps.bundle.md'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o . '[\u21c9 Payroll](payroll__steps.bundle.md)'`, `pf -o . 'workflow.bundles/payroll__steps.bundle.md'`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/3",
-      "failure": "overcompiled",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/bundle-set/3",
+      "failure": "unstated_run",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o inputs-out 'x' 2>&1 \\| head -5; ls inputs`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o inputs-out 'x' 2>&1 \\| head -5; ls inputs`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.run]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
-      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/5",
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/bundle-set/5",
       "failure": "read_source",
       "disposition": "miss",
-      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
     }
   ],
   "baseline": {
@@ -281,19 +281,19 @@
       },
       {
         "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-        "form": "compiled",
+        "form": "bundle-set",
         "workflow": "dispatch-beside",
         "scenario": "set-beside-a-dispatch"
       },
       {
         "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-        "form": "compiled",
+        "form": "bundle-set",
         "workflow": "dispatch-question",
         "scenario": "returned-question"
       },
       {
         "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-        "form": "compiled",
+        "form": "bundle-set",
         "workflow": "dispatch-set",
         "scenario": "parallel-set"
       },
@@ -595,9 +595,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 2,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 2,
+        "misordered_run": 0,
         "read_source": 0,
         "errored": 0
       },
@@ -627,9 +627,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 2,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 2,
+        "misordered_run": 0,
         "read_source": 3,
         "errored": 0
       },
@@ -641,7 +641,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "dispatch-brief",
       "scenario": "ledger-brief",
       "sessions": 5,
@@ -659,9 +659,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 2,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 2,
+        "misordered_run": 0,
         "read_source": 2,
         "errored": 0
       },
@@ -673,7 +673,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "workflow": "dispatch-brief",
       "scenario": "payroll-brief",
       "sessions": 5,
@@ -691,9 +691,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 3,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 3,
+        "misordered_run": 0,
         "read_source": 1,
         "errored": 0
       },
@@ -723,9 +723,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 4,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 4,
+        "misordered_run": 0,
         "read_source": 3,
         "errored": 0
       },
@@ -737,7 +737,7 @@
     },
     {
       "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
-      "form": "compiled",
+      "form": "bundle-set",
       "sessions": 10,
       "passed": 2,
       "pass_rate": 0.2,
@@ -753,9 +753,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 5,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 5,
+        "misordered_run": 0,
         "read_source": 3,
         "errored": 0
       },
@@ -777,9 +777,9 @@
           "sequential_set": 0,
           "unrelayed_question": 0,
           "premature_dispatch": 0,
-          "uncompiled": 0,
-          "overcompiled": 5,
-          "misordered_compile": 0,
+          "missed_run": 0,
+          "unstated_run": 5,
+          "misordered_run": 0,
           "read_source": 3,
           "errored": 0
         }
@@ -804,9 +804,9 @@
         "sequential_set": 0,
         "unrelayed_question": 0,
         "premature_dispatch": 0,
-        "uncompiled": 0,
-        "overcompiled": 9,
-        "misordered_compile": 0,
+        "missed_run": 0,
+        "unstated_run": 9,
+        "misordered_run": 0,
         "read_source": 6,
         "errored": 0
       },
@@ -828,9 +828,9 @@
           "sequential_set": 0,
           "unrelayed_question": 0,
           "premature_dispatch": 0,
-          "uncompiled": 0,
-          "overcompiled": 9,
-          "misordered_compile": 0,
+          "missed_run": 0,
+          "unstated_run": 9,
+          "misordered_run": 0,
           "read_source": 6,
           "errored": 0
         }

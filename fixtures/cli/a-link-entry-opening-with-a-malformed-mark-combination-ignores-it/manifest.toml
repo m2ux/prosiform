@@ -1,4 +1,4 @@
-description = "A Markdown link entry whose text opens with ¬↳⇉, a combination the operator rules refuse in a source, compiles its destination under the presets its title selects: the marks opening a link entry are ignored whatever they combine to."
+description = "A Markdown link entry whose text opens with ¬↳⇉, a combination the operator rules refuse in a source, bundles its destination under the presets its title selects: the marks opening a link entry are ignored whatever they combine to."
 
 clauses = [
   "Link entries — A link entry",

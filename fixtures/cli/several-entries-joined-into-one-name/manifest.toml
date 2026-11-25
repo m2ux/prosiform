@@ -3,7 +3,7 @@ description = "One entry reaches all required input documents or sections throug
 clauses = [
   "Input and output contract — Entry references",
   "CLI contract — -o DIR, the invocation working directory when absent",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
 ]
 
 [invocation]

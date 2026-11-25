@@ -1,4 +1,4 @@
-description = "The step Fetch the page offline and the target's heading Implementation offline each select fetch.md's offline preset, so the run activating the target compiles it under the presets the step selects, and the deferral is kept with its generated line."
+description = "The step Fetch the page offline and the target's heading Implementation offline each select fetch.md's offline preset, so the run activating the target bundles it under the presets the step selects, and the deferral is kept with its generated line."
 
 clauses = [
   "Section composition — Deferred composition",

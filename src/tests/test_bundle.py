@@ -559,7 +559,7 @@ def opening(heading: str) -> str:
     return f"# {INSTRUCTIONS}\n\n{line}\n\n"
 
 
-def compiled(
+def built(
     root: Path, sources: Mapping[str, str], *entries: str
 ) -> tuple[int, dict[str, str], str]:
     """One run over a tree of sources: its status, its bundles and its diagnostics."""
@@ -579,7 +579,7 @@ def compiled(
 
 
 def test_every_bundle_opens_with_the_run_pf_line(tmp_path: Path) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED + "# Guide\n\nRun [\u21c9 plan](plan.md).\n",
@@ -599,7 +599,7 @@ def test_every_bundle_opens_with_the_run_pf_line(tmp_path: Path) -> None:
 def test_a_bundle_dispatching_nothing_opens_with_the_run_pf_line(
     tmp_path: Path,
 ) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED + "# Guide\n\nSee [plan](plan.md).\n",
@@ -614,7 +614,7 @@ def test_a_bundle_dispatching_nothing_opens_with_the_run_pf_line(
 
 
 def test_the_run_pf_line_precedes_a_file_heading(tmp_path: Path) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED + "# Guide\n\n## Run\n\nRun [\u21c9 plan](plan.md).\n",
@@ -629,7 +629,7 @@ def test_the_run_pf_line_precedes_a_file_heading(tmp_path: Path) -> None:
 
 
 def test_the_run_pf_line_precedes_a_preamble(tmp_path: Path) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED
@@ -648,7 +648,7 @@ def test_the_run_pf_line_precedes_a_titled_entry_members_title(
     tmp_path: Path,
 ) -> None:
     member = "---\nprosiform: {default: {group: {notes: 2}}}\n---\n"
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": f"{member}Intro.\n\n# Guide\n\nAbove.\n\n"
@@ -665,7 +665,7 @@ def test_the_run_pf_line_precedes_a_titled_entry_members_title(
 
 
 def test_a_dispatch_in_a_nested_section_stays_inline(tmp_path: Path) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED
@@ -685,7 +685,7 @@ def test_a_dispatch_in_a_nested_section_stays_inline(tmp_path: Path) -> None:
 def test_a_set_of_two_points_at_one_in_parallel_sub_section(
     tmp_path: Path,
 ) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED
@@ -707,7 +707,7 @@ def test_a_set_of_two_points_at_one_in_parallel_sub_section(
 def test_a_set_of_one_target_publishes_as_an_inline_dispatch(
     tmp_path: Path,
 ) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED + "# Guide\n\nRun [\u2afd plan](plan.md) then "
@@ -727,7 +727,7 @@ def test_a_set_of_one_target_publishes_as_an_inline_dispatch(
 def test_a_dispatch_link_publishes_with_its_mark_and_one_blank(
     tmp_path: Path,
 ) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED + "# Guide\n\nRun [ \u21c9   plan](plan.md).\n",
@@ -742,7 +742,7 @@ def test_a_dispatch_link_publishes_with_its_mark_and_one_blank(
 def test_a_bundle_using_both_operators_carries_no_protocol(
     tmp_path: Path,
 ) -> None:
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED
@@ -776,7 +776,7 @@ def test_an_authored_heading_pf_does_not_emit_publishes(
     tmp_path: Path, operator: str, heading: str
 ) -> None:
     mark = f"{operator} " if operator else ""
-    status, bundles, _ = compiled(
+    status, bundles, _ = built(
         tmp_path,
         {
             "guide.md": DECLARED + f"# Guide\n\nRun [{mark}plan](plan.md).\n\n"
@@ -792,7 +792,7 @@ def test_an_authored_heading_pf_does_not_emit_publishes(
 def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
     tmp_path: Path,
 ) -> None:
-    status, bundles, errors = compiled(
+    status, bundles, errors = built(
         tmp_path,
         {
             "guide.md": DECLARED

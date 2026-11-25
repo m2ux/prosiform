@@ -1,4 +1,4 @@
-description = "A link opening with the deferral mark and then the dispatch mark states a dispatch no bundle publishes, because a dispatch is compiled up front into a bundle of its own, so the run refuses the link, naming it, and publishes nothing."
+description = "A link opening with the deferral mark and then the dispatch mark states a dispatch no bundle publishes, because a dispatch is bundled up front on its own, so the run refuses the link, naming it, and publishes nothing."
 
 clauses = [
   "Link classification and resource handling — Operators that combine",

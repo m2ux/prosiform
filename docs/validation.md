@@ -73,7 +73,7 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 ## What a run refuses
 
-Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
+Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
 
 | Check | Code | Exit |
 | --- | --- | --- |
@@ -88,7 +88,7 @@ Each check below ends the run before anything is written, under the code it name
 | A `prosiform` declaration outside its grammar, a malformed `choice`, `stub`, `level` or `levels`, a `choice` or `stub` in `default`, a preset holding both and a preset named `?` among them | `E_INVALID_CONVERSION_METADATA` | `1` |
 | A dispatch whose target's [level](dispatch.md#models) the entry's level map names no model for | `E_LEVEL_UNMAPPED` | `1` |
 | A `level` in force for the run's entry | `E_LEVEL_ON_ENTRY` | `1` |
-| A `stub` declared by a document the run compiles other than its entry | `E_STUB_OFF_ENTRY` | `1` |
+| A `stub` declared by a document the run bundles other than its entry | `E_STUB_OFF_ENTRY` | `1` |
 | Two depths for one group | `E_GROUP_CONFLICT` | `1` |
 | A target, or a fragment's heading, that does not exist | `E_TARGET_NOT_FOUND` | `1` |
 | A fragment naming a heading two headings share, or one inside a container | `E_AMBIGUOUS_SOURCE_HEADING`, `E_NESTED_SECTION_TARGET` | `1` |

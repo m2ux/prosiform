@@ -72,24 +72,24 @@ wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
 own sub-agent ran. A command is a `pf` run in each segment `;`, `&&`,
 `||`, `|`, `&` or a newline separate whose first word is `pf` or a path
-ending `/pf`. The compiler's own grammar and entry reader read its one
+ending `/pf`. The bundler's own grammar and entry reader read its one
 positional entry, a published link or a plain path, and an optional
 `--pick`: a link's destination is the run's reference and its title the
 names it selects, the pick standing where `?` stands, and a plain path
-selects none. A run the compiler refuses, a stray or repeated `--pick`
+selects none. A run the bundler refuses, a stray or repeated `--pick`
 among them, or one in a segment that does not split whole, is malformed
-and compiles nothing. A reference names a stated one when it is
+and bundles nothing. A reference names a stated one when it is
 that reference or ends `/` and that reference, and its effective matching
 named presets agree. Informational
-calls compile nothing and satisfy no bare guide run. Each agent's runs, the
+calls bundle nothing and satisfy no bare guide run. Each agent's runs, the
 session's and each started sub-agent's, are held to the runs stated for it:
 
-- every stated run was made: otherwise *uncompiled*;
+- every stated run was made: otherwise *missed_run*;
 - every run naming a reference is a stated one, and no run is malformed:
-  otherwise *overcompiled*, as a run on a deferred line the path did not
-  reach is. A bare `pf` beyond those stated prints the guide and compiles
+  otherwise *unstated_run*, as a run on a deferred line the path did not
+  reach is. A bare `pf` beyond those stated prints the guide and bundles
   nothing, so it is no departure;
-- the stated runs were made in their order: otherwise *misordered_compile*.
+- the stated runs were made in their order: otherwise *misordered_run*.
 
 The checks are read in that order, after the dispatch checks, so a sub-agent
 that never started fails *undispatched* rather than leaving its runs unmade.
@@ -108,7 +108,7 @@ sources, as that document or a path ending `/` and its path within them, is
 no source.
 
 A start is an `Agent` tool call in the transcript, whose prompt names the
-compiled file or authored section it hands over; its
+bundled file or authored section it hands over; its
 return is the sub-agent's report, read as `question` when its first line opens
 `Question:`, as `pf`'s guide prescribes, and as `done` otherwise. Two starts
 in one message are together, since they were dispatched at once. Which
@@ -150,14 +150,14 @@ __all__ = [
 ]
 from workflow import (
     BOOTSTRAP,
-    COMPILED_FORM,
+    BUNDLE_SET_FORM,
     FEWER,
     SHELL_FORMS,
     SOURCE_DIR,
     START,
-    Compile,
     Dispatch,
     Scenario,
+    StatedRun,
     Workflow,
     effective_presets,
     entry_bundle,
@@ -213,9 +213,9 @@ class Failure(StrEnum):
     SEQUENTIAL_SET = "sequential_set"
     UNRELAYED_QUESTION = "unrelayed_question"
     PREMATURE_DISPATCH = "premature_dispatch"
-    UNCOMPILED = "uncompiled"
-    OVERCOMPILED = "overcompiled"
-    MISORDERED_COMPILE = "misordered_compile"
+    MISSED_RUN = "missed_run"
+    UNSTATED_RUN = "unstated_run"
+    MISORDERED_RUN = "misordered_run"
     READ_SOURCE = "read_source"
     ERRORED = "errored"
 
@@ -421,10 +421,10 @@ def read_reads(workspace: Path) -> tuple[str, ...] | None:
 def sources_read(workflow: Workflow, reads: tuple[str, ...]) -> tuple[str, ...]:
     """The reads naming a document of the workflow's shell-form sources.
 
-    The sources are the documents of its `compiled` form, or of the skill's
+    The sources are the documents of its `bundle-set` form, or of the skill's
     `sources/` for a bootstrap workflow, each named by its path within them.
     """
-    form = COMPILED_FORM if COMPILED_FORM in workflow.forms else BOOTSTRAP
+    form = BUNDLE_SET_FORM if BUNDLE_SET_FORM in workflow.forms else BOOTSTRAP
     if form not in workflow.forms:
         return ()
     root = workflow.form(form)
@@ -493,7 +493,7 @@ def _commands(command: str) -> list[tuple[list[str], bool]]:
     """Read literal shell words and redirects without evaluating shell input.
 
     Redirection operators and their one operand belong to the shell, not
-    the compiler grammar; a duplication carries its descriptor as its
+    the bundler grammar; a duplication carries its descriptor as its
     operand. A heredoc's delimiter is its operand, and its body, the lines
     after the next newline up to the delimiter line, is data, never commands.
     Quoted or escaped operators remain argument text. Each segment is its
@@ -549,19 +549,19 @@ def _commands(command: str) -> list[tuple[list[str], bool]]:
     return found
 
 
-def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
+def pf_runs(commands: tuple[str, ...]) -> list[StatedRun | None]:
     """The single-entry selections commands request; None marks invalid usage.
 
     A run is a command whose first word is `pf` or a path ending `/pf`, since
-    a command may name the build by a directory. The compiler's own grammar
+    a command may name the build by a directory. The bundler's own grammar
     reads its positional entry and its pick, and its own entry reader the
     link the entry publishes: the link's destination and title tags, or a
     plain path carrying none. A pick stands where `?` stands, the token
-    itself selecting nothing. An entry the compiler refuses, a pick beside
+    itself selecting nothing. An entry the bundler refuses, a pick beside
     an entry whose title carries no `?` among them, is invalid usage, as is
     a command that does not split whole and whose first word names `pf`.
     """
-    runs: list[Compile | None] = []
+    runs: list[StatedRun | None] = []
     for command in commands:
         for words, whole in _commands(command):
             if not words or words[0].rsplit("/", 1)[-1] != PF:
@@ -577,7 +577,7 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
             if parsed.help or parsed.version or parsed.codes:
                 continue
             if parsed.entry is None:
-                runs.append(None if len(words) > 1 else Compile(None))
+                runs.append(None if len(words) > 1 else StatedRun(None))
                 continue
             try:
                 reference = command_entry(parsed.entry, parsed.pick)
@@ -586,11 +586,11 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 continue
             fragment = "" if reference.fragment is None else f"#{reference.fragment}"
             tags = reference.tags if parsed.pick is None else reference.tags - {PICK}
-            runs.append(Compile(None, reference.path + fragment, tags))
+            runs.append(StatedRun(None, reference.path + fragment, tags))
     return runs
 
 
-def _names(made: Compile | None, stated: Compile, root: Path | None) -> bool:
+def _names(made: StatedRun | None, stated: StatedRun, root: Path | None) -> bool:
     """Whether a command names the stated destination and effective presets."""
     if made is None:
         return False
@@ -606,34 +606,34 @@ def _names(made: Compile | None, stated: Compile, root: Path | None) -> bool:
 
 
 def _held_to(
-    made: list[Compile | None], stated: list[Compile], root: Path | None
+    made: list[StatedRun | None], stated: list[StatedRun], root: Path | None
 ) -> Failure | None:
     """The first run check one agent's runs fail, or nothing when they pass."""
     if not all(any(_names(run, due, root) for run in made) for due in stated):
-        return Failure.UNCOMPILED
+        return Failure.MISSED_RUN
     if any(
         (run is None or run.entry is not None)
         and not any(_names(run, due, root) for due in stated)
         for run in made
     ):
-        return Failure.OVERCOMPILED
+        return Failure.UNSTATED_RUN
     cursor = 0
     for run in made:
         if cursor < len(stated) and _names(run, stated[cursor], root):
             cursor += 1
-    return None if cursor == len(stated) else Failure.MISORDERED_COMPILE
+    return None if cursor == len(stated) else Failure.MISORDERED_RUN
 
 
 def _picked(
-    made: list[Compile | None], stated: list[Compile], root: Path | None
-) -> tuple[list[Compile], tuple[str, ...]]:
+    made: list[StatedRun | None], stated: list[StatedRun], root: Path | None
+) -> tuple[list[StatedRun], tuple[str, ...]]:
     """The runs one agent is held to, and the path each stated pick took.
 
     A stated pick is met by the picked run alone, or by the listing, the link
     as written, then the picked run. An agent that made the listing took the
     second path, so it is held to the listing before its pick.
     """
-    held: list[Compile] = []
+    held: list[StatedRun] = []
     paths: list[str] = []
     for due in stated:
         if due.pick is not None:
@@ -652,14 +652,14 @@ def _agent_runs(
     commands: tuple[str, ...],
     starts: tuple[Start, ...],
     source_directory: str,
-) -> list[tuple[list[Compile | None], list[Compile]]]:
+) -> list[tuple[list[StatedRun | None], list[StatedRun]]]:
     """Each agent's runs beside the runs its scenario states for it.
 
     The session's runs are read from its own commands, and a sub-agent's from
     the commands of every start naming its section, so a section dispatched
     again keeps one sequence of runs.
     """
-    agents: dict[str | None, list[Compile | None]] = {None: pf_runs(commands)}
+    agents: dict[str | None, list[StatedRun | None]] = {None: pf_runs(commands)}
     for section in dict.fromkeys(entry.section for entry in scenario.trace):
         agents[section] = pf_runs(
             tuple(
@@ -676,13 +676,13 @@ def _agent_runs(
     return [
         (
             made,
-            [replace(run, by=None) for run in scenario.compile if run.by == agent],
+            [replace(run, by=None) for run in scenario.runs if run.by == agent],
         )
         for agent, made in agents.items()
     ]
 
 
-def compiles(
+def bundles(
     scenario: Scenario,
     commands: tuple[str, ...],
     starts: tuple[Start, ...],
@@ -698,7 +698,7 @@ def compiles(
         _held_to(made, _picked(made, stated, root)[0], root)
         for made, stated in _agent_runs(scenario, commands, starts, source_directory)
     ]
-    order = (Failure.UNCOMPILED, Failure.OVERCOMPILED, Failure.MISORDERED_COMPILE)
+    order = (Failure.MISSED_RUN, Failure.UNSTATED_RUN, Failure.MISORDERED_RUN)
     return next((failure for failure in order if failure in found), None)
 
 
@@ -723,14 +723,14 @@ def names(
     source_directory: str = "",
     presets: frozenset[str] = frozenset(),
 ) -> bool:
-    """Whether a start's prompt names a section's compiled file or authored reference.
+    """Whether a start's prompt names a section's bundled file or authored reference.
 
-    A compiled form hands over `pf`'s bundle for the section, named
+    A bundle-set form hands over `pf`'s bundle for the section, named
     `<document>__<heading>.bundle.md` and written beside the entry; an authored form
     hands over the section itself, named `<document>#<heading>`. Both spell
-    one section, since the bundle's name is compiled from it.
+    one section, since the bundle's name is bundled from it.
 
-    A bootstrap skill compiles the documents it carries, so its sections sit
+    A bootstrap skill bundles the documents it carries, so its sections sit
     under `sources/` inside the skill, and a session reaches them by either
     name: the reference the scenario states, or that reference as the skill
     directory holds it.
@@ -905,8 +905,8 @@ def score(
             )
         picks: tuple[str, ...] = ()
         if commands is not None:
-            root = workflow.compile_root
-            order = compiles(scenario, commands, starts, source_directory, root)
+            root = workflow.run_root
+            order = bundles(scenario, commands, starts, source_directory, root)
             if order is not None:
                 return Verdict(False, order, None, expected, actual, actions)
             picks = pick_paths(scenario, commands, starts, source_directory, root)

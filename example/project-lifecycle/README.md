@@ -85,7 +85,7 @@ The SOLID principles follow from that shape:
 
 ## What the agent follows
 
-The agent reads one instruction set: the lifecycle compiled from the entry's link for the SDLC the user named. It holds the modes and that SDLC's practice, and the modes read the same under every SDLC.
+The agent reads one instruction set: the lifecycle bundled from the entry's link for the SDLC the user named. It holds the modes and that SDLC's practice, and the modes read the same under every SDLC.
 
 ![On the left, SKILL.md with its Ad Hoc and Waterfall links, then the lifecycle, the five modes and both adapters. On the right, the instructions: the board stages, the three practices each holding ad hoc's steps, and the modes under one Modes group.](../../docs/images/lifecycle-ad-hoc.svg)
 

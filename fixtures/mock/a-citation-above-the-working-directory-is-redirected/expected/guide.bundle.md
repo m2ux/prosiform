@@ -4,7 +4,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 # Guide
 
-Compile [the notes](#stand-in).
+Bundle [the notes](#stand-in).
 
 # Stand-in
 

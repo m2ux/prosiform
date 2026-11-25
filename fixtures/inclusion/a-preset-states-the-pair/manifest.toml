@@ -1,4 +1,4 @@
-description = "A link written by a document whose default preset states subst: [{rules.md: stub.md}] compiles stub.md in place of rules.md, the substitute the pair rules.md=stub.md compiled on the command line, and the default pair is a route its author declared, so the run raises nothing."
+description = "A link written by a document whose default preset states subst: [{rules.md: stub.md}] bundles stub.md in place of rules.md, the substitute the pair rules.md=stub.md bundled on the command line, and the default pair is a route its author declared, so the run raises nothing."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

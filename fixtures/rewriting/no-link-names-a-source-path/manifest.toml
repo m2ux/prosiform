@@ -3,7 +3,7 @@ description = "A bundle whose every link names a declaring document carries no l
 clauses = [
   "Bundle destinations — Internal links",
   "Bundle destinations — Uniqueness",
-  "Post-compilation invariants — One intended destination",
+  "Post-bundling invariants — One intended destination",
 ]
 
 [invocation]

@@ -62,7 +62,7 @@ GLOSSARY = """# Glossary
 | Term | Definition |
 | --- | --- |
 | **bundle** (n.) | The single validated document produced by one run. |
-| **deferral** | An author's statement that a reference is compiled elsewhere. |
+| **deferral** | An author's statement that a reference is bundled elsewhere. |
 """
 
 DOCUMENTATION = """## Invocation

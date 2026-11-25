@@ -16,7 +16,7 @@ Work Tracker plans work as tracker issues and keeps the plan current until the w
 
 ## Dispatch
 
-A link whose text opens with `⇉` names material a sub-agent compiles. Compile the marked link and hand it to a sub-agent.
+A link whose text opens with `⇉` names material a sub-agent bundles. Bundle the marked link and hand it to a sub-agent.
 
 ## Modes
 

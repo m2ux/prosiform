@@ -1,9 +1,9 @@
-# Instruction: Following a Compiled Bundle
+# Instruction: Following a Bundle Set
 
-The task a session in the `compiled` form is given. That form places the
-bundle set `pf` compiled from a workflow's sources in the folder `pf` writes it
+The task a session in the `bundle-set` form is given. That form places the
+bundle set `pf` bundled from a workflow's sources in the folder `pf` writes it
 to, beside the sources and with the build on the session's path, so a line of
-the bundle naming further material to compile can be compiled where it stands.
+the bundle naming further material to bundle can be bundled where it stands.
 A run puts the entry's bundle in place of `ENTRY`.
 
 ```text

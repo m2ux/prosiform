@@ -1,16 +1,16 @@
-# Instruction: Compiling a Skill
+# Instruction: Bundling a Skill
 
 The task a session in the `bootstrap` form is given. That form places a skill
 where the agent CLI discovers skills, and hands over the documents it names
-without compiling them: the session finds the skill, compiles what it names,
+without bundling them: the session finds the skill, bundles what it names,
 and follows the bundle that comes out.
 
 ```text
 A skill is available to you. Find it, do what it says, and follow the
 workflow it leads you to to completion, starting at its first state.
 
-- The skill names documents to compile and how. Compile them before reading
-  any state's section: the bundle the compile writes is the document that
+- The skill names documents to bundle and how. Bundle them before reading
+  any state's section: the bundle that run writes is the document that
   states the workflow.
 - On entering a state, before anything else, append the state's name as one
   line to trace.log in this directory. Append only a state: a step the

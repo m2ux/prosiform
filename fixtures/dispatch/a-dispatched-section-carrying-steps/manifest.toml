@@ -1,4 +1,4 @@
-description = "A dispatched section carrying numbered steps is compiled to a bundle of its own selecting that section, and the run publishes both with no warning."
+description = "A dispatched section carrying numbered steps is bundled on its own selecting that section, and the run publishes both with no warning."
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",

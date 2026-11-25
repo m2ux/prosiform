@@ -3,7 +3,7 @@ description = "A document whose references select presets pairing it with two gr
 clauses = [
   "Grouping — Nested groups",
   "Presets — A document in several groups",
-  "Post-compilation invariants — Group isolation",
+  "Post-bundling invariants — Group isolation",
 ]
 
 [invocation]

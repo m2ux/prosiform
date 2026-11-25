@@ -2,8 +2,8 @@ description = "A validation-only run bundles and validates its entry reference a
 
 clauses = [
   "CLI contract — -c, discover, bundle and validate without emitting or publishing the bundle",
-  "Compile before publishing, no success output is published until the complete candidate has been constructed and validated",
-  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Bundle before publishing, no success output is published until the complete candidate has been constructed and validated",
+  "Exit status and JSON diagnostics — 0, successful bundling, validation, or informational CLI response",
   "Adversarial acceptance fixtures — CLI",
 ]
 

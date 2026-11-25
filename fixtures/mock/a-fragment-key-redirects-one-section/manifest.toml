@@ -1,4 +1,4 @@
-description = "A subst key carrying a fragment redirects the section it names alone, so the link to that section compiles the substitute while the link to its document compiles the document as it ships."
+description = "A subst key carrying a fragment redirects the section it names alone, so the link to that section bundles the substitute while the link to its document bundles the document as it ships."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

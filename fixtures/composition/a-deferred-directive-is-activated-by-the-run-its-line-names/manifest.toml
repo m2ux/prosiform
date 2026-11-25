@@ -1,4 +1,4 @@
-description = "The run a deferred directive's line names compiles its target as an entry: the implementation's body is validated and published, its immediate directive composes beneath it, and its own deferred directive is deferred again, keeping its place with a line of its own. The sources are those of the fixture whose step defers this implementation."
+description = "The run a deferred directive's line names bundles its target as an entry: the implementation's body is validated and published, its immediate directive composes beneath it, and its own deferred directive is deferred again, keeping its place with a line of its own. The sources are those of the fixture whose step defers this implementation."
 
 clauses = [
   "Section composition — Activation",

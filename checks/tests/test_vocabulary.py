@@ -15,7 +15,7 @@ import vocabulary
 DESIGN = """\
 # Design
 
-A *bundle* is what the compiler emits, and a **bundle** in bold marks nothing.
+A *bundle* is what the bundler emits, and a **bundle** in bold marks nothing.
 The *entry reference* names where a run starts, and a later *bundle* repeats a
 term already marked.
 
@@ -40,7 +40,7 @@ GLOSSARY = """\
 
 | Term | Definition |
 | --- | --- |
-| **Bundle** | What the compiler emits. |
+| **Bundle** | What the bundler emits. |
 | **Entry reference** | Where a run starts. |
 | **Source root (a directory)** | A tree a run reads. |
 
@@ -107,7 +107,7 @@ def test_a_term_is_used_in_its_plural_and_in_any_case() -> None:
 def test_the_criteria_are_the_text_their_section_carries() -> None:
     criteria = vocabulary.criteria_text(DESIGN)
     assert "A bundle names every entry reference" in criteria
-    assert "the compiler emits" not in criteria
+    assert "the bundler emits" not in criteria
 
 
 def test_the_design_is_read_from_the_link_the_readme_names(

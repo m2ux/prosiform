@@ -1,8 +1,8 @@
 description = "A section selected first and its whole document included later by a dependency is one region: the document's group carries the larger region alone, and a reference in the part the entry did not select is resolved."
 
 clauses = [
-  "Compile before publishing, expanding coverage",
-  "Compile before publishing — step 5, consolidate selections",
+  "Bundle before publishing, expanding coverage",
+  "Bundle before publishing — step 5, consolidate selections",
   "Input and output contract — Groups, emit each selected region once",
   "Adversarial acceptance fixtures — Wrapper identity",
   "Input and output contract — Entry identity",

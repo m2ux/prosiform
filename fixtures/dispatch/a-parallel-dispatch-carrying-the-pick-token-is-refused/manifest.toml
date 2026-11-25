@@ -1,4 +1,4 @@
-description = "A parallel dispatch carries the pick token ?, but this run compiles its target as a bundle of its own and no agent is left to pick, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming it, and publishes nothing."
+description = "A parallel dispatch carries the pick token ?, but this run bundles its target on its own and no agent is left to pick, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming it, and publishes nothing."
 
 clauses = [
   "Link classification and resource handling — The pick token",

@@ -1,4 +1,4 @@
-description = "A deferred link to a document declaring alternatives carries the pick token ? as its title, so the bundle publishes the link with its title as authored, leaving the pick to the agent that compiles it in a later run."
+description = "A deferred link to a document declaring alternatives carries the pick token ? as its title, so the bundle publishes the link with its title as authored, leaving the pick to the agent that bundles it in a later run."
 
 clauses = [
   "Link classification and resource handling — The pick token",

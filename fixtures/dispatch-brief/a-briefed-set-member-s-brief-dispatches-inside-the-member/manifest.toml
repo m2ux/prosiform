@@ -1,4 +1,4 @@
-description = "A briefed set member's brief writes a dispatch of its own, which compiles a bundle of its own and publishes where the brief writes it, inside the member's sub-section, and is no member of the set: the set's lines name its two members alone."
+description = "A briefed set member's brief writes a dispatch of its own, which has a bundle of its own and publishes where the brief writes it, inside the member's sub-section, and is no member of the set: the set's lines name its two members alone."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",

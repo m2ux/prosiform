@@ -82,7 +82,7 @@ from prosiform.closure import (
     arrowed,
     briefing,
     bundle_selection,
-    compiled_pick,
+    bundled_pick,
     components,
     conflicting,
     contradicting,
@@ -337,7 +337,7 @@ BUDGET_TABLE = "budgets:\n" + "".join(
 )
 
 EXIT_STATUSES = """exit statuses:
-  0  successful compilation, validation, or informational response
+  0  successful bundling, validation, or informational response
   1  input, dependency, policy, safety, or resource-limit failure
   2  invalid usage or option combination
   3  output publication or delivery failure, a broken pipe among them
@@ -354,7 +354,7 @@ Following a bundle:
 
 Symbol grammar:
 
-  ↳  names a section to inline: compile its destination with pf, read that
+  ↳  names a section to inline: bundle its destination with pf, read that
      bundle whole, keep it in context, and follow it where the link stands.
      Do not open its source yourself: read the bundle pf writes.
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
@@ -386,7 +386,7 @@ Symbol grammar:
 
 Usage:
 
-  pf compiles a Markdown document that declares prosiform into one or
+  pf bundles a Markdown document that declares prosiform into one or
   more bundles.
 
   pf -o <folder> '<link>' [--pick <alternative>]
@@ -401,7 +401,7 @@ Usage:
   --pick <alternative>   the alternative a link whose title carries ?
                          leaves to you
 
-Compiling a link:
+Bundling a link:
 
   Run pf on a link in a bundle as written, quoted as one argument, from
   the folder that bundle is in, never on a ⇉ or ⫽ link. When its title
@@ -880,7 +880,7 @@ def unresolved(
                 else "name the alternative that fits your task in the title or "
                 "tooltip of each link reaching it, a link entry's among them"
                 if placing is None
-                else f"write the brief {placing.original!r} so it compiles with no "
+                else f"write the brief {placing.original!r} so it bundles with no "
                 "alternative in force, since the picking dispatch carrying it "
                 "leaves the pick to its agent"
                 if carried
@@ -1079,7 +1079,7 @@ def governing(
 def defaults(
     conversion: Conversion, path: str
 ) -> dict[tuple[str, str | None], Governed]:
-    """The `subst` pairs a document's `default` puts in force wherever it compiles."""
+    """The `subst` pairs a document's `default` puts in force wherever it bundles."""
     return {
         subst_identity(pair.original, path): Governed(
             DEFAULT, pair, subst_reference(pair, path), routing=True
@@ -1633,7 +1633,7 @@ def changed(path: str, what: str, chain: Sequence[str]) -> Failure:
         f"the source {path!r} {what}, so the bundle would carry bytes the run "
         f"no longer reads",
         code=SOURCE_CHANGED,
-        remedy="run the compilation again, over sources nothing is writing",
+        remedy="bundle again, over sources nothing is writing",
         reference=path,
         source=path,
         chain=chain,
@@ -1707,7 +1707,7 @@ def conformance_fault(environment: Mapping[str, str]) -> str | None:
 def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
     """Write other bytes to each source the run read.
 
-    A source that changes during compilation is a fact about the run
+    A source that changes during bundling is a fact about the run
     rather than about any document it reads, so a source tree and an
     invocation state nothing about it and a run asked for the fault is
     what reaches it. The write happens where a concurrent writer's
@@ -1978,7 +1978,7 @@ def refusals_of_operators(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
-    """Report operator combinations or targets that cannot be compiled.
+    """Report operator combinations or targets that cannot be bundled.
 
     `closure.operators`, `closure.gapped`, `closure.arrowed`,
     `closure.deferring_dispatch`, `closure.contradicting` and
@@ -2024,7 +2024,7 @@ def refusals_of_operators(
                 "dispatch mark, which states a dispatch no bundle publishes",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="write the dispatch mark, a space and the link's text, "
-                "which compiles the target up front",
+                "which bundles the target up front",
                 reference=use.name,
                 source=at,
                 chain=(*chain, use.destination),
@@ -2051,7 +2051,7 @@ def refusals_of_operators(
                 + ", which state two ways for one sub-agent to run",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="open the link's text with the one operator that states how "
-                "the material is compiled",
+                "the material is bundled",
                 reference=use.name,
                 source=at,
                 chain=(*chain, use.destination),
@@ -2070,7 +2070,7 @@ def refusals_of_operators(
             raise input_failure(
                 f"the link {use.name!r} opens with an operator and names "
                 f"{use.destination!r}, which names no document, so the operator "
-                f"states a compilation no run can read",
+                f"states a bundling no run can read",
                 code=TARGET_NOT_FOUND,
                 remedy="name a Markdown document that exists, or remove the operator",
                 reference=use.destination,
@@ -2081,7 +2081,7 @@ def refusals_of_operators(
             raise input_failure(
                 f"the link {use.name!r} opens with an operator and names "
                 f"{use.destination!r}, a document whose frontmatter declares no "
-                f"prosiform, so the operator states no compilation the run can "
+                f"prosiform, so the operator states no bundling the run can "
                 f"carry out",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="declare prosiform in the target's frontmatter, or remove "
@@ -2094,7 +2094,7 @@ def refusals_of_operators(
         raise input_failure(
             f"the {kind} {use.name!r} opens with an operator and names "
             f"{use.destination!r}, which is no Markdown document or section, so "
-            f"the operator states no compilation the run can carry out",
+            f"the operator states no bundling the run can carry out",
             code=UNSUPPORTED_CONSTRUCT,
             remedy="name a Markdown document or section, or remove the operator",
             reference=use.destination,
@@ -2119,7 +2119,7 @@ def refusals_of_picks(
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if use.resource or not compiled_pick(use.opening, use.tags):
+        if use.resource or not bundled_pick(use.opening, use.tags):
             continue
         at = location(path, source.line(use.line))
         target = named(path, use.destination, substitution, at, chain, tags=use.tags)
@@ -2127,7 +2127,7 @@ def refusals_of_picks(
             continue
         raise input_failure(
             f"the link {use.name!r} carries the pick token {PICK!r} and names "
-            f"{use.destination!r}, which this run compiles, so no agent is left "
+            f"{use.destination!r}, which this run bundles, so no agent is left "
             f"to pick",
             code=UNSUPPORTED_CONSTRUCT,
             remedy=f"write the deferral mark {DEFERRAL_MARK!r} to leave the pick "
@@ -2563,7 +2563,7 @@ def stub_off_entry(one: Reference, conversion: Conversion) -> None:
     """Refuse a stub declared by a document other than the run's entry.
 
     A stub binds trial material, and the run's entry is its one channel:
-    its pairs reach every document the run compiles, so a document under
+    its pairs reach every document the run bundles, so a document under
     test carries none.
     """
     stub = next((preset for preset in conversion.presets if preset.stub), None)
@@ -2571,7 +2571,7 @@ def stub_off_entry(one: Reference, conversion: Conversion) -> None:
         raise input_failure(
             f"{one.path!r} declares the stub {stub.name!r}, and a stub is "
             f"declared by the run's entry alone, whose pairs reach every "
-            f"document the run compiles",
+            f"document the run bundles",
             code=STUB_OFF_ENTRY,
             remedy="declare the stub in the run's entry",
             reference=one.original,
@@ -4376,8 +4376,8 @@ def run_folder(output: Path, entry: BundleSelection) -> Path:
 
 
 @dataclass(frozen=True)
-class Compiled:
-    """One compiled bundle and its run evidence.
+class Bundled:
+    """One bundle and its run evidence.
 
     `text`, `name` and `selection` identify the bundle. `hops` maps
     effective selections to dispatch occurrences. `leading` and
@@ -4418,7 +4418,7 @@ class Compiled:
                 yield path, key, pair
 
 
-def compiled(
+def bundle_one(
     root: Path,
     requested: Sequence[Reference],
     options: argparse.Namespace,
@@ -4426,8 +4426,8 @@ def compiled(
     run: frozenset[str] = frozenset(),
     entry: BundleSelection | None = None,
     models: tuple[tuple[str, str], ...] | None = None,
-) -> Compiled:
-    """Compile one effective entry selection and collect its evidence.
+) -> Bundled:
+    """Bundle one effective entry selection and collect its evidence.
 
     `budgets` creates this bundle's counters. `traverse` discovers its
     sources, `resolved` checks alternative selections, and `compose`
@@ -4513,7 +4513,7 @@ def compiled(
                 code=RESOURCE_PORTABILITY,
             )
         )
-    return Compiled(
+    return Bundled(
         bundled,
         name,
         selected,
@@ -4579,7 +4579,7 @@ def names(
     )
 
 
-def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
+def unused_presets(bundles: Iterable[Bundled]) -> list[Diagnostic]:
     """One warning for each preset no reference of the run selected.
 
     A preset one bundle leaves unselected and another selects governed
@@ -4598,7 +4598,7 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
         Diagnostic(
             WARNING,
             f"the preset {name!r} of {path!r} is selected by no reference the run "
-            f"compiled, so it governs nothing",
+            f"bundled, so it governs nothing",
             code=PRESET_UNUSED,
             source=path,
             remedy="name the preset in the reaching link's title, or drop the preset",
@@ -4609,7 +4609,7 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
 
 
 def routes(
-    bundles: Iterable[Compiled],
+    bundles: Iterable[Bundled],
 ) -> set[tuple[str, tuple[str, str | None], str]]:
     """The routing pairs the run put in force, by document, key and substitute.
 
@@ -4627,14 +4627,12 @@ def routes(
     return routing - standing
 
 
-def unused_pairs(
-    bundles: Iterable[Compiled], mapping: Substitution
-) -> list[Diagnostic]:
+def unused_pairs(bundles: Iterable[Bundled], mapping: Substitution) -> list[Diagnostic]:
     """One warning for each `subst` pair in force that no reference used.
 
     A pair is in force for the links its declaring document writes, so
     one no reference of the run named substitutes nothing. A routing
-    pair routes whatever the document is compiled for, so it is unused
+    pair routes whatever the document is bundled for, so it is unused
     only where no link of its document names its key, a link outside
     the selection naming it as one inside does. The warning
     carries the key as its author wrote it as `source`, names the
@@ -4674,25 +4672,25 @@ def unused_pairs(
 
 def dispatched_set(
     root: Path,
-    entry: Compiled,
+    entry: Bundled,
     single: Collection[BundleSelection],
     options: argparse.Namespace,
     run: frozenset[str] = frozenset(),
-) -> dict[BundleSelection, Compiled]:
-    """Compile each distinct dispatched selection once, transitively.
+) -> dict[BundleSelection, Bundled]:
+    """Bundle each distinct dispatched selection once, transitively.
 
     Selections are visited in occurrence order. A selection equal to
     the run's entry reuses its bundle; other selections are passed to
-    `compiled` under the entry's mapping, names and model map.
+    `bundle_one` under the entry's mapping, names and model map.
     """
-    built: dict[BundleSelection, Compiled] = {}
+    built: dict[BundleSelection, Bundled] = {}
     pending = list(entry.hops.items())
     while pending:
         selected, hop = pending.pop(0)
         if selected in built or selected in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(
+        one = bundle_one(
             root,
             [target],
             options,
@@ -4782,7 +4780,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     output = Path(options.output).resolve()
     run = run_names(requested[0])
-    first = compiled(root, requested, options, mapping, run)
+    first = bundle_one(root, requested, options, mapping, run)
     folder = run_folder(output, first.selection)
     single = {first.selection}
     built = dispatched_set(root, first, single, options, run)

@@ -157,7 +157,7 @@ def test_section_level_filters_both_panels_with_optional_compaction() -> None:
             "a" * 40,
             compact=compact,
             input_section_level=2,
-            compiled_section_level=2,
+            bundled_section_level=2,
         )
         assert diagram.count("Select Project Board") == 2
         assert "Find Theme Board" not in diagram
@@ -176,9 +176,9 @@ def test_section_level_handles_setext_titles() -> None:
 def test_panel_section_levels_are_independent() -> None:
     module = renderer()
     source = "# Input\n## Area\n### Operation\n[Input Link](input.md)\n"
-    output = "# Compiled\n## Area\n### Operation\n[Compiled Link](#target)\n"
+    output = "# Bundled\n## Area\n### Operation\n[Bundled Link](#target)\n"
     for compact in (False, True):
-        for input_level, compiled_level in ((2, None), (None, 2), (2, 3), (3, 2)):
+        for input_level, bundled_level in ((2, None), (None, 2), (2, 3), (3, 2)):
             diagram = module.svg(
                 {"SKILL.md": source},
                 "skill",
@@ -187,10 +187,10 @@ def test_panel_section_levels_are_independent() -> None:
                 "a" * 40,
                 compact=compact,
                 input_section_level=input_level,
-                compiled_section_level=compiled_level,
+                bundled_section_level=bundled_level,
             )
             assert ("Input Link" in diagram) == (input_level != 2)
-            assert ("Compiled Link" in diagram) == (compiled_level != 2)
+            assert ("Bundled Link" in diagram) == (bundled_level != 2)
 
 
 def test_body_content_is_indented_beyond_its_containing_heading() -> None:
@@ -200,7 +200,7 @@ def test_body_content_is_indented_beyond_its_containing_heading() -> None:
         "Body text\n#### Tick Criteria\n[Tick State](#tick)\n"
         "## Next Area\n[Next Link](#next)\n"
     )
-    markup, _ = module.card(0, 0, 880, "Compiler output", body, True)
+    markup, _ = module.card(0, 0, 880, "Bundler output", body, True)
     root = ElementTree.fromstring("<svg>" + markup + "</svg>")
     positions = {node.text: float(node.attrib["x"]) for node in root.iter("text")}
     assert positions["Readiness"] == positions["Verify Criteria"] + 12

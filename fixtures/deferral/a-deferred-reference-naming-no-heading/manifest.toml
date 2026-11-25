@@ -1,4 +1,4 @@
-description = "A deferred reference naming no heading of the document it resolves to fails with E_TARGET_NOT_FOUND and publishes nothing, so withholding the compilation withholds nothing of the run's responsibility for the reference."
+description = "A deferred reference naming no heading of the document it resolves to fails with E_TARGET_NOT_FOUND and publishes nothing, so withholding the bundling withholds nothing of the run's responsibility for the reference."
 
 clauses = [
   "Link classification and resource handling — A withheld link's target",

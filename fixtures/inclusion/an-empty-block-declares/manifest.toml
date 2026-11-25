@@ -1,4 +1,4 @@
-description = "A target whose prosiform mapping holds no key declares, so the link naming it is compiled into the bundle and its destination rewritten."
+description = "A target whose prosiform mapping holds no key declares, so the link naming it is bundled into the bundle and its destination rewritten."
 
 clauses = [
   "Conversion metadata — An empty block declares",

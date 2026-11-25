@@ -66,11 +66,11 @@ def test_the_agent_pick_section_states_the_cost_and_failures_the_file_records() 
     assert all(failing["disposition"] == "miss" for failing in record["failing"])
 
 
-def test_the_page_states_one_compiled_form_carrying_the_run_pf_line() -> None:
-    """AC13: one `compiled` form carrying `pf`, and no `staged` form or section."""
+def test_the_page_states_one_bundle_set_form_carrying_the_run_pf_line() -> None:
+    """AC13: one `bundle-set` form carrying `pf`, and no `staged` form or section."""
     forms = [row[0] for row in table_rows(section("## Forms"))]
-    assert forms.count("compiled") == 1 and "staged" not in forms
-    [row] = [row for row in table_rows(section("## Forms")) if row[0] == "compiled"]
+    assert forms.count("bundle-set") == 1 and "staged" not in forms
+    [row] = [row for row in table_rows(section("## Forms")) if row[0] == "bundle-set"]
     assert "run-pf line" in row[1] and "as `pf`" in row[1]
     assert "shell limited to `pf`" in row[1]
     assert "staged" not in README.lower()

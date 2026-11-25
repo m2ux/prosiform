@@ -978,9 +978,9 @@ class Opencode:
     subagent_depth: int = 8
     """How deep a sub-agent's own dispatch may go.
 
-    The CLI refuses a nested start at depth one by default, and a compiled
+    The CLI refuses a nested start at depth one by default, and a bundled
     bundle dispatches at every hop the workflow states, so a session could
-    follow no chain. The figure matches the link depth `pf` compiles to.
+    follow no chain. The figure matches the link depth `pf` bundles to.
     """
     prompt_on_argv: bool = True
     """Whether the task text is an argument rather than the session's input.

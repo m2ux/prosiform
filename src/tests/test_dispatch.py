@@ -1,7 +1,7 @@
 """Assert the dispatch analysis follows chains as deep as the limit and refuses a cycle.
 
 Each graph here is a mapping from a target to the targets its bundle
-dispatches, standing in for the bundles a run compiles, so a case states
+dispatches, standing in for the bundles a run writes, so a case states
 the shape of the dispatches and what that shape raises.
 """
 

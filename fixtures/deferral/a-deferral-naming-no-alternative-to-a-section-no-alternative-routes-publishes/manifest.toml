@@ -1,4 +1,4 @@
-description = "A deferred link with no title names the Hand-off section of stage.md. Its two alternatives route body.md, which only the Steps section links, and state no group pair, so the later run compiles the section with none in force, and the bundle publishes the link as authored."
+description = "A deferred link with no title names the Hand-off section of stage.md. Its two alternatives route body.md, which only the Steps section links, and state no group pair, so the later run bundles the section with none in force, and the bundle publishes the link as authored."
 
 clauses = [
   "Link classification and resource handling — The pick token",
