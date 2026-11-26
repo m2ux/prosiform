@@ -1,4 +1,4 @@
-description = "Every original definition node is removed from emitted content, the definitions no use names and the second definition of one label included."
+description = "Every original definition node is removed from emitted content, the definitions no use names and the second definition of one label among them."
 
 clauses = [
   "Source-local reference interpretation — step 4",

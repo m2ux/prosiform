@@ -1,4 +1,4 @@
-description = "An ordinary link a contribution carries includes its target, which the bundle places where the contribution stands: the read document's Inputs, reached only by a directive, links the format document's Paths and its own Outputs, so the read document's file group carries Outputs alone and the format document is placed ahead of the write document, which the guide links in a later section."
+description = "An ordinary link a contribution carries bundles its target, which the bundle places where the contribution stands: the read document's Inputs, reached only by a directive, links the format document's Paths and its own Outputs, so the read document's file group carries Outputs alone and the format document is placed ahead of the write document, which the guide links in a later section."
 
 clauses = [
   "Section composition — Inline-only targets",
