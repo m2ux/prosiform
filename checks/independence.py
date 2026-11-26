@@ -42,12 +42,14 @@ configuration, as the corpus names it — and fails without one.
 The design states the contract where it states behaviour. A section the
 conformance report records as stating no behaviour states what the project
 decided about its builds, what each is made with, what remains to be proven
-of them and what an upstream contribution would say, so its prose states a build's words
-rather than the contract's. A word only such a section carries is a build's
+of them and what an upstream contribution would say, so the terms it marks
+are a build's words rather than the contract's. Such a term is a build's
 however it is written: `crate` names packaging in lower case as plainly as
-`Cargo` does with a capital, so it is reported whatever its shape. A claim
-quoting the tree its fixture carries states that tree's words, so a word
-naming one of the tree's files is the tree's rather than a build's.
+`Cargo` does with a capital, so it is reported whatever its shape. The rest
+of that section's prose is the ordinary words its sentences are written in,
+which name nothing. A claim quoting the tree its fixture carries states
+that tree's words, so a word naming one of the tree's files is the tree's
+rather than a build's.
 
 The glossary names the terms it deliberately does not use and why each was
 refused. A fixture's description is the text a second implementor reads
@@ -103,6 +105,7 @@ PATH_NAME = re.compile(r"\.(?:md|toml|json|ya?ml|txt)$", re.IGNORECASE)
 CODE_SPAN = re.compile(r"`[^`\n]*`")
 LINK_DESTINATION = re.compile(r"\]\([^)\n]*\)")
 TABLE_TERM = re.compile(r"^\|\s*\*\*([^*]+)\*\*", re.MULTILINE)
+MARK = re.compile(r"`([^`\n]*)`|\*\*([^*\n]+)\*\*")
 
 CARRIED = "message_contains"
 DESCRIPTION = "description"
@@ -128,8 +131,8 @@ class Vocabulary:
     """What the contract states, and the words it refuses.
 
     `names` holds every term the contract states, in each form a sentence
-    inflects it to. `built` holds each form of a word only a section stating
-    no behaviour carries, against that section's name. `avoided` holds each
+    inflects it to. `built` holds each form of a build word, against the
+    name of the section stating no behaviour that marks it. `avoided` holds each
     term the glossary deliberately does not use, against the reason it
     gives.
     """
@@ -194,6 +197,11 @@ def prose(text: str) -> str:
     return LINK_DESTINATION.sub("]", CODE_SPAN.sub(" ", text))
 
 
+def marked(text: str) -> list[str]:
+    """Every term one text marks: a code span's code, and a bold term."""
+    return [code or bold for code, bold in MARK.findall(text)]
+
+
 def registered(text: str) -> list[str]:
     """Every term the contract defines, as its tables name them."""
     return [plain(term).strip() for term in TABLE_TERM.findall(text)]
@@ -228,9 +236,10 @@ def stated(design: str, glossary: str, documentation: str) -> Vocabulary:
     The prose of the design's behavioural sections states the contract's
     own words, the design's clause names state what it calls things, the
     glossary's terms define them, the documented invocation and the schema
-    declare its interface. A word the prose of a section stating no
-    behaviour carries and none of those states is a build's, the design
-    divided as `conformance.partition` divides it.
+    declare its interface. A word of a term a section stating no behaviour
+    marks, as `marked` reads it, that none of those states in any of its
+    forms is a build's, the design divided as `conformance.partition`
+    divides it. A word that section writes unmarked is not.
     """
     behavioural, silent = partition(design)
     names: set[str] = set()
@@ -248,7 +257,7 @@ def stated(design: str, glossary: str, documentation: str) -> Vocabulary:
                 names |= forms(word)
     built: dict[str, str] = {}
     for section, carried in silent.items():
-        for word in WORD.findall(prose(carried)):
+        for word in WORD.findall(" ".join(marked(carried))):
             spellings = forms(word)
             if spellings & names:
                 continue
@@ -306,8 +315,8 @@ def refused(
     """Why the contract refuses one word a claim states, or nothing.
 
     An avoided term is refused whatever the design's prose states, where
-    the claim is one `avoiding` marks. A word only a section stating no
-    behaviour carries is refused whatever its shape, unless it is a word of
+    the claim is one `avoiding` marks. A build word, as `stated` reads it,
+    is refused whatever its shape, unless it is a word of
     the `tree` the claim's fixture carries, which a claim quoting that tree
     states as the tree's. A shaped word is refused where the contract does
     not name it.
@@ -322,8 +331,8 @@ def refused(
     for spelling in [] if spellings & set(tree) else sorted(spellings):
         if spelling in vocabulary.built:
             return (
-                f"is a word only the design's {vocabulary.built[spelling]!r} "
-                "section carries, which states no behaviour"
+                f"is a build word the design's {vocabulary.built[spelling]!r} "
+                "section marks, which states no behaviour"
             )
     if shaped(term, opening) and not PATH_NAME.search(term):
         return UNNAMED
@@ -470,8 +479,8 @@ def main() -> int:
         return 1
     print(
         "\nindependence check: every shaped term of every fixture declaration and "
-        "every report entry is one the contract names, none is a word only a "
-        "section stating no behaviour carries, and no identity or description "
+        "every report entry is one the contract names, none is a build word a "
+        "section stating no behaviour marks, and no identity or description "
         "states an avoided term"
     )
     return 0

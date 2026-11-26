@@ -15,16 +15,16 @@ written in is passed over however unfamiliar it is, because ordinary prose
 is not what the check is looking for.
 
 Two kinds of word are refused whatever their shape. The design supplied here
-carries a section stating no behaviour, and a word only that section
-carries is reported in a declaration, in a fixture's identity and in the
-report entry naming that fixture, while a word it shares with a
-behavioural section passes. The glossary supplied here names terms it
-deliberately does not use, and a description or a fixture identity stating
-one, in any segment of the identity's path, is reported with the reason the
-glossary gives.
+carries a section stating no behaviour, and a word only that section marks
+is reported in a declaration, in a fixture's identity and in the report
+entry naming that fixture, while a word it writes unmarked, and a term it
+marks that a behavioural section also states, pass. The glossary supplied
+here names terms it deliberately does not use, and a description or a
+fixture identity stating one, in any segment of the identity's path, is
+reported with the reason the glossary gives.
 
 One case reads the design the README pins in place of the one supplied here,
-so a declaration naming the build words that design states apart from its
+so a declaration naming a build word that design marks apart from its
 behaviour is shown reported over the contract the corpus is held to.
 """
 
@@ -62,8 +62,8 @@ DESIGN = (
 
 ## Design status
 
-The production build ships as one crate, and the oracle stays in use beside
-it. Each build emits the regions the sections below state.
+The production build ships as one `crate`; meanwhile the **oracle** stays in
+use beside it. Each **build** emits the regions the sections below state.
 
 ## File heading
 
@@ -367,17 +367,22 @@ def test_a_declaration_naming_the_pinned_design_s_build_words_is_reported(
     corpus = fixture(
         tmp_path / "fixtures",
         "a-boundary-between-emitted-regions",
-        manifest("The crate and the wheel emit two regions with a blank line."),
+        manifest("The pulldown-cmark parser emits two regions with a blank line."),
     )
     found = corpus_references(corpus, pinned)
-    assert [reference.found for reference in found] == ["crate", "wheel"]
-    assert all(
-        "'Production build obligations' section" in reference.reason
-        for reference in found
-    )
+    assert [reference.found for reference in found] == ["cmark", "pulldown"]
+    assert all("states no behaviour" in reference.reason for reference in found)
 
 
-def test_a_word_a_silent_section_shares_with_the_contract_is_admitted(
+def test_a_word_a_silent_section_writes_unmarked_is_admitted(
+    vocabulary: Vocabulary,
+) -> None:
+    assert "meanwhile" not in vocabulary.names
+    claim = "Meanwhile the regions are emitted with one blank line between them."
+    assert scan(claim, "where", vocabulary) == []
+
+
+def test_a_term_a_silent_section_marks_and_the_contract_states_is_admitted(
     vocabulary: Vocabulary,
 ) -> None:
     assert "build" in vocabulary.names
