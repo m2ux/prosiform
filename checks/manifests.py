@@ -133,9 +133,7 @@ class UnknownFixture(ValueError):
 
     def __init__(self, names: Sequence[str]) -> None:
         self.names = tuple(names)
-        super().__init__(
-            "no fixture carries the identity " + ", ".join(self.names)
-        )
+        super().__init__("no fixture carries the identity " + ", ".join(self.names))
 
 
 def selected(names: Sequence[str], corpus: Path = CORPUS) -> list[Path]:

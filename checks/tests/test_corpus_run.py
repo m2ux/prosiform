@@ -324,7 +324,9 @@ def test_the_whole_corpus_runs_against_the_build(
     monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
     assert main(tmp_path / "corpus") == 0
     printed = capsys.readouterr().out.splitlines()
-    assert "corpus check: 3 fixture(s), 3 pass, 0 fail, 0 awaited, 0 unexpected pass" in printed
+    assert printed[-1] == (
+        "corpus check: 3 fixture(s), 3 pass, 0 fail, 0 awaited, 0 unexpected pass"
+    )
     for name in ("one", "two", "three"):
         assert f"{name}: pass" in printed
 
