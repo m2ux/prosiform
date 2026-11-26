@@ -40,6 +40,12 @@
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
 #
+# `make triage` runs the corpus the same way and names each fixture the run
+# fails under the drift category its run falls in, and each whose run failed
+# in itself apart. It reports and writes nothing, so `make check` leaves it
+# out. ARGS passes its options through: `--only CATEGORY` and the identities
+# of the fixtures to triage.
+#
 # `make harness` holds the checks' own tests: the manifest schema and its
 # cases, the corpus runner's comparison, the catalogue, the conformance report
 # and the documents the checks read. They need no configured build.
@@ -76,7 +82,7 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render examples eval-diagrams
+.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence triage render examples eval-diagrams
 
 CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
@@ -101,6 +107,9 @@ eval-harness:
 
 corpus:
 	$(UV_RUN) python checks/corpus.py
+
+triage:
+	$(UV_RUN) python checks/triage.py $(ARGS)
 
 smoke:
 	python3 checks/smoke.py

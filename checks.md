@@ -16,7 +16,7 @@ make check
 make check-all
 ```
 
-Three commands sit outside it, because each needs a tool or a budget the others do not; a fourth, `make eval-harness`, holds the diagram-following eval's own tests, which are dispatched by hand. See [Outside `make check`](#outside-make-check).
+Three commands sit outside it, because each needs a tool or a budget the others do not; a fourth, `make eval-harness`, holds the diagram-following eval's own tests, which are dispatched by hand; and `make triage` reads a red corpus run rather than checking anything. See [Outside `make check`](#outside-make-check).
 
 ## When Continuous Integration Runs
 
@@ -56,6 +56,7 @@ A pull request that touches none of those paths is reported as not checked: the 
 - **Fixtures.** Every fixture matches the [manifest schema](fixtures/README.md).
 - **Diagnostic codes.** Each catalogue of diagnostic codes is exactly the set the design declares.
 - **Runner.** The runner decides a fixture's result from its manifest and files alone, and tells a run that failed in itself from one whose output moved.
+- **Triage.** [Drift triage](#drift-triage) names each fixture under its own category, reports a selected category alone, and reports nothing for a passing corpus.
 - **Check targets.** `make check-all` runs every check of the set and names each that failed, and `make check` stops at the first.
 - **Check readings.** Each check parses its own input correctly on cases written to be misread, and the heading-slug rule generates the anchors GitHub generated for a captured document.
 - **Authoring guidance.** Each worked bundle command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the bundler's grammar; the architecture lists every package module. The invocation guide recommends hyphens rather than underscores in names.
@@ -132,6 +133,21 @@ These two checks keep the corpus tied to the design rather than to any one build
 | `make eval-harness` | The diagram-following eval's corpus, scorer, runner and report are well formed. Dispatched by hand, because it proves what a change to the eval changed and not what the build does. See [The eval harness](#the-eval-harness). |
 | `make examples` | Each case in [`scripts/examples.json`](scripts/examples.json) runs against the build, and its drawing under [`docs/images/`](docs/images/) shows the files the run read beside the bundles it wrote. |
 | `make eval-diagrams` | Real agents follow the diagram-following workflows over the default matrix, and the report gives each cell's pass rate. See [The Diagram-Following Eval](#the-diagram-following-eval). |
+| `make triage` | Nothing: it reports each fixture the corpus run fails under the drift category its run falls in, and writes no fixture. See [Drift Triage](#drift-triage). |
+
+### Drift Triage
+
+`make triage` runs the corpus as `make corpus` does and reads each fixture the run fails. A passing or awaited fixture is no drift, and a tree the corpus run passes produces no report.
+
+- **Run failed in itself.** Named apart from every category, as `run failed in itself`: its output is no expectation.
+- **Run reports something else.** `status` for another exit status, `streams` for other diagnostics or standard output.
+- **Bundles laid out otherwise.** `layout` for another number of bundles than declared, or bundles outside one folder of the run's own; `names` for the declared number under another name.
+- **Bundle content moved.** `inserted`, `removed`, `rewritten` one line for one in place, or `both`. A newline spelled another way is a line rewritten.
+- **Selecting.** `ARGS="--only CATEGORY"` reports one category alone, and identities in `ARGS` limit the run to those fixtures.
+
+```bash
+make triage ARGS="--only rewritten"
+```
 
 ### Rendering
 
@@ -152,7 +168,7 @@ These two checks keep the corpus tied to the design rather than to any one build
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make examples` and `make eval-diagrams`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make triage`, `make examples` and `make eval-diagrams`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
 - **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 
@@ -163,7 +179,7 @@ These two checks keep the corpus tied to the design rather than to any one build
 
 ### Choosing the Build Under Test
 
-`make corpus`, `make invocation`, `make conformance` and `make independence` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation and one declared surface bind every implementation of the contract.
+`make corpus`, `make triage`, `make invocation`, `make conformance` and `make independence` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation and one declared surface bind every implementation of the contract.
 
 `PROSIFORM_BUILD` holds that build's command line, split the way a shell splits one. A corpus run resolves it from the fixture's own directory.
 
