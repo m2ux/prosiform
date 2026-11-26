@@ -13,6 +13,8 @@ The row belongs to the repository checks epic, whose rows state a rule a check m
 | Artifact | Purpose |
 | --- | --- |
 | [w09.md](w09.md) | Work item for W09. |
+| [test-evidence.md](test-evidence.md) | The check's tests, its run over the `python/v0.35.0` release commit with real and faulty tags, and `make check-all`. |
+| [run.py](run.py) | Runs `checks/releases.py` over a named repository. |
 
 ## Links
 
