@@ -14,6 +14,8 @@ A change to bundle text or names is then read as a diff, not typed into each fix
 | --- | --- |
 | [w03.md](w03.md) | Work item for W03. |
 | [w04.md](w04.md) | Work item for W04. |
+| [test-results.md](test-results.md) | Each test's procedure and observed result, and the real-corpus trial. |
+| [real-corpus-restate.diff](real-corpus-restate.diff) | What restatement wrote over three revertibly staled real fixtures. |
 
 ## Links
 

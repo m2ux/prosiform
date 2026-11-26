@@ -1,0 +1,45 @@
+diff --git a/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/expected/investigate-gamma.bundle.md b/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/expected/investigate-gamma.bundle.md
+deleted file mode 100644
+index 081c88093..000000000
+--- a/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/expected/investigate-gamma.bundle.md
++++ /dev/null
+@@ -1,19 +0,0 @@
+-# § Instructions
+-
+-Run `pf`, then follow the guidance it prints. Follow [Investigate](#investigate) next.
+-
+-# Investigate
+-
+-## Given
+-
+-Write the case number as [the rules](#tests) say.
+-
+-## Steps
+-
+-1. Read the case file.
+-
+-# Beta Rules
+-
+-### Tests
+-
+-Run the beta tests.
+diff --git a/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/manifest.toml b/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/manifest.toml
+index 3d3e88974..5eb91f966 100644
+--- a/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/manifest.toml
++++ b/fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish/manifest.toml
+@@ -17,5 +17,5 @@ diagnostics = []
+ bundles = [
+   "expected/guide.bundle.md",
+   "expected/investigate-alpha.bundle.md",
+-  "expected/investigate-gamma.bundle.md",
++  "expected/investigate-beta.bundle.md",
+ ]
+diff --git a/fixtures/dispatch/a-dispatched-section-of-fields/expected/plan__fields.bundle.md b/fixtures/dispatch/a-dispatched-section-of-fields/expected/plan__fields.bundle.md
+index 264a7407c..098099c04 100644
+--- a/fixtures/dispatch/a-dispatched-section-of-fields/expected/plan__fields.bundle.md
++++ b/fixtures/dispatch/a-dispatched-section-of-fields/expected/plan__fields.bundle.md
+@@ -13,4 +13,3 @@ Run `pf`, then follow the guidance it prints. Follow [Plan](#plan) next.
+ #### Owner
+ 
+ - The person accountable for it.
+-stale line
