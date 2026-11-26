@@ -1,4 +1,4 @@
-description = "A link naming a declaring document above the writing document's directory is bundled and its destination rewritten, where the same tree under a declared root at the writing document's directory would have carried it as a citation: the boundary is derived from the links the document writes, so it holds the parent directory the link names."
+description = "A link naming a declaring document above the writing document's directory is bundled and its destination rewritten, where the same tree under a declared root at the writing document's directory would have carried it as a citation: a link resolves from the directory of the file that wrote it, and the target's own declaration decides whether it is bundled."
 
 clauses = [
   "File-owned invocation conformance cases — Target declarations, a target above the writing document's directory bundled",
