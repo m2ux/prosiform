@@ -1,4 +1,4 @@
-description = "A composed section's subsection links a sibling subsection, and an ordinary link also includes that subsection; the contribution's link points at its own copy of the sibling, and the included group's link at the sibling the group carries."
+description = "A composed section's subsection links a sibling subsection, and an ordinary link also bundles that subsection; the contribution's link points at its own copy of the sibling, and the linked group's link at the sibling the group carries."
 
 clauses = [
   "Section composition — The source of composed content",

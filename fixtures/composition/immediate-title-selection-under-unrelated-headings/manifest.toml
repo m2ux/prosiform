@@ -1,4 +1,4 @@
-description = "An immediate composition selects the matching complete names from its title, including a multiword name and Unicode case, and reads the cached page and reviewed notes under unrelated headings."
+description = "An immediate composition selects the matching complete names from its title, a multiword name and Unicode case among them, and reads the cached page and reviewed notes under unrelated headings."
 
 clauses = [
   "Section composition — Presets and subst",
