@@ -64,7 +64,7 @@ RENDERED: dict[str, list[str]] = {
     "rewriting/a-diagram-click-destination": ["#open"],
     "rewriting/a-diagram-short-click-destination": ["#open", "#closing"],
     "rewriting/every-click-on-one-diagram-line": ["#open", "#closed"],
-    "reference/an-html-anchor-mermaid-draws-as-no-anchor-is-text": ["#plan"],
+    "reference/an-html-link-a-renderer-draws-as-no-link-is-text": ["#plan"],
     "rewriting/a-swimlanes-diagram-click-in-each-form": [
         "#draft",
         "#review",
@@ -77,7 +77,7 @@ RENDERED: dict[str, list[str]] = {
     "rewriting/a-class-diagram-link-destination": ["#ticket", "#review"],
     "rewriting/a-sequence-diagram-link-destination": ["#client"],
     "rewriting/a-sequence-diagram-links-line-destinations": ["#server", "#operations"],
-    "rewriting/a-sequence-diagram-link-and-links-line-anchors": [
+    "rewriting/a-sequence-diagram-link-and-links-line-destinations": [
         "#client",
         "#server",
         "#operations",

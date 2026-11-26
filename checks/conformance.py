@@ -64,11 +64,12 @@ can state: it binds how a build goes about its work, what a calling wrapper
 does with the output, or how sources are authored, and the outcome it
 serves is stated by other clauses carrying fixtures of their own. That is a
 different thing from a section of the design stating no behaviour at all. A
-section naming what the project has decided, what remains to be proven once
-implementation is authorized, or what an upstream contribution would say
-states no rule a corpus could cover, so it is declared here and leaves the
-inventory of clauses entirely, it and the rules beneath it: a heading that
-can carry no fixture is not a gap, and counting it as one measures nothing.
+section naming what the project has decided, what a build is made with,
+what remains to be proven once implementation is authorized, or what an
+upstream contribution would say states no rule a corpus could cover, so it
+is declared here and leaves the inventory of clauses entirely, it and the
+rules beneath it: a heading that can carry no fixture is not a gap, and
+counting it as one measures nothing.
 
 The design is read from the branch and path the README's Design link names,
 as the vocabulary check reads the same document, so no path into a dated
@@ -236,6 +237,13 @@ SECTIONS = (
         reason=(
             "it states what has been decided about each build and what each "
             "must meet, and no outcome a run produces"
+        ),
+    ),
+    Declaration(
+        name="Production build obligations",
+        reason=(
+            "it names what a build is made with, its parser among them, and no "
+            "outcome a run produces"
         ),
     ),
     Declaration(

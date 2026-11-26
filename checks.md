@@ -126,7 +126,7 @@ These two checks keep the corpus tied to the design rather than to any one build
 - **The rule.** Any term written the way a type, function, field, constant, package or language is written must be one the contract names.
 - **Where contract names come from.** The prose of the design's behavioural sections and its clause names, the terms the [glossary](docs/glossary.md) defines, and the interface the contract declares.
 - **Build words.** A word only a design section stating no behaviour carries is refused whatever its shape, unless it names a file the fixture carries.
-- **Avoided terms.** A fixture description stating a term the glossary deliberately does not use is refused, with the reason the glossary gives.
+- **Avoided terms.** A fixture description or identity stating a term the glossary deliberately does not use, in any segment of the identity's path, is refused, with the reason the glossary gives.
 - **Needs a build.** It renders the conformance report, so it fails when no build is configured.
 
 ### Releases
