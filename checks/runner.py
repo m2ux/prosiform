@@ -122,6 +122,15 @@ class Difference:
     detail: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class Written:
+    """One file a run created: the folder of the run it sits in, and its bytes."""
+
+    folder: str | None
+    name: str
+    data: bytes
+
+
 class State(Enum):
     """The three states a fixture's verdict reaches, each holding its report label.
 
@@ -136,13 +145,18 @@ class State(Enum):
 
 @dataclass(frozen=True)
 class Result:
-    """One fixture's verdict and the run it was decided from."""
+    """One fixture's verdict and the run it was decided from.
+
+    `written` holds each file the run created, in path order, and is empty
+    for a run that wrote nothing or never started.
+    """
 
     fixture: str
     differences: tuple[Difference, ...]
     exit_status: int | None
     stdout: bytes
     stderr: bytes
+    written: tuple[Written, ...] = ()
 
     @property
     def passed(self) -> bool:
@@ -311,15 +325,6 @@ def entries(*directories: Path) -> set[Path]:
         for walked, folders, names in os.walk(directory)
         for name in [*folders, *names]
     }
-
-
-@dataclass(frozen=True)
-class Written:
-    """One file a run created: the folder of the run it sits in, and its bytes."""
-
-    folder: str | None
-    name: str
-    data: bytes
 
 
 def collected(created: set[Path]) -> list[Written]:
@@ -650,4 +655,5 @@ def run_fixture(fixture: Path, corpus: Path = CORPUS) -> Result:
         completed.returncode,
         completed.stdout,
         completed.stderr,
+        tuple(written),
     )

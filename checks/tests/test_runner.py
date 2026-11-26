@@ -374,6 +374,17 @@ def test_a_file_the_run_writes_is_removed(
     assert not (fixture / "guide").exists()
 
 
+def test_the_result_carries_each_file_the_run_wrote(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Other\n"))
+    written = run_fixture(fixture).written
+    assert [(one.folder, one.name, one.data) for one in written] == [
+        (RUN_FOLDER, BUNDLE_NAME, b"# Other\n")
+    ]
+
+
 def test_a_file_written_outside_a_folder_of_the_run_is_reported(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
