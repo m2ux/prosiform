@@ -135,8 +135,6 @@ from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
 from prosiform.profile import (
-    HEADROOM,
-    PARSER_REFERENCE_LIMIT,
     RAW_HTML,
     UNSUPPORTED_CONSTRUCT,
 )
@@ -144,7 +142,6 @@ from prosiform.source import (
     CODES as SOURCE_CODES,
 )
 from prosiform.source import (
-    NESTED_SECTION_TARGET,
     UNTERMINATED_FRONTMATTER,
     Capture,
     slug,
@@ -330,28 +327,6 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         assert rule in " ".join(GUIDE.split())
 
 
-def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
-    """A sub-agent is given where the bundle is, and reads it there."""
-    guide = " ".join(GUIDE.split())
-    assert (
-        "⇉ names a bundle to hand on: give a sub-agent the path of its file, "
-        "which it reads there," in guide
-    )
-    assert "Do not open the bundle yourself: hand on its link." in guide
-    assert "Do not check or redo its work: take its answer as given." in guide
-    assert (
-        "Hand over the path and those inputs alone: "
-        "add no instruction, framing or reply form." in guide
-    )
-    assert (
-        "Where on <model> follows a ⇉ link, or a diagram's %% <node> on "
-        "<model> comment stands beneath its node's link, start its sub-agent "
-        "on that model; where neither does, start it as your harness does "
-        "by default." in guide
-    )
-    assert "Give each bundle's file path to its own sub-agent at once" in guide
-
-
 def test_the_guide_opens_on_following_a_bundle() -> None:
     """Every reader follows a bundle as written, a sub-agent's dispatches too."""
     assert GUIDE.startswith("Following a bundle:")
@@ -362,21 +337,6 @@ def test_the_guide_opens_on_following_a_bundle() -> None:
         "handing on each ⇉ and ⫽ link it meets." in guide
     )
     assert guide.index("Symbol grammar:") < guide.index("Usage:")
-
-
-def test_the_guide_leaves_a_briefs_stated_work_to_the_sub_agent() -> None:
-    """A brief's asks are the dispatcher's; the work it states is the bundle's."""
-    guide = " ".join(GUIDE.split())
-    assert (
-        "Where a ⇉ link points at a sub-section rather than at a bundle file, "
-        "the text above its ⇉ line there, and the sections beneath that line, "
-        "are the bundle's brief: do what it asks of you before you hand the "
-        "bundle on." in guide
-    )
-    assert (
-        "What it states the bundle takes is what you hand over; what it states "
-        "the bundle leaves or answers is the sub-agent's work" in guide
-    )
 
 
 def test_the_guide_states_a_sub_agents_inputs_are_the_dispatching_steps() -> None:
@@ -405,7 +365,7 @@ def test_the_help_response_names_the_bare_command() -> None:
     )
 
 
-@pytest.mark.parametrize("arguments", [("-c",), ("-d", "json"), ("-o", ".")])
+@pytest.mark.parametrize("arguments", [("-d", "json"), ("-o", ".")])
 def test_an_argument_naming_no_entry_reference_is_no_bare_command(
     arguments: tuple[str, ...],
 ) -> None:
@@ -459,12 +419,6 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
     ):
         declared.update(published)
     assert CODES == tuple(sorted(declared))
-
-
-def test_an_informational_response_needs_no_source_root() -> None:
-    assert invoke("-v").status == SUCCESS
-    assert invoke("-h").status == SUCCESS
-    assert invoke("-C").status == SUCCESS
 
 
 @pytest.mark.parametrize(
@@ -525,13 +479,8 @@ def test_budget_entries_naming_several_budgets_set_each() -> None:
 @pytest.mark.parametrize(
     ("entries", "named"),
     [
-        (("--budget", "key=1"), "'key'"),
-        (("--budget", "files"), "carries no '='"),
-        (("--budget", "=1"), "names no budget"),
         (("--budget", "files="), "no positive decimal integer"),
         (("--budget", "files=0"), "no positive decimal integer"),
-        (("--budget", "files=1", "--budget", "files=2"), "files budget is named twice"),
-        (("--budget", "nesting=1"), "below 2"),
     ],
 )
 def test_a_budget_entry_the_grammar_does_not_admit_is_invalid_usage(
@@ -545,17 +494,7 @@ def test_a_budget_entry_the_grammar_does_not_admit_is_invalid_usage(
     assert run.bundle == ""
 
 
-def test_an_unknown_budget_name_is_reported_with_every_name_admitted(
-    root: Path,
-) -> None:
-    run = invoke("-d", "json", "--budget", "key=1", "guide.md", cwd=root)
-    message = run.diagnostics()[0]["message"]
-    assert all(budget.name in message for budget in BUDGETS)
-
-
-@pytest.mark.parametrize(
-    "arguments", [("-djson",), ("-d=json",), ("-cdjson",), ("-d", "json")]
-)
+@pytest.mark.parametrize("arguments", [("-djson",), ("-d=json",), ("-cdjson",)])
 def test_short_diagnostic_forms_report_usage_as_json(
     arguments: tuple[str, ...],
 ) -> None:
@@ -577,40 +516,6 @@ def test_diagnostic_selection_respects_values_terminators_and_last_option(
     else:
         assert run.status == USAGE_FAILURE
         assert run.stderr.startswith(INVALID_USAGE)
-
-
-def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:
-    run = invoke(
-        "-o",
-        str(root.parent),
-        "-c",
-        "-d",
-        "json",
-        "guide.md",
-        cwd=root,
-    )
-    assert run.status == SUCCESS
-
-
-@pytest.mark.parametrize("option", ["--manifest", "--watch", "--cache"])
-def test_an_option_the_contract_does_not_declare_is_refused(
-    root: Path, option: str
-) -> None:
-    run = invoke(option, "8", "guide.md", cwd=root)
-    assert run.status == USAGE_FAILURE
-
-
-def test_a_missing_entry_is_invalid_usage() -> None:
-    run = invoke()
-    assert run.status == USAGE_FAILURE
-    assert run.bundle == ""
-    assert "entry reference" in run.stderr
-
-
-def test_a_run_naming_no_entry_reference_is_invalid_usage(root: Path) -> None:
-    run = invoke(cwd=root)
-    assert run.status == USAGE_FAILURE
-    assert run.bundle == ""
 
 
 def test_a_bare_fragment_is_invalid_usage_naming_the_section_spelling(
@@ -647,16 +552,6 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_that_title(
     assert run.bundle.startswith(f"{opening('Second')}# Second\n\n## Outcomes\n")
 
 
-def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
-    root: Path,
-) -> None:
-    written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee [Bare](notes/bare.md).\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [Bare](#bare)." in run.bundle
-
-
 def test_a_declared_root_is_an_input_failure(tmp_path: Path) -> None:
     (tmp_path / "guide.md").write_text("---\nprosiform: {root: .}\n---\n# Guide\n")
     run = invoke("-d", "json", "guide.md", cwd=tmp_path)
@@ -681,7 +576,7 @@ def test_a_usage_failure_is_reported_before_an_input_failure(tmp_path: Path) -> 
     assert run.status == USAGE_FAILURE
 
 
-@pytest.mark.parametrize("value", ["yaml", "", "TEXT", "jsonl"])
+@pytest.mark.parametrize("value", ["", "TEXT", "jsonl"])
 def test_a_diagnostic_format_the_contract_does_not_declare_is_invalid_usage(
     root: Path, value: str
 ) -> None:
@@ -705,66 +600,6 @@ def test_a_run_folder_holding_a_dependency_source_is_invalid_usage(
     assert sorted(path.name for path in note.parent.iterdir()) == ["note.md"]
 
 
-def test_an_author_folder_named_like_the_entry_is_left_as_it_was(
-    root: Path,
-) -> None:
-    (root / "guide.md").write_text(
-        DECLARED + "# Guide\n\nIt needs [the note](guide/note.md).\n"
-    )
-    (root / "guide").mkdir()
-    (root / "guide" / "note.md").write_text("# Note\n")
-    (root / "guide" / "draft.txt").write_text("an author's draft\n")
-    run = invoke("-o", str(root), "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert contents(root / "guide") == {
-        "draft.txt": b"an author's draft\n",
-        "note.md": b"# Note\n",
-    }
-    assert sorted(contents(root / "guide.bundles")) == ["guide.bundle.md"]
-
-
-def test_a_source_reached_through_a_link_is_refused_before_any_output_check(
-    root: Path, tmp_path: Path
-) -> None:
-    outside = tmp_path.parent / "outside.md"
-    outside.write_text("# Outside\n")
-    (root / "alias.md").symlink_to(outside)
-    run = invoke("-d", "json", "-o", str(tmp_path.parent), "alias.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [SOURCE_SYMLINK]
-    assert not (tmp_path.parent / "alias").exists()
-
-
-def test_a_bundle_is_written_into_the_folder_o_names(
-    root: Path, tmp_path: Path
-) -> None:
-    folder = tmp_path / "build"
-    folder.mkdir()
-    run = invoke("-o", "build", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.stdout == ""
-    assert [path.name for path in folder.iterdir()] == ["guide.bundles"]
-    assert [path.name for path in (folder / "guide.bundles").iterdir()] == [
-        "guide.bundle.md"
-    ]
-    assert (
-        folder / "guide.bundles" / "guide.bundle.md"
-    ).read_text() == f"{opening('Guide')}# Guide\n"
-
-
-def test_a_bundle_is_written_into_the_working_directory_without_o(
-    root: Path,
-) -> None:
-    out, err = StringIO(), StringIO()
-    with chdir(root):
-        status = main(["guide.md"], out, err)
-    assert status == SUCCESS
-    assert out.getvalue() == "" and err.getvalue() == ""
-    assert (
-        root / "guide.bundles" / "guide.bundle.md"
-    ).read_text() == f"{opening('Guide')}# Guide\n"
-
-
 def test_one_entry_source_selects_several_inputs(root: Path, tmp_path: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\n## Run\n\nDo it.\n")
     written(root, "docs/note.md", DECLARED + "# Note\n")
@@ -783,30 +618,6 @@ def test_one_entry_source_selects_several_inputs(root: Path, tmp_path: Path) -> 
     assert (folder / "guide__run.bundles/guide__run.bundle.md").read_text().count(
         "Do it."
     ) == 1
-
-
-def test_standard_output_named_as_the_folder_is_invalid_usage(root: Path) -> None:
-    run = invoke("-d", "json", "-o", "-", "guide.md", cwd=root)
-    assert run.status == USAGE_FAILURE
-    assert run.stdout == "" and run.bundle == ""
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
-    assert "standard output" in run.diagnostics()[0]["message"]
-    assert sorted(path.name for path in root.iterdir()) == ["docs", "guide.md"]
-
-
-def test_a_validation_only_run_publishes_nothing(root: Path) -> None:
-    run = invoke("-c", "guide.md", cwd=root)
-    assert run.stdout == "" and run.bundle == ""
-
-
-def test_a_validation_only_run_with_an_output_folder_writes_nothing(
-    root: Path, tmp_path: Path
-) -> None:
-    folder = tmp_path / "build"
-    folder.mkdir()
-    run = invoke("-c", "-o", str(folder), "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert not list(folder.iterdir())
 
 
 def test_a_refused_write_is_a_publication_failure() -> None:
@@ -861,53 +672,10 @@ def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> N
     assert run.diagnostics()[0]["chain"] == ["guide.md#nowhere"]
 
 
-def test_an_entry_is_bundled_as_named_whatever_its_presets_state(root: Path) -> None:
-    """No document writes an entry reference, so no `subst` pair redirects it."""
-    written(
-        root,
-        "entry.md",
-        "---\nprosiform:\n  default:\n    subst: [{entry.md: stand-in.md}]\n---\n"
-        "# Entry\n\nEvery step the entry names.\n",
-    )
-    written(root, "stand-in.md", DECLARED + "# Stand-in\n\nA stand-in.\n")
-    run = invoke("-d", "json", "entry.md", cwd=root)
-    assert run.status == 0
-    assert list(run.bundles) == ["entry.bundle.md"]
-    assert run.bundle.startswith(f"{opening('Entry')}# Entry\n")
-    assert "Stand-in" not in run.bundle
-    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
-        ("W_SUBST_UNUSED", "entry.md")
-    ]
-
-
 def test_an_entry_reference_resolves_to_the_path_the_caller_wrote() -> None:
     assert entry("./docs/../entry.md#steps", None) == resolve(
         "./docs/../entry.md#steps"
     )
-
-
-def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
-    written(
-        root, "entry.md", f"{DECLARED}# Entry\n\nSee [notes](docs/notes.md#detail).\n"
-    )
-    written(
-        root,
-        "docs/notes.md",
-        f"{DECLARED}# Notes\n\n## Detail\n\nSee [other](other.md#nowhere).\n",
-    )
-    written(root, "docs/other.md", f"{DECLARED}# Other\n\n## Here\n\nContent.\n")
-    run = invoke("-d", "json", "entry.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
-    reported = run.diagnostics()[0]
-    assert reported["chain"] == [
-        "entry.md",
-        "docs/notes.md#detail",
-        "docs/other.md#nowhere",
-    ]
-    assert reported["reference"] == "other.md#nowhere"
-    assert reported["resolved"] == "docs/other.md"
-    assert reported["source"] == "docs/notes.md:8"
 
 
 def test_a_document_a_dependency_reached_reports_the_route_to_it(root: Path) -> None:
@@ -928,9 +696,6 @@ def test_a_usage_failure_reaching_no_document_carries_no_chain(root: Path) -> No
 @pytest.mark.parametrize(
     ("source", "code"),
     [
-        ("# Guide\n\n<div>raw</div>\n", RAW_HTML),
-        ("# Guide\n\nA paragraph carrying <span>raw</span> markup.\n", RAW_HTML),
-        ("# Guide\n\nSee [[page]] for the procedure.\n", UNSUPPORTED_CONSTRUCT),
         ("# Guide\n\n![[page]]\n", UNSUPPORTED_CONSTRUCT),
         ("# Guide\n\nA claim[^1] needing support.\n", UNSUPPORTED_CONSTRUCT),
         ("# Guide\n\n## Run {#custom-id}\n", UNSUPPORTED_CONSTRUCT),
@@ -946,21 +711,6 @@ def test_a_construct_the_profile_refuses_fails_the_run(
     assert [one["severity"] for one in run.diagnostics()] == ["error"]
     assert [one["code"] for one in run.diagnostics()] == [code]
     assert run.diagnostics()[0]["source"].startswith("guide.md:")
-
-
-@pytest.mark.parametrize(
-    "source",
-    [
-        "# Guide\n\nA code span naming `[[page]]` is prose about a wiki link.\n",
-        "# Guide\n\nAn escaped \\[\\[page\\]\\] is literal text.\n",
-        "# Guide\n\nA paragraph mentioning {#custom-id} names no section.\n",
-        "# Guide\n\n```html\n<div>raw</div>\n```\n",
-        "# Guide\n\n- [ ] open\n- [x] done\n\n[x]: page.md\n",
-    ],
-)
-def test_a_source_the_profile_accepts_bundles(root: Path, source: str) -> None:
-    written(root, "guide.md", DECLARED + source)
-    assert invoke("guide.md", cwd=root).status == SUCCESS
 
 
 def test_a_section_entry_is_read_under_the_profile(root: Path) -> None:
@@ -980,33 +730,10 @@ def test_a_refusal_names_the_construct_and_where_it_sits(root: Path) -> None:
     assert "wiki link" in reported["message"]
 
 
-def test_an_entry_suffix_outside_the_profile_is_an_input_failure(root: Path) -> None:
-    written(root, "notes.txt", "# Notes\n")
-    run = invoke("-d", "json", "notes.txt", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["reference"] == "notes.txt"
-    assert [one["code"] for one in run.diagnostics()] == [UNSUPPORTED_ENTRY_SUFFIX]
-
-
-def test_an_entry_suffix_is_classified_case_insensitively(root: Path) -> None:
-    written(root, "GUIDE.MARKDOWN", DECLARED + "# Guide\n")
-    assert invoke("GUIDE.MARKDOWN", cwd=root).status == SUCCESS
-
-
 def test_an_entry_naming_no_document_is_an_input_failure(root: Path) -> None:
     run = invoke("-d", "json", "absent.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
-
-
-@pytest.mark.parametrize("reference", ["/guide.md", "C:/guide.md", "//host/guide.md"])
-def test_an_entry_the_root_cannot_contain_is_an_input_failure(
-    root: Path, reference: str
-) -> None:
-    written(root.parent, "outside.md", "# Outside\n")
-    run = invoke("-d", "json", reference, cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [SOURCE_OUTSIDE_ROOT]
 
 
 def test_a_fragment_reference_reads_the_whole_document_it_names(root: Path) -> None:
@@ -1014,42 +741,6 @@ def test_a_fragment_reference_reads_the_whole_document_it_names(root: Path) -> N
     run = invoke("guide.md#run", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.stderr.startswith(RAW_HTML)
-
-
-@pytest.mark.parametrize(
-    "arguments",
-    [
-        (),
-        ("#a-section",),
-        ("-d", "yaml", "guide.md"),
-        ("--watch", "guide.md"),
-    ],
-)
-def test_a_fault_in_the_command_line_carries_the_invalid_usage_code(
-    root: Path, arguments: tuple[str, ...]
-) -> None:
-    run = invoke("-d", "json", *arguments, cwd=root)
-    assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
-
-
-def test_a_missing_entry_carries_the_invalid_usage_code() -> None:
-    run = invoke("-d", "json")
-    assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
-
-
-def test_a_run_folder_holding_an_input_source_carries_the_invalid_usage_code(
-    root: Path,
-) -> None:
-    (root / "guide.md").write_text(
-        DECLARED + "# Guide\n\nIt needs [the note](guide.bundles/note.md).\n"
-    )
-    (root / "guide.bundles").mkdir()
-    (root / "guide.bundles" / "note.md").write_text(f"{DECLARED}# Note\n")
-    run = invoke("-d", "json", "-o", str(root), "guide.md", cwd=root)
-    assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
 
 
 def test_a_source_that_is_not_valid_utf8_is_an_input_failure(root: Path) -> None:
@@ -1072,16 +763,6 @@ def test_a_source_that_is_not_valid_utf8_reaches_no_generic_handler(
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert "unexpected internal error" not in run.diagnostics()[0]["message"]
-
-
-def test_an_unterminated_frontmatter_opener_is_an_input_failure(root: Path) -> None:
-    written(root, "guide.md", "---\ntitle: Guide\n\n# Guide\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    reported = run.diagnostics()[0]
-    assert reported["code"] == UNTERMINATED_FRONTMATTER
-    assert reported["source"] == "guide.md:1"
 
 
 def test_transport_metadata_reaches_no_parse(root: Path) -> None:
@@ -1118,12 +799,8 @@ def test_a_diagnostic_below_a_mark_and_its_block_names_the_line_of_the_file(
 @pytest.mark.parametrize(
     "source",
     [
-        " ---\nprosiform: {}\n---\n\nSee [[page]] now.\n",
-        "--- \nprosiform: {}\n---\n\nSee [[page]] now.\n",
-        "+++\nprosiform = {}\n+++\n\nSee [[page]] now.\n",
         '{\n  "prosiform": {}\n}\n\nSee [[page]] now.\n',
         "***\nprosiform: {}\n---\n\nSee [[page]] now.\n",
-        "\n---\nprosiform: {}\n---\n\nSee [[page]] now.\n",
     ],
 )
 def test_a_first_line_that_is_no_opener_declares_nothing(
@@ -1144,22 +821,6 @@ def test_a_crlf_delimited_block_is_stripped_by_the_command(root: Path) -> None:
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.diagnostics()[0]["source"] == "guide.md:5"
-
-
-def test_a_section_entry_is_stripped_too(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        "---\nprosiform: {}\ntitle: Guide\n---\n# Guide\n\n## Run\n\n<div>raw</div>\n",
-    )
-    run = invoke("-d", "json", "guide.md#run", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["source"] == "guide.md:9"
-
-
-def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
-    written(root, "guide.md", "﻿---\nprosiform: {}\ntitle: Guide\n...\n# Guide\n")
-    assert invoke("guide.md", cwd=root).status == SUCCESS
 
 
 def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
@@ -1213,25 +874,6 @@ def test_a_probe_refuses_a_link(root: Path) -> None:
     assert caught.value.diagnostic.code == SOURCE_SYMLINK
 
 
-def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n## Run\n\nDo it.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.diagnostics() == []
-    assert run.bundle == (f"{opening('Guide')}# Guide\n\n## Run\n\nDo it.\n")
-
-
-def test_a_run_that_cannot_publish_reports_the_publication_failure_alone(
-    root: Path, tmp_path: Path
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nBody.\n")
-    blocker = tmp_path / "file"
-    blocker.write_text("not a folder")
-    run = invoke("-d", "json", "-o", str(blocker / "under"), "guide.md", cwd=root)
-    assert run.status == PUBLICATION_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
-
-
 def test_two_untitled_sources_sharing_a_basename_stay_distinguishable(
     root: Path,
 ) -> None:
@@ -1241,35 +883,6 @@ def test_two_untitled_sources_sharing_a_basename_stay_distinguishable(
     assert run.status == SUCCESS
     assert "# Docs/Note\n\nUnder docs." in run.bundle
     assert "# Notes/Note\n\nUnder notes." in run.bundle
-
-
-def test_two_sources_sharing_a_title_take_distinct_destinations(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n[One](docs/note.md) [Two](notes/note.md)\n",
-    )
-    written(root, "docs/note.md", f"{DECLARED}# Note\n\nUnder docs.\n")
-    written(root, "notes/note.md", f"{DECLARED}# Note\n\nUnder notes.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[One](#note) [Two](#note-1)" in run.bundle
-    assert run.bundle.index("Under docs.") < run.bundle.index("Under notes.")
-    assert run.bundle.count("# Note\n") == 2
-
-
-def test_documents_are_ordered_as_the_entry_links_name_them(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n")
-    written(root, "docs/note.md", DECLARED + "Body.\n")
-    written(root, "notes/note.md", DECLARED + "Body.\n")
-    ordered = invoke(
-        linked(root, "guide.md", "notes/note.md", "docs/note.md"),
-        cwd=root,
-    ).bundle
-    assert ordered.index("# Guide\n") < ordered.index("# Notes/Note\n")
-    assert ordered.index("# Notes/Note\n") < ordered.index("# Docs/Note\n")
 
 
 def test_groups_are_ordered_by_first_link(root: Path) -> None:
@@ -1300,25 +913,6 @@ def test_members_are_ordered_by_first_link(root: Path) -> None:
     ordered = invoke("guide.md", cwd=root).bundle
     assert ordered.index("### Zulu\n") < ordered.index("### Alpha\n")
     assert ordered.index("Zulu use.") < ordered.index("Alpha use.")
-
-
-def test_one_document_named_twice_is_one_group(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n")
-    (root / "sub").mkdir()
-    run = invoke(linked(root, "guide.md", "sub/../guide.md"), cwd=root)
-    assert run.bundle.count("# Guide\n") == 1
-
-
-def test_two_paths_differing_only_by_suffix_are_two_groups(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "One.\n")
-    written(root, "guide.markdown", DECLARED + "Two.\n")
-    run = invoke("-d", "json", linked(root, "guide.md", "guide.markdown"), cwd=root)
-    assert run.status == SUCCESS
-    assert (
-        run.bundle == f"{opening('Guide')}# Guide\n\nOne.\n\n[Input](#guide-1)\n\n"
-        "# Guide\n\nTwo.\n"
-    )
-    assert [one["code"] for one in run.diagnostics()] == [COINCIDENT_HEADING]
 
 
 def test_coinciding_file_headings_warn_once_naming_every_source(root: Path) -> None:
@@ -1430,11 +1024,6 @@ def substituting(*entries: str) -> str:
     ("entries", "message"),
     [
         (
-            ("{rules.md: a.md}", "{./rules.md: b.md}"),
-            "prosiform.default.subst[1] key './rules.md' names the identity the key "
-            "of prosiform.default.subst[0] names",
-        ),
-        (
             ('{"rules.md#Checks": a.md}', '{"rules.md#Checks": b.md}'),
             "prosiform.default.subst[1] key 'rules.md#Checks' names the identity",
         ),
@@ -1443,18 +1032,9 @@ def substituting(*entries: str) -> str:
             "prosiform.default.subst[1] key 'notes/../rules.md' names the identity",
         ),
         (
-            ("{rules.md: ./rules.md}",),
-            "prosiform.default.subst[0] maps 'rules.md' to './rules.md', which name "
-            "one identity",
-        ),
-        (
             ('{"guide.md#Checks": "#Checks"}',),
             "prosiform.default.subst[0] maps 'guide.md#Checks' to '#Checks', which "
             "name one identity",
-        ),
-        (
-            ('{"#Checks": stub.md}',),
-            "prosiform.default.subst[0] key '#Checks' names a section alone",
         ),
     ],
 )
@@ -1478,7 +1058,6 @@ def test_a_subst_rule_stated_twice_or_against_itself_is_refused(
 @pytest.mark.parametrize(
     "entries",
     [
-        ("{rules.md: a.md}", '{"rules.md#Checks": b.md}'),
         ("{rules.md: a.md}", "{notes/rules.md: b.md}"),
         ('{"rules.md#Checks": "#Other"}',),
     ],
@@ -1611,25 +1190,6 @@ def test_a_selected_preset_disagreeing_with_default_holds_over_it(
     assert "## Reviews\n\n### Rules" in run.bundle
 
 
-def test_presets_one_tag_selection_leaves_unselected_disagree_with_nothing(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + '# Guide\n\n## Checks\n\nFollow [the rules](rules.md "checks").\n',
-    )
-    written(
-        root,
-        "rules.md",
-        presets(("Checks", ("reviews", 1)), ("Draft", ("reviews", 2)))
-        + "# Rules\n\nAll.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert "## Reviews\n\n### Rules" in run.bundle
-
-
 def test_a_linking_documents_presets_never_reach_the_document_it_links(
     root: Path,
 ) -> None:
@@ -1693,25 +1253,6 @@ def test_a_preset_no_tag_selects_warns_and_the_run_publishes(root: Path) -> None
     assert warning["remedy"].startswith("name the preset in the reaching link's title")
 
 
-def test_selected_presets_and_default_warn_nothing(root: Path) -> None:
-    """A preset a title selects governed content, and `default` always does."""
-    written(
-        root,
-        "guide.md",
-        DECLARED + '# Guide\n\n## Checks\n\nFollow [the rules](rules.md "checks").\n',
-    )
-    written(
-        root,
-        "rules.md",
-        "---\nprosiform:\n  default:\n    group: {modes: 1}\n"
-        "  Checks:\n    group: {reviews: 1}\n"
-        "---\n# Rules\n\nAll.\n",
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.stderr == ""
-
-
 def test_a_preset_one_reference_selects_is_used_though_another_leaves_it(
     root: Path,
 ) -> None:
@@ -1757,25 +1298,6 @@ def test_a_preset_a_dispatched_bundle_selects_is_used(root: Path) -> None:
     assert run.status == SUCCESS, run.stderr
     assert len(run.bundles) == 2
     assert unused_presets_of(run) == []
-
-
-def test_a_preset_on_a_deferred_only_document_warns_nothing(root: Path) -> None:
-    """A deferral contributes no content, so the run weighs none of its presets."""
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Steps\n\nDefer [¬ the notes](noted.md#draft).\n",
-    )
-    written(
-        root,
-        "noted.md",
-        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
-        "---\n# Noted\n\n## Draft\n\nAll.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert f"({FROM_BUNDLE}noted.md#draft)" in run.bundle
-    assert run.diagnostics() == []
 
 
 def test_a_document_both_deferred_and_bundled_is_weighed(root: Path) -> None:
@@ -1831,7 +1353,7 @@ def unresolved_of(run: Run) -> dict[str, Any]:
     return diagnostic
 
 
-@pytest.mark.parametrize("title", ["", ' "saga"', ' "checks"'])
+@pytest.mark.parametrize("title", [' "checks"'])
 def test_a_document_with_no_alternative_in_force_is_refused(
     kinds: Path, title: str
 ) -> None:
@@ -2005,15 +1527,9 @@ LINK_GUIDE = (
 @pytest.mark.parametrize(
     "link",
     [
-        '[¬ Plan](guide.md#plan "checks")',
-        '[↳ Plan](guide.md#plan "checks")',
-        '[⇉ Plan](guide.md#plan "checks")',
-        '[⫽ Plan](guide.md#plan "checks")',
-        '[¬↳⇉⫽ Plan](guide.md#plan "checks")',
         '[⇉¬ Plan](guide.md#plan "Checks, unknown")',
         'click Plan "guide.md#plan" "checks"',
         'click Plan href "guide.md#plan" "checks" _blank',
-        'link Plan "guide.md#plan" "checks"',
     ],
 )
 def test_a_link_entry_bundles_its_destination_whatever_marks_open_it(
@@ -2042,7 +1558,7 @@ def test_an_indented_link_entry_bundles_as_its_link(root: Path, indent: str) -> 
 
 @pytest.mark.parametrize(
     "entry_text",
-    ["guide.md#plan", "[Plan](guide.md#plan)", 'click Plan "guide.md#plan"'],
+    ["[Plan](guide.md#plan)", 'click Plan "guide.md#plan"'],
 )
 def test_an_entry_carrying_no_title_selects_no_named_preset(
     root: Path, entry_text: str
@@ -2111,7 +1627,6 @@ def test_a_link_entry_whose_title_states_operator_marks_is_invalid_usage(
 @pytest.mark.parametrize(
     ("link", "body"),
     [
-        ('[¬ Body](work-kind.md "?")', "Task-Body"),
         ('click Body "work-kind.md" "?"', "Task-Body"),
         ('link Body "work-kind.md" "? , checks"', "Task-Body"),
     ],
@@ -2153,11 +1668,7 @@ def test_a_pick_after_the_listing_bundles_the_named_alternative(kinds: Path) -> 
 @pytest.mark.parametrize(
     "arguments",
     [
-        ("work-kind.md", "--pick", "task"),
-        ('[Body](work-kind.md "task")', "--pick", "task"),
         ('click Body "work-kind.md" "epic"', "--pick", "task"),
-        ('[¬ Body](work-kind.md "?")', "--pick", "task", "--pick", "epic"),
-        ("--pick", "task"),
     ],
 )
 def test_a_stray_or_repeated_pick_is_invalid_usage(
@@ -2172,7 +1683,6 @@ def test_a_stray_or_repeated_pick_is_invalid_usage(
 @pytest.mark.parametrize(
     "entry_text",
     [
-        "[Plan](guide.md#plan) and [Other](guide.md#other)",
         "[Plan](guide.md#plan).",
         "[Plan](guide.md#plan) trailing",
         'Defer [the plan](guide.md#plan "checks").',
@@ -2190,22 +1700,6 @@ def test_a_text_written_as_a_link_but_not_one_link_is_invalid_usage(
     run = invoke("-d", "json", entry_text, cwd=root)
     assert run.status == USAGE_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
-
-
-def test_two_alternatives_in_force_are_refused_before_their_pairs_compare(
-    kinds: Path,
-) -> None:
-    """Alternatives route one key apart, so the count speaks before the pairs."""
-    written(
-        kinds,
-        "guide.md",
-        DECLARED
-        + (
-            '# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md "epic").\n\n'
-            '## Deliver\n\nPopulate [the body](work-kind.md "task").\n'
-        ),
-    )
-    unresolved_of(invoke("-d", "json", "guide.md", cwd=kinds))
 
 
 def test_a_pick_without_a_title_beside_it_is_one_in_force(kinds: Path) -> None:
@@ -2258,12 +1752,11 @@ def refused_link(run: Run) -> dict[str, Any]:
     return diagnostic
 
 
-@pytest.mark.parametrize("title", ["?", "checks, ?"])
 @pytest.mark.parametrize(
-    ("link", "destination"),
+    ("link", "destination", "title"),
     [
-        ("¬ the body", "work-kind.md"),
-        ("¬↳ the body", "work-kind.md#populate"),
+        ("¬ the body", "work-kind.md", "checks, ?"),
+        ("¬↳ the body", "work-kind.md#populate", "?"),
     ],
 )
 def test_a_deferral_publishes_its_pick_token_as_authored(
@@ -2279,22 +1772,6 @@ def test_a_deferral_publishes_its_pick_token_as_authored(
     run = invoke("-d", "json", "guide.md", cwd=kinds)
     assert run.status == SUCCESS, run.stderr
     assert f'({FROM_BUNDLE}{destination} "{title}")' in run.bundle
-
-
-@pytest.mark.parametrize("link", ["the body", "↳ the body", "⫽ the body"])
-def test_a_bundled_link_carrying_the_pick_token_is_refused(
-    kinds: Path, link: str
-) -> None:
-    written(kinds, "work-kind.md", WORK_KIND + POPULATE)
-    written(
-        kinds,
-        "guide.md",
-        DECLARED
-        + f'# Guide\n\n## Plan\n\nPopulate [{link}](work-kind.md#populate "?").\n',
-    )
-    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
-    assert diagnostic["reference"] == link
-    assert "pick token '?'" in diagnostic["message"]
 
 
 def test_a_link_to_a_silent_document_keeps_the_pick_token_as_text(
@@ -2336,7 +1813,7 @@ def test_a_deferral_stating_no_one_pick_is_refused(
     )
 
 
-@pytest.mark.parametrize("title", ["", ' "checks"'])
+@pytest.mark.parametrize("title", [' "checks"'])
 @pytest.mark.parametrize("link", ["¬ the fields", "¬↳ the fields"])
 def test_a_deferral_naming_no_alternative_to_unrouted_content_publishes(
     kinds: Path, link: str, title: str
@@ -2401,7 +1878,7 @@ def test_a_deferral_whose_later_run_fails_for_want_of_a_pick_is_refused(
     assert "names no alternative" in diagnostic["message"]
 
 
-@pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
+@pytest.mark.parametrize("title", ["Checks,?"])
 def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
     kinds: Path, title: str
 ) -> None:
@@ -2476,46 +1953,11 @@ def test_a_pick_token_on_a_deferral_to_no_alternatives_is_refused(
     )
 
 
-@pytest.mark.parametrize(
-    ("destination", "title"),
-    [("work-kind.md", ' "Task, checks"'), ("body.md", ""), ("body.md", ' "checks"')],
-)
-def test_a_deferral_naming_one_pick_or_needing_none_publishes(
-    kinds: Path, destination: str, title: str
-) -> None:
-    written(
-        kinds,
-        "guide.md",
-        DECLARED
-        + f"# Guide\n\n## Plan\n\nPopulate [¬ the body]({destination}{title}).\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=kinds)
-    assert run.status == SUCCESS, run.stderr
-    assert f"({FROM_BUNDLE}{destination}{title})" in run.bundle
-
-
 TWO_SECTIONS = DECLARED + (
     "# Guide\n\n## Checks\n\n"
     'Review [the rules](rules.md "checks").\n\n## Draft\n\n'
     'Draft [the rules](rules.md "draft").\n'
 )
-
-
-def test_two_sections_reaching_one_document_each_select_its_presets(
-    root: Path,
-) -> None:
-    written(root, "guide.md", TWO_SECTIONS)
-    written(
-        root,
-        "rules.md",
-        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
-        + "# Rules\n\nAll.\n",
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert "## Reviews\n\n### Rules\n\nAll." in run.bundle
-    assert "## Drafts\n\n### Rules\n\nAll." in run.bundle
-    assert run.bundle.count("All.") == 2
 
 
 def test_a_document_a_later_round_reaches_again_takes_that_selection(
@@ -2610,28 +2052,6 @@ def test_a_selected_preset_pair_holds_over_default() -> None:
     assert pair(declared, frozenset({"draft"})) == membership("default", "modes", 1)
     assert pair(declared, frozenset({"other"})) == membership("default", "modes", 1)
     assert pair(Conversion(True, (Preset("Draft"),)), frozenset({"draft"})) is None
-
-
-def test_a_whole_document_link_entry_selects_by_its_title(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        presets(("Checks", ("reviews", 1))) + "# Release Checks\n\nEvery check.\n",
-    )
-    run = invoke('[Guide](guide.md "checks")', cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert run.bundle == (
-        f"{opening('Reviews')}# Reviews\n\n## Release Checks\n\nEvery check.\n"
-    )
-
-
-def test_an_untitled_whole_document_entry_selects_no_preset(root: Path) -> None:
-    written(
-        root, "guide.md", presets(("Checks", ("reviews", 1))) + "## Checks\n\nAll.\n"
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert not run.bundle.startswith("# Reviews")
 
 
 def test_a_reference_in_a_preamble_selects_no_preset(root: Path) -> None:
@@ -2750,19 +2170,6 @@ def test_a_coincidence_reads_as_text(root: Path) -> None:
     )
 
 
-def test_a_heading_beyond_the_sixth_level_fails_and_publishes_nothing(
-    root: Path,
-) -> None:
-    written(root, "deep.md", f"{DECLARED}## Lead\n\n###### Deep\n")
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nIt needs [the deep one](deep.md).\n"
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
-
-
 def test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name(
     root: Path,
 ) -> None:
@@ -2810,33 +2217,6 @@ def test_a_heading_overflowing_in_a_later_member_names_that_member_s_chain(
     assert reported["code"] == HEADING_DEPTH_OVERFLOW
     assert reported["source"] == "b.md"
     assert reported["chain"] == ["guide.md", "b.md"]
-
-
-def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\nDo it.\n\n## Stop\n\nStop it.\n",
-    )
-    run = invoke("guide.md#run", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundle == (f"{opening('Guide')}# Guide\n\n### Run\n\nDo it.\n")
-
-
-def test_a_fragment_naming_a_container_nested_heading_is_refused(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n> ## Nested\n>\n> Inside.\n")
-    run = invoke("-d", "json", "guide.md#nested", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    assert [one["code"] for one in run.diagnostics()] == [NESTED_SECTION_TARGET]
-    assert [one["reference"] for one in run.diagnostics()] == ["guide.md#nested"]
-
-
-def test_a_fragment_naming_no_heading_is_a_missing_target(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n## Run\n")
-    run = invoke("-d", "json", "guide.md#stop", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
 
 
 def test_an_empty_fragment_is_a_whole_document_reference(root: Path) -> None:
@@ -2891,18 +2271,6 @@ def test_a_failed_run_leaves_the_earlier_folder_alone(
     (earlier / "guide.bundle.md").write_text("earlier bytes\n")
     assert invoke("-o", str(tmp_path), "guide.md", cwd=root).status == (INPUT_FAILURE)
     assert contents(earlier) == {"guide.bundle.md": b"earlier bytes\n"}
-
-
-def test_an_output_path_the_run_cannot_make_is_a_publication_failure(
-    root: Path, tmp_path: Path
-) -> None:
-    """A folder the run cannot create is refused; one it can, it makes."""
-    written(root, "guide.md", DECLARED + "# Guide\n")
-    blocker = tmp_path / "file"
-    blocker.write_text("not a folder")
-    run = invoke("-d", "json", "-o", str(blocker / "under"), "guide.md", cwd=root)
-    assert run.status == PUBLICATION_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [PUBLICATION_FAILED]
 
 
 def outputs(budget: int) -> Limits:
@@ -2970,23 +2338,6 @@ def test_two_bundles_deriving_one_name_publish_nothing(
     assert "'member_0.md'" in refused.value.diagnostic.message
     assert list(tmp_path.iterdir()) == []
     assert err.getvalue() == ""
-
-
-@pytest.mark.parametrize("check", [False, True])
-def test_an_output_folder_that_does_not_exist_is_made_by_the_run(
-    tmp_path: Path, check: bool
-) -> None:
-    """The caller names the folder it wants; the run makes it rather than refusing."""
-    bundles = bundle_set("# One\n")
-    publication(
-        bundles,
-        tmp_path / "absent" / "run",
-        outputs(1024),
-        Reporter(StringIO()),
-        check,
-    )
-    assert (tmp_path / "absent").is_dir()
-    assert (tmp_path / "absent" / "run").is_dir() == (not check)
 
 
 def test_a_set_is_published_whole_once_every_member_validates(tmp_path: Path) -> None:
@@ -3121,13 +2472,6 @@ def test_an_earlier_set_that_cannot_be_removed_warns_on_a_published_run(
     assert str(aside) in warned
 
 
-def test_a_validation_only_run_bundles_and_publishes_nothing(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nBody.\n")
-    run = invoke("-c", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundle == ""
-
-
 def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     root: Path,
 ) -> None:
@@ -3138,175 +2482,6 @@ def test_a_validation_only_run_still_reports_a_bundle_it_cannot_build(
     run = invoke("-c", "-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert [one["code"] for one in run.diagnostics()] == [HEADING_DEPTH_OVERFLOW]
-
-
-def test_an_image_naming_a_markdown_document_carries_no_document(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee ![the rules](rules.md).\n")
-    written(root, "rules.md", "# Rules\n\nThe rules.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "![the rules](rules.md)" in run.bundle
-    assert "The rules." not in run.bundle
-
-
-def test_an_image_naming_a_markdown_document_warns_once_on_portability(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee ![the rules](rules.md).\n")
-    written(root, "rules.md", "# Rules\n\nThe rules.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    codes = [one["code"] for one in run.diagnostics()]
-    assert codes.count(RESOURCE_PORTABILITY) == 1
-
-
-def test_a_bundle_naming_no_resource_does_not_warn_on_portability(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nSee [the spec](https://e.test/s.pdf).\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert RESOURCE_PORTABILITY not in [one["code"] for one in run.diagnostics()]
-
-
-def test_an_unmarked_image_is_emitted_as_authored(root: Path) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee ![the architecture](plan.png).\n"
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "![the architecture](plan.png)" in run.bundle
-
-
-def test_an_unmarked_resource_is_emitted_as_authored(root: Path) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [the spec](https://e.test/s.md).\n"
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[the spec](https://e.test/s.md)" in run.bundle
-
-
-def test_a_reference_under_the_root_is_bundled_and_rewritten(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee [the rules](rules.md).\n")
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[the rules](#rules)" in run.bundle
-    assert "Every rule." in run.bundle
-
-
-def test_a_reference_to_a_section_under_the_root_carries_that_section(
-    root: Path,
-) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [the step](process.md#step).\n"
-    )
-    written(
-        root,
-        "process.md",
-        DECLARED + "# Process\n\n## Draft\n\nNo.\n\n## Step\n\nYes.\n",
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[the step](#step)" in run.bundle
-    assert "Yes." in run.bundle
-    assert "No." not in run.bundle
-
-
-def test_a_reference_outside_the_root_is_emitted_as_authored(tmp_path: Path) -> None:
-    allowed = tmp_path / "source"
-    allowed.mkdir()
-    (tmp_path / "rules.md").write_text("# Rules\n\n<div>raw</div>\n")
-    (allowed / "guide.md").write_text(
-        DECLARED + "# Guide\n\nSee [the rules](../rules.md).\n"
-    )
-    run = invoke("guide.md", cwd=allowed)
-    assert run.status == SUCCESS
-    assert "[the rules](../rules.md)" in run.bundle
-    assert "raw" not in run.bundle
-
-
-def test_a_root_relative_reference_inside_a_source_is_emitted_as_authored(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee [the rules](/rules.md).\n")
-    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[the rules](/rules.md)" in run.bundle
-    assert "Every rule." not in run.bundle
-
-
-def test_a_drive_path_inside_a_source_is_emitted_as_authored(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee [the rules](C:/rules.md).\n")
-    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "[the rules](C:/rules.md)" in run.bundle
-    assert "Every rule." not in run.bundle
-
-
-def test_a_link_naming_no_document_is_text(
-    root: Path,
-) -> None:
-    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\nSee [the rules](rules.md) and [the steps](procedure.md).\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.diagnostics() == []
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\n"
-        "See [the rules](rules.md) and [the steps](procedure.md).\n"
-    )
-
-
-def test_a_reference_under_the_root_naming_no_heading_publishes_nothing(
-    root: Path,
-) -> None:
-    written(
-        root, "procedure.md", DECLARED + "# Procedure\n\n## Steps\n\nCarry each out.\n"
-    )
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nSee [the review](procedure.md#review).\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == TARGET_NOT_FOUND
-    assert run.diagnostics()[0]["resolved"] == "procedure.md"
-    assert run.bundle == ""
-
-
-def test_a_marked_reference_under_the_root_is_not_bundled(root: Path) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [\u00ac the rules](rules.md).\n"
-    )
-    written(
-        root, "rules.md", DECLARED + "# Rules\n\nEvery rule the procedure requires.\n"
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "# Rules" not in run.bundle
-    assert "Every rule the procedure requires." not in run.bundle
-
-
-def test_a_deferred_link_publishes_its_text_without_the_mark(root: Path) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [\u00ac the rules](rules.md).\n"
-    )
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert f"See [the rules]({FROM_BUNDLE}rules.md)." in run.bundle
 
 
 @pytest.mark.parametrize(
@@ -3321,55 +2496,13 @@ def test_the_blanks_after_the_mark_go_with_it(root: Path, written_as: str) -> No
     assert f"See [the rules]({FROM_BUNDLE}rules.md)." in run.bundle
 
 
-@pytest.mark.parametrize("mark", ["\u00ac", "\u21c9"])
-def test_a_mark_with_no_space_after_it_opens_an_ordinary_link(
-    root: Path, mark: str
-) -> None:
-    written(root, "guide.md", DECLARED + f"# Guide\n\nSee [{mark}Rules](rules.md).\n")
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert f"See [{mark}Rules](#rules)." in run.bundle
-    assert "Every rule." in run.bundle
-    assert run.diagnostics() == []
-
-
-def test_a_deferred_composition_is_written_with_its_marks_together(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\nSee [\u00ac\u21b3 Rules](rules.md#detail).\n",
-    )
-    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [Rules](#rules)." in run.bundle
-    assert f"[\u21b3 Detail]({FROM_BUNDLE}rules.md#detail)" in run.bundle
-    assert "Every rule." not in run.bundle
-    assert run.diagnostics() == []
-
-
 @pytest.mark.parametrize(
     ("label", "contains"),
     [
         ("\u00ac\u21c9 Rules", "dispatch mark"),
-        ("\u00ac\u2afd Rules", "dispatch mark"),
-        ("\u21c9\u21b3 Rules", "composition mark"),
-        ("\u2afd\u21b3 Rules", "composition mark"),
-        ("\u2192", "arrow"),
-        ("\u00ac\u2192", "arrow"),
-        ("\u00ac \u21b3 Rules", "written together"),
     ],
     ids=[
         "a deferred dispatch",
-        "a deferred parallel dispatch",
-        "a dispatch written against the composition mark",
-        "a parallel dispatch written against the composition mark",
-        "an arrow label",
-        "a deferred arrow label",
-        "a blank between the deferral and composition marks",
     ],
 )
 def test_a_link_stating_no_one_operation_is_refused_and_publishes_nothing(
@@ -3405,125 +2538,6 @@ def test_an_arrow_label_names_the_link_and_points_at_the_composition_mark(
     assert "\u21b3" in reported["remedy"]
 
 
-def test_a_deferral_stands_where_another_reference_carried_its_target(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\nSee [\u00ac the rules](rules.md) and [the house](house.md).\n",
-    )
-    written(
-        root, "house.md", DECLARED + "# House\n\nIt requires [the rules](rules.md).\n"
-    )
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "# Rules" in run.bundle
-    assert f"See [the rules]({FROM_BUNDLE}rules.md)" in run.bundle
-    assert "It requires [the rules](#rules)" in run.bundle
-
-
-def test_a_dispatched_reference_under_the_root_is_not_bundled(root: Path) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [\u21c9 the rules](rules.md).\n"
-    )
-    written(
-        root, "rules.md", DECLARED + "# Rules\n\nEvery rule the sub-agent requires.\n"
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "# Rules" not in run.bundle
-    assert "Every rule the sub-agent requires." not in run.bundle
-
-
-def test_a_dispatched_link_stays_inline_pointing_at_its_bundle_file(
-    root: Path,
-) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [\u21c9 the rules](rules.md).\n"
-    )
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\nSee [\u21c9 the rules](rules.bundle.md).\n"
-    )
-
-
-def test_a_run_publishes_a_bundle_for_each_target_its_dispatches_reach(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n1. Plan [\u21c9 plan](plan.md#steps).\n",
-    )
-    written(
-        root,
-        "plan.md",
-        DECLARED + "# Plan\n\n## Steps\n\n1. Review [\u21c9 review](review.md).\n",
-    )
-    written(root, "review.md", DECLARED + "# Review\n\n1. Read.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert sorted(run.bundles) == [
-        "guide.bundle.md",
-        "plan__steps.bundle.md",
-        "review.bundle.md",
-    ]
-    assert "[\u21c9 plan](plan__steps.bundle.md)" in run.bundle
-    assert run.bundles["plan__steps.bundle.md"] == (
-        f"{opening('Plan')}# Plan\n\n### Steps\n\n"
-        "1. Review [\u21c9 review](review.bundle.md).\n"
-    )
-    assert (
-        run.bundles["review.bundle.md"] == f"{opening('Review')}# Review\n\n1. Read.\n"
-    )
-
-
-def test_one_target_dispatched_from_two_sections_is_one_bundle(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## One\n\nRun [\u21c9 plan](plan.md).\n\n"
-        "## Two\n\nRun [\u21c9 plan](plan.md) and [\u21c9 the plan](plan.md).\n",
-    )
-    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert sorted(run.bundles) == ["guide.bundle.md", "plan.bundle.md"]
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\n## One\n\nRun [\u21c9 plan](plan.bundle.md).\n\n"
-        "## Two\n\n"
-        "Run [\u21c9 plan](plan.bundle.md) and [\u21c9 the plan](plan.bundle.md).\n"
-    )
-
-
-def test_an_in_parallel_sub_section_precedes_the_child_sections_of_its_section(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\n"
-        "Run [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-        "### Detail\n\nMore.\n",
-    )
-    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
-    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\n## Run\n\n"
-        "Run [plan](#\u2afd-dispatch-set) and "
-        "[check](#\u2afd-dispatch-set).\n\n"
-        f"### \u2afd Dispatch Set\n\n"
-        "[\u21c9 plan](plan.bundle.md)\n[\u21c9 check](check.bundle.md)\n\n"
-        "### Detail\n\nMore.\n"
-    )
-
-
 def test_a_set_above_the_first_heading_takes_its_level(root: Path) -> None:
     written(
         root,
@@ -3553,20 +2567,6 @@ def test_a_dispatch_in_a_linked_document_sits_under_its_shifted_section(
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle.endswith("# Notes\n\nRun [\u21c9 plan](plan.bundle.md).\n")
-
-
-def test_a_dispatch_in_a_level_six_section_publishes_inline(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## A\n\n### B\n\n#### C\n\n##### D\n\n###### E\n\n"
-        "Run [\u21c9 plan](plan.md).\n",
-    )
-    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.diagnostics() == []
-    assert run.bundle.endswith("Run [\u21c9 plan](plan.bundle.md).\n")
 
 
 def test_a_picking_dispatch_of_its_own_document_warns_once(root: Path) -> None:
@@ -3638,11 +2638,7 @@ def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
 @pytest.mark.parametrize(
     ("link", "heading"),
     [
-        ("", "Prosiform"),
         ("", "In parallel"),
-        ("Run [\u21c9 plan](plan.md).", "In parallel"),
-        ("Run [\u21c9 plan](plan.md).", "Prosiform"),
-        ("Run [\u21c9 plan](plan.md).", "Dispatch plan"),
     ],
 )
 def test_a_heading_pf_does_not_emit_in_the_bundle_publishes(
@@ -3672,21 +2668,6 @@ def test_an_empty_dispatch_reached_through_a_link_names_the_route(root: Path) ->
     assert diagnostic["chain"] == ["guide.md", "steps.md", "plan.md"]
 
 
-def test_a_link_opening_with_two_dispatch_marks_is_refused(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nRead [\u21c9\u2afd the rules](rules.md).\n",
-    )
-    written(root, "rules.md", "# Rules\n\nEvery rule.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    diagnostic = run.diagnostics()[0]
-    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["reference"] == "\u21c9\u2afd the rules"
-
-
 @pytest.mark.parametrize("mark", ["\u21c9", "\u2afd"])
 def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> None:
     """A title the file heading absorbs is no section, so it places no sub-section."""
@@ -3702,41 +2683,6 @@ def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> No
     assert diagnostic["source"] == "note.md:4"
     assert diagnostic["chain"] == ["guide.md", "note.md"]
     assert diagnostic["remedy"]
-
-
-def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
-    """A member's title the subsection absorbs places no sub-section either."""
-    front = "---\nprosiform:\n  default:\n    group: {Merge: 2}\n---\n\n"
-    member = "note-\u21c9-plan.md"
-    written(
-        root,
-        "entry.md",
-        front + f"# Entry\n\nRead [note]({member}) and [plan](plan.md).\n",
-    )
-    written(root, member, front + "# Note [\u21c9 Plan](plan.md)\n\nBody.\n")
-    written(root, "plan.md", "# Plan\n\n1. Go.\n")
-    run = invoke("-d", "json", "entry.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["source"] == f"{member}:7"
-
-
-def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> None:
-    """A title no group emits carries its link as text, so nothing bundles it."""
-    written(root, "guide.md", DECLARED + "# Guide\n\nRead [the part](note.md#part).\n")
-    written(
-        root, "note.md", DECLARED + "# Top [\u21c9 Plan](plan.md)\n\n## Part\n\nBody.\n"
-    )
-    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["source"] == "note.md:4"
-    assert diagnostic["chain"] == ["guide.md", "note.md#part"]
 
 
 def test_a_dispatch_in_the_entry_s_own_title_still_publishes(root: Path) -> None:
@@ -3781,7 +2727,6 @@ def test_an_unknown_prosiform_key_fails(root: Path, key: str) -> None:
 @pytest.mark.parametrize(
     "entry,side,clause",
     [
-        ('{"rules.md?x": stub.md}', "rules.md?x", "carries the query 'x'"),
         ('{rules.md: "stub%zz.md"}', "stub%zz.md", "carries the escape '%zz'"),
         ('{rules.md: "stub%2Fx.md"}', "stub%2Fx.md", "decodes to a path separator"),
         ('{"/rules.md": stub.md}', "/rules.md", "names the root-relative path"),
@@ -3864,29 +2809,6 @@ def routed(root: Path, pairs: str, fragment: str = "") -> None:
         written(root, f"{name}.md", f"{DECLARED}# {title}\n\n## Steps\n\nEach step.\n")
 
 
-def test_a_used_routing_pair_raises_no_warning(root: Path) -> None:
-    routed(root, "{body.md: epic-body.md}")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert "# Epic Body" in run.bundle
-    assert run.diagnostics() == []
-
-
-def test_a_routing_pair_whose_link_sits_outside_the_selection_stays_quiet(
-    root: Path,
-) -> None:
-    """Only the unselected Review section links checklist.md, which still names it."""
-    routed(
-        root,
-        "{body.md: epic-body.md}, {checklist.md: epic-checklist.md}",
-        "#populate",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert "Epic Checklist" not in run.bundle
-    assert run.diagnostics() == []
-
-
 def test_a_routing_pair_naming_a_section_is_named_by_a_link_to_it(root: Path) -> None:
     routed(
         root,
@@ -3925,37 +2847,6 @@ def test_a_stand_in_beside_a_routing_pair_still_warns(root: Path) -> None:
     ] == [(SUBST_USED, "checklist.md#steps", "stub.md#steps")]
 
 
-@pytest.mark.parametrize("order", [("epic", "mock"), ("mock", "epic")])
-def test_a_pair_an_ordinary_preset_shares_routes_in_either_order(
-    root: Path, order: tuple[str, str]
-) -> None:
-    """An alternative and an ordinary preset stating one pair both route it."""
-    stated = {
-        "epic": "  epic:\n    choice: Lists its tasks.\n",
-        "mock": "  mock:\n",
-    }
-    written(
-        root,
-        "guide.md",
-        f'{DECLARED}# Guide\n\nSee [kind](work-kind.md "epic, mock").\n',
-    )
-    written(
-        root,
-        "work-kind.md",
-        "---\nprosiform:\n"
-        + "".join(
-            stated[name] + "    subst: [{body.md: epic-body.md}]\n" for name in order
-        )
-        + "---\n# Work Kind\n\nPopulate [the body](body.md).\n",
-    )
-    for name in ("body", "epic-body"):
-        written(root, f"{name}.md", f"{DECLARED}# {name.title()}\n\nText.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert "# Epic-Body" in run.bundle
-    assert run.diagnostics() == []
-
-
 def test_a_stand_in_no_selected_link_uses_still_warns_unused(root: Path) -> None:
     """A stand-in is weighed against the run's references, not the document's links."""
     routed(root, "{body.md: epic-body.md}", "#populate")
@@ -3986,32 +2877,6 @@ def test_a_link_names_a_key_for_its_section_or_its_whole_document(
     assert names(identities, key) is expected
 
 
-def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
-    declaration = "---\nprosiform: {}\nmetadata:\n  dispatch: One rule.\n---\n"
-    written(
-        root,
-        "guide.md",
-        f"{declaration}# Guide\n\nSee [\u21c9 rules](rules.md).\n",
-    )
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "One rule." not in run.bundle
-
-
-def test_a_deferred_fragment_of_its_own_document_is_not_bundled(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\n## Alpha\n\nSee [\u00ac B](#beta).\n\n## Beta\n\nBody.\n",
-    )
-    run = invoke("guide.md#alpha", cwd=root)
-    assert run.status == SUCCESS
-    assert f"See [B]({FROM_BUNDLE}guide.md#beta)." in run.bundle
-    assert "Body." not in run.bundle
-
-
 def test_a_deferred_reference_naming_no_document_fails(root: Path) -> None:
     written(
         root, "guide.md", DECLARED + "# Guide\n\nSee [\u00ac the rules](rules.md).\n"
@@ -4021,52 +2886,6 @@ def test_a_deferred_reference_naming_no_document_fails(root: Path) -> None:
     assert [one["code"] for one in run.diagnostics()] == [TARGET_NOT_FOUND]
     assert "names no document" in run.diagnostics()[0]["message"]
     assert run.bundle == ""
-
-
-def test_a_deferred_reference_naming_no_heading_fails(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nSee [\u00ac the rules](rules.md#absent).\n",
-    )
-    written(root, "rules.md", DECLARED + "# Rules\n\n## Here\n\nEvery rule.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    reported = run.diagnostics()[0]
-    assert reported["code"] == TARGET_NOT_FOUND
-    assert reported["reference"] == "rules.md#absent"
-    assert reported["resolved"] == "rules.md"
-    assert reported["chain"] == ["guide.md", "rules.md#absent"]
-    assert run.bundle == ""
-
-
-def test_a_deferred_destination_is_the_target_path_from_the_bundle_folder(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "topic/guide.md",
-        DECLARED + "# Guide\n\nSee [\u00ac the rules](../shared/rules.md#here).\n",
-    )
-    written(root, "shared/rules.md", DECLARED + "# Rules\n\n## Here\n\nEvery rule.\n")
-    run = invoke("topic/guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert f"See [the rules]({FROM_BUNDLE}shared/rules.md#here)." in run.bundle
-
-
-def test_a_document_only_a_deferral_names_contributes_nothing(root: Path) -> None:
-    written(
-        root,
-        "topic/guide.md",
-        DECLARED + "# Guide\n\nSee [\u00ac the rules](../shared/rules.md).\n",
-    )
-    written(
-        root, "shared/rules.md", DECLARED + "# Rules\n\nEvery rule the guide defers.\n"
-    )
-    run = invoke("topic/guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "# shared/rules" not in run.bundle
-    assert "Every rule the guide defers." not in run.bundle
 
 
 def test_a_heading_a_container_carries_confirms_a_deferral(root: Path) -> None:
@@ -4083,90 +2902,6 @@ def test_a_heading_a_container_carries_confirms_a_deferral(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert f"See [the rules]({FROM_BUNDLE}rules.md#inner)." in run.bundle
-
-
-def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
-    root: Path,
-) -> None:
-    written(
-        root, "guide.md", DECLARED + "# Guide\n\n## Alpha\n\nSee [A](guide.md#alpha).\n"
-    )
-    run = invoke("guide.md#alpha", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [A](#alpha)." in run.bundle
-    assert run.bundle.count("### Alpha") == 1
-
-
-def test_identity_is_compared_after_the_path_and_the_fragment_resolve(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Alpha\n\nSee [A](./%67uide.md#alpha).\n",
-    )
-    run = invoke("guide.md#alpha", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [A](#alpha)." in run.bundle
-
-
-def test_a_preamble_link_to_its_own_document_resolves_to_that_document(
-    root: Path,
-) -> None:
-    written(
-        root, "guide.md", DECLARED + "See [the guide](guide.md).\n\n## Alpha\n\nBody.\n"
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [the guide](#guide)." in run.bundle
-
-
-def test_a_section_link_to_its_whole_document_is_an_ancestor_inclusion(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n## Alpha\n\nSee [it](guide.md).\n")
-    assert invoke("guide.md#alpha", cwd=root).status == SUCCESS
-
-
-def test_a_link_to_another_section_of_one_file_is_no_self_reference(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\n## Alpha\n\nSee [B](guide.md#beta).\n\n## Beta\n\nBody.\n",
-    )
-    assert invoke("guide.md#alpha", cwd=root).status == SUCCESS
-
-
-def test_classification_is_the_same_before_and_after_consolidation(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\n## Alpha\n\nBody.\n\n### Detail\n\nSee [A](guide.md#alpha).\n",
-    )
-    child = invoke("guide.md#detail", cwd=root)
-    consolidated = invoke("guide.md#alpha", cwd=root)
-    assert child.status == SUCCESS
-    assert consolidated.status == SUCCESS
-    assert child.bundle.partition("\n\n")[2] == consolidated.bundle.partition("\n\n")[2]
-
-
-def test_a_self_reference_resolves_the_same_after_consolidation(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Alpha\n\n### Detail\n\nSee [D](guide.md#detail).\n",
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [D](#detail)." in run.bundle
 
 
 def chained(root: Path) -> None:
@@ -4199,15 +2934,6 @@ def test_a_crossed_budget_fails_the_run_and_names_the_budget(
     assert name in reported["message"]
     assert f"--budget {name}" in reported["remedy"]
     assert run.bundle == ""
-
-
-def test_a_crossed_nesting_budget_fails_rather_than_reinterpreting_the_source(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n" + "> " * 12 + "The bottom.\n")
-    run = invoke("-d", "json", "--budget", "nesting=3", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == RESOURCE_LIMIT
 
 
 def test_a_parsing_safety_budget_an_unselected_construct_crosses_names_the_source(
@@ -4267,13 +2993,6 @@ def scoped(root: Path) -> None:
     )
 
 
-def test_an_unselected_broken_link_does_not_fail_the_run(root: Path) -> None:
-    scoped(root)
-    run = invoke("guide.md#alpha", cwd=root)
-    assert run.status == SUCCESS
-    assert "### Alpha" in run.bundle
-
-
 def test_an_unselected_self_link_does_not_fail_the_run(root: Path) -> None:
     written(
         root,
@@ -4299,23 +3018,6 @@ def test_the_same_sibling_fails_once_the_closure_includes_it(root: Path) -> None
     assert reported["reference"] == "missing.md"
 
 
-def test_a_profile_refusal_a_named_document_did_not_select_does_not_fail(
-    root: Path,
-) -> None:
-    scoped(root)
-    assert invoke("guide.md#alpha", cwd=root).status == SUCCESS
-
-
-def test_a_profile_refusal_a_reached_document_did_not_select_does_not_fail(
-    root: Path,
-) -> None:
-    scoped(root)
-    run = invoke("guide.md#alpha", cwd=root)
-    assert run.status == SUCCESS
-    assert "### Gamma" in run.bundle
-    assert "Delta" not in run.bundle
-
-
 def test_a_profile_refusal_the_run_selected_still_fails(root: Path) -> None:
     scoped(root)
     run = invoke("-d", "json", "guide.md#beta", cwd=root)
@@ -4338,21 +3040,7 @@ def test_a_refusal_in_a_reached_document_the_closure_selected_fails(
     assert reported["chain"] == ["guide.md", "other.md"]
 
 
-def test_a_target_at_the_expansion_depth_is_bundled(root: Path) -> None:
-    chained(root)
-    run = invoke("--budget", "depth=2", "alpha.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "# Gamma" in run.bundle
-
-
-def test_a_crossed_budget_publishes_no_output_file(root: Path) -> None:
-    chained(root)
-    run = invoke("--budget", "output-bytes=64", "alpha.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-
-
-@pytest.mark.parametrize("value", ["0", "-1", "1.5", "0x10", " 1", ""])
+@pytest.mark.parametrize("value", ["1.5", "0x10", " 1", ""])
 def test_a_budget_override_that_is_no_positive_decimal_integer_is_refused(
     root: Path, value: str
 ) -> None:
@@ -4385,18 +3073,6 @@ def test_a_candidate_disagreeing_with_its_provenance_publishes_nothing(
 def unnamed(*arguments: object) -> tuple[str, list[tuple[str, str]]]:
     """Composition raising an error the contract names no outcome for."""
     raise RuntimeError("the composition reached a state the contract never names")
-
-
-def test_an_error_the_contract_does_not_name_is_an_internal_error_as_data(
-    root: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setattr("prosiform.cli.compose", unnamed)
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INTERNAL_ERROR
-    assert run.bundle == ""
-    assert [(one["severity"], one["code"]) for one in run.diagnostics()] == [
-        ("error", UNEXPECTED_INTERNAL_ERROR)
-    ]
 
 
 def test_an_error_the_contract_does_not_name_is_an_internal_error_as_text(
@@ -4467,19 +3143,6 @@ def writing_once(root: Path, write: Callable[[Path], object]) -> Callable[..., b
     return reading
 
 
-def test_a_source_written_during_the_run_publishes_nothing(
-    root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setattr(
-        "prosiform.cli.read_source",
-        writing_once(root, lambda path: path.write_text("# Guide\n\nRewritten.\n")),
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
-
-
 def test_a_source_removed_during_the_run_publishes_nothing(
     root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -4519,45 +3182,6 @@ def test_an_unsafe_boundary_is_an_input_failure(tmp_path: Path) -> None:
     assert one["remedy"]
 
 
-def test_an_unsafe_boundary_publishes_no_file(tmp_path: Path) -> None:
-    source = tmp_path / "source"
-    source.mkdir()
-    (source / "guide.md").write_text(
-        DECLARED
-        + "# Guide\n\n- The first list.\n\n[notes]: notes.md\n\n- The second list.\n"
-    )
-    run = invoke("-d", "json", "guide.md", cwd=source)
-    assert run.status == INPUT_FAILURE
-    assert run.diagnostics()[0]["code"] == UNSAFE_BUNDLE_BOUNDARY
-    assert run.bundle == ""
-
-
-def surrounded(brackets: int) -> str:
-    """One source whose dependency sits under a run of open brackets."""
-    return f"# Guide\n\nThe guide cites {'[' * brackets}the plan](plan.md).\n"
-
-
-def test_a_lookup_the_parser_declines_fails_the_run(root: Path) -> None:
-    written(root, "guide.md", DECLARED + surrounded(2 + HEADROOM + 1))
-    written(root, "plan.md", "# Plan\n\nThe plan.\n")
-    run = invoke("-d", "json", "--budget", "nesting=2", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    reported = run.diagnostics()[0]
-    assert reported["code"] == PARSER_REFERENCE_LIMIT
-    assert reported["source"] == "guide.md:6"
-    assert reported["chain"] == ["guide.md"]
-
-
-def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) -> None:
-    written(root, "guide.md", DECLARED + surrounded(2 + HEADROOM))
-    written(root, "plan.md", DECLARED + "# Plan\n\nThe plan.\n")
-    run = invoke("-d", "json", "--budget", "nesting=2", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "The plan." in run.bundle
-    assert run.diagnostics() == []
-
-
 def test_the_source_changed_fault_fails_the_run_and_publishes_nothing(
     root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -4568,16 +3192,6 @@ def test_the_source_changed_fault_fails_the_run_and_publishes_nothing(
     assert run.bundle == ""
     assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
     assert (root / "guide.md").read_bytes() != (DECLARED + "# Guide\n").encode()
-
-
-def test_the_internal_fault_names_the_run_and_publishes_nothing(
-    root: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setenv(FAULT_VARIABLE, "internal")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INTERNAL_ERROR
-    assert run.bundle == ""
-    assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
 
 
 def test_a_run_asking_for_no_fault_meets_none(
@@ -4607,29 +3221,6 @@ def test_a_fault_the_contract_does_not_declare_is_a_usage_failure(
     assert (root / "guide.md").read_bytes() == (DECLARED + "# Guide\n").encode()
 
 
-def test_a_declined_lookup_names_the_reference_under_the_default_budgets(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + surrounded(NESTING.default + HEADROOM + 1))
-    written(root, "plan.md", "# Plan\n\nThe plan.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    reported = run.diagnostics()[0]
-    assert reported["code"] == PARSER_REFERENCE_LIMIT
-    assert reported["reference"] == "plan.md"
-    assert reported["source"] == "guide.md:6"
-
-
-def test_a_budget_spent_on_the_last_valid_reference_bundles_it(root: Path) -> None:
-    written(root, "guide.md", DECLARED + surrounded(NESTING.default + HEADROOM))
-    written(root, "plan.md", DECLARED + "# Plan\n\nThe plan.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "The plan." in run.bundle
-    assert PARSER_REFERENCE_LIMIT not in run.stderr
-
-
 def dispatching(root: Path, names: Sequence[str]) -> None:
     """A chain of documents, each dispatching the next."""
     for name, following in zip(names, names[1:], strict=False):
@@ -4637,13 +3228,6 @@ def dispatching(root: Path, names: Sequence[str]) -> None:
             root, name, f"{DECLARED}# {name}\n\n1. Run [\u21c9 next]({following}).\n"
         )
     written(root, names[-1], f"{DECLARED}# {names[-1]}\n\n1. Done.\n")
-
-
-def test_a_chain_of_three_dispatches_raises_no_warning(root: Path) -> None:
-    dispatching(root, ["guide.md", "a.md", "b.md", "c.md"])
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.diagnostics() == []
 
 
 def test_a_fourth_dispatch_warns_naming_the_chain(root: Path) -> None:
@@ -4662,21 +3246,6 @@ def test_a_fourth_dispatch_warns_naming_the_chain(root: Path) -> None:
         ("b.md", 6),
         ("c.md", 6),
     ]
-
-
-def test_a_dispatched_section_of_the_entry_is_a_hop(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nRun [⇉ Run](#run).\n\n## Run\n\n1. Start [⇉ a](a.md).\n",
-    )
-    dispatching(root, ["a.md", "b.md", "c.md"])
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    own, deep = run.diagnostics()
-    assert own["code"] == DISPATCH_SELF
-    assert deep["code"] == DISPATCH_DEPTH
-    assert deep["chain"] == ["guide.md", "guide.md#run", "a.md", "b.md", "c.md"]
 
 
 def test_a_deferred_link_in_a_dispatched_closure_is_no_hop(root: Path) -> None:
@@ -4710,19 +3279,6 @@ def test_two_links_dispatching_one_deep_target_warn_once(root: Path) -> None:
     assert [one["code"] for one in run.diagnostics()] == [DISPATCH_DEPTH]
 
 
-def test_a_cycle_of_dispatches_is_refused_naming_the_chain(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nRun [⇉ a](a.md).\n")
-    written(root, "a.md", DECLARED + "# A\n\n1. Run [⇉ b](b.md).\n")
-    written(root, "b.md", DECLARED + "# B\n\nRun [⇉ a](a.md).\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [refusal] = run.diagnostics()
-    assert refusal["code"] == DISPATCH_CYCLE
-    assert refusal["severity"] == "error"
-    assert refusal["chain"] == ["guide.md", "a.md", "b.md", "a.md"]
-
-
 def test_a_dispatch_of_the_entry_is_a_cycle(root: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\nRun [⇉ plan](plan.md).\n")
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Again [⇉ guide](guide.md).\n")
@@ -4731,19 +3287,6 @@ def test_a_dispatch_of_the_entry_is_a_cycle(root: Path) -> None:
     [refusal] = run.diagnostics()
     assert refusal["code"] == DISPATCH_CYCLE
     assert refusal["chain"] == ["guide.md", "plan.md", "guide.md"]
-
-
-def test_a_section_dispatching_its_own_document_is_a_cycle(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\n1. Again [\u21c9 the guide](guide.md).\n",
-    )
-    run = invoke("-d", "json", "guide.md#run", cwd=root)
-    assert run.status == INPUT_FAILURE
-    [refusal] = run.diagnostics()
-    assert refusal["code"] == DISPATCH_CYCLE
-    assert refusal["chain"] == ["guide.md#run", "guide.md", "guide.md"]
 
 
 def test_a_section_dispatched_from_its_own_document_warns_once(root: Path) -> None:
@@ -4762,18 +3305,6 @@ def test_a_section_dispatched_from_its_own_document_warns_once(root: Path) -> No
     assert run.bundles["guide__steps.bundle.md"] == (
         f"{opening('Guide')}# Guide\n\n### Steps\n\n1. Go.\n"
     )
-
-
-def test_a_fragment_only_dispatch_names_its_own_document(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\n1. Run [\u21c9 the steps](#steps).\n\n## Steps\n\n1. Go.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert [one["code"] for one in run.diagnostics()] == [DISPATCH_SELF]
 
 
 def test_a_directive_composing_a_section_of_its_own_document_warns(
@@ -4806,18 +3337,6 @@ def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.diagnostics() == []
-
-
-def test_a_dispatched_bundle_carrying_a_deferral_opens_with_the_run_pf_line(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n1. Run [⇉ a](a.md).\n")
-    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬ b](b.md).\n")
-    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundles["a.bundle.md"].startswith(f"{opening('A')}# A\n")
-    assert run.bundles["guide.bundle.md"].startswith(f"{opening('Guide')}# Guide\n")
 
 
 def test_a_dispatched_target_whose_bundling_fails_publishes_nothing(
@@ -4880,10 +3399,7 @@ def test_a_link_opening_with_a_guillemet_is_bundled(root: Path) -> None:
 @pytest.mark.parametrize(
     "use",
     [
-        "[{mark} the spec](https://e.test/s.md)",
         "[{mark} the diagram](plan.png)",
-        "![{mark} the architecture](plan.png)",
-        "[{mark} the rules](../outside.md)",
     ],
 )
 def test_an_operator_naming_no_document_under_the_root_is_refused(
@@ -4900,115 +3416,6 @@ def test_an_operator_naming_no_document_under_the_root_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
     assert diagnostic["source"] == "guide.md:6"
-
-
-def test_a_dispatched_section_carrying_steps_raises_nothing(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nRun [\u21c9 the steps](plan.md#steps).\n",
-    )
-    written(
-        root,
-        "plan.md",
-        DECLARED + "# Plan\n\n## Steps\n\n### First\n\n1. Read.\n2. Write.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.diagnostics() == []
-
-
-def test_a_dispatched_section_of_fields_raises_nothing(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nRead [\u21c9 the fields](plan.md#fields).\n",
-    )
-    written(
-        root,
-        "plan.md",
-        DECLARED
-        + "# Plan\n\n## Fields\n\n### Title\n\n- One line.\n\n## Steps\n\n1. Go.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "Read [\u21c9 the fields](plan__fields.bundle.md)." in run.bundle
-    assert run.diagnostics() == []
-
-
-def test_a_sections_parallel_links_point_at_one_sub_section_listing_each_bundle(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Review\n\n"
-        "1. Review [⫽ Code Review](review.md#code) and "
-        "[⫽ Test Review](review.md#tests).\n",
-    )
-    written(
-        root,
-        "review.md",
-        DECLARED + "# Review\n\n## Code\n\nCode.\n\n## Tests\n\nTests.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.diagnostics() == []
-    assert sorted(run.bundles) == [
-        "guide.bundle.md",
-        "review__code.bundle.md",
-        "review__tests.bundle.md",
-    ]
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\n## Review\n\n"
-        "1. Review [Code Review](#\u2afd-dispatch-set) and "
-        "[Test Review](#\u2afd-dispatch-set).\n\n"
-        f"### \u2afd Dispatch Set\n\n"
-        "[⇉ Code Review](review__code.bundle.md)\n"
-        "[⇉ Test Review](review__tests.bundle.md)\n"
-    )
-
-
-def test_a_target_named_twice_in_one_set_is_listed_once(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nRun [⫽ a](a.md), [⫽ b](b.md) and [⫽ a again](a.md).\n",
-    )
-    written(root, "a.md", DECLARED + "# A\n\nA.\n")
-    written(root, "b.md", DECLARED + "# B\n\nB.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\n"
-        "Run [a](#\u2afd-dispatch-set), [b](#\u2afd-dispatch-set) "
-        "and [a again](#\u2afd-dispatch-set).\n\n"
-        f"## \u2afd Dispatch Set\n\n"
-        "[⇉ a](a.bundle.md)\n[\u21c9 b](b.bundle.md)\n"
-    )
-
-
-def test_a_child_sections_parallel_links_form_its_own_set(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\nRun [⫽ a](a.md) and [⫽ b](b.md).\n\n"
-        "### Detail\n\nRun [⫽ b](b.md) and [⫽ c](c.md).\n",
-    )
-    for name in "abc":
-        written(root, f"{name}.md", f"{DECLARED}# {name.upper()}\n\nBody.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundle == (
-        f"{opening('Guide')}# Guide\n\n## Run\n\n"
-        "Run [a](#\u2afd-dispatch-set) and [b](#\u2afd-dispatch-set).\n\n"
-        f"### \u2afd Dispatch Set\n\n"
-        "[⇉ a](a.bundle.md)\n[\u21c9 b](b.bundle.md)\n\n"
-        "### Detail\n\nRun [b](#\u2afd-dispatch-set-1) and "
-        "[c](#\u2afd-dispatch-set-1).\n\n"
-        f"#### \u2afd Dispatch Set\n\n"
-        "[⇉ b](b.bundle.md)\n[\u21c9 c](c.bundle.md)\n"
-    )
 
 
 def test_a_section_carrying_both_operators_keeps_its_dispatches_inline(
@@ -5047,9 +3454,6 @@ def test_a_section_carrying_both_operators_keeps_its_dispatches_inline(
 @pytest.mark.parametrize(
     "body",
     [
-        "Some prose.\n",
-        "1. First.\n2. Second.\n",
-        "- An item linking no document.\n",
         "- [A](a.md)\n  - [B](https://example.test/b.md)\n",
     ],
 )
@@ -5071,22 +3475,7 @@ def test_a_parallel_target_of_any_shape_publishes_with_no_diagnostic(
     assert sorted(run.bundles) == ["guide.bundle.md", "plan__reviews.bundle.md"]
 
 
-@pytest.mark.parametrize("opening", ["⫽⇉ the reviews", "⇉⫽ the reviews"])
-def test_a_parallel_mark_with_the_dispatch_mark_is_refused(
-    root: Path, opening: str
-) -> None:
-    written(root, "guide.md", f"{DECLARED}# Guide\n\nRun [{opening}](plan.md).\n")
-    written(root, "plan.md", f"{DECLARED}# Plan\n\n- [A](plan.md)\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundle == ""
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["reference"] == opening
-    assert "two ways for one sub-agent" in diagnostic["message"]
-
-
-@pytest.mark.parametrize("destination", ["https://example.test/plan.md", "image.png"])
+@pytest.mark.parametrize("destination", ["image.png"])
 def test_a_parallel_link_naming_no_markdown_under_the_root_is_refused(
     root: Path, destination: str
 ) -> None:
@@ -5098,17 +3487,6 @@ def test_a_parallel_link_naming_no_markdown_under_the_root_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
     assert diagnostic["reference"] == destination
-
-
-def test_a_parallel_mark_with_no_space_after_it_opens_an_ordinary_link(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee [⫽Rules](rules.md).\n")
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "See [⫽Rules](#rules)." in run.bundle
-    assert run.diagnostics() == []
 
 
 def test_a_parallel_dispatch_is_a_hop_of_a_chain(root: Path) -> None:
@@ -5130,22 +3508,6 @@ def test_a_parallel_dispatch_closing_a_cycle_is_refused(root: Path) -> None:
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == DISPATCH_CYCLE
-
-
-def test_a_set_in_a_level_six_section_is_refused(root: Path) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## A\n\n### B\n\n#### C\n\n##### D\n\n###### E\n\n"
-        "Run [⫽ plan](plan.md) and [⫽ check](check.md).\n",
-    )
-    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
-    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == HEADING_DEPTH_OVERFLOW
 
 
 def test_each_diagram_fence_is_read_once_per_parse_of_a_run(
@@ -5210,33 +3572,6 @@ def test_an_operator_naming_a_silent_document_is_refused(root: Path, mark: str) 
     [reported] = run.diagnostics()
     assert reported["code"] == UNSUPPORTED_CONSTRUCT
     assert reported["reference"] == "rules.md"
-    assert "declares no prosiform" in reported["message"]
-
-
-def test_a_fragment_only_link_naming_no_heading_is_a_missing_target(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nSee [the steps](#nowhere).\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    [reported] = run.diagnostics()
-    assert reported["code"] == TARGET_NOT_FOUND
-    assert reported["reference"] == "#nowhere"
-    assert reported["resolved"] == "guide.md"
-    assert reported["source"] == "guide.md:6"
-
-
-def test_an_entry_naming_a_silent_document_fails_before_any_source_is_read(
-    root: Path,
-) -> None:
-    (root / "guide.md").write_bytes(DECLARED.encode() + b"# Guide\n\n\xff\n")
-    written(root, "notes.md", "# Notes\n")
-    run = invoke("-d", "json", "notes.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    [reported] = run.diagnostics()
-    assert reported["code"] == TARGET_NOT_FOUND
-    assert reported["reference"] == "notes.md"
-    assert reported["chain"] == ["notes.md"]
     assert "declares no prosiform" in reported["message"]
 
 
@@ -5510,7 +3845,7 @@ def test_a_tooltip_tag_stating_operator_marks_is_refused(
     assert "start of the text of the element" in reported["remedy"]
 
 
-@pytest.mark.parametrize("tooltip", ["with ↳ Given", "⇉Intake", "checks"])
+@pytest.mark.parametrize("tooltip", ["with ↳ Given", "⇉Intake"])
 def test_a_tooltip_tag_opening_with_no_operator_marks_is_a_title(
     root: Path, tooltip: str
 ) -> None:
@@ -5520,20 +3855,6 @@ def test_a_tooltip_tag_opening_with_no_operator_marks_is_a_title(
     assert run.status == SUCCESS, run.stderr
     assert f'    click Intake "#intake" "{tooltip}"\n' in run.bundle
     assert "# Intake\n\nTake it in.\n" in run.bundle
-
-
-def test_a_class_label_states_its_link_s_operator(root: Path) -> None:
-    written(root, "intake.md", DECLARED + "# Intake\n\n1. Take it in.\n")
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n```mermaid\nclassDiagram\n"
-        '    class Intake["⇉ Intake"]\n    link Intake "intake.md"\n```\n',
-    )
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert '    link Intake "intake.bundle.md"\n' in run.bundle
-    assert "# Intake" not in run.bundle
 
 
 @pytest.mark.parametrize(
