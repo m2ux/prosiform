@@ -46,6 +46,14 @@
 # out. ARGS passes its options through: `--only CATEGORY` and the identities
 # of the fixtures to triage.
 #
+# `make restate` runs the corpus the same way and writes the expected bundles,
+# and the manifest's bundles entry, of each fixture triage files under a
+# category restatement writes. It refuses and names every other fixture triage
+# names, and then fails. It is a local authoring aid, so `make check` and
+# continuous integration leave it out. ARGS passes its options through:
+# `--write`, without which it names each fixture and writes nothing, and the
+# identities of the fixtures to restate.
+#
 # `make harness` holds the checks' own tests: the manifest schema and its
 # cases, the corpus runner's comparison, the catalogue, the conformance report
 # and the documents the checks read. They need no configured build.
@@ -82,7 +90,7 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence triage render examples eval-diagrams
+.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence triage restate render examples eval-diagrams
 
 CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
@@ -110,6 +118,9 @@ corpus:
 
 triage:
 	$(UV_RUN) python checks/triage.py $(ARGS)
+
+restate:
+	$(UV_RUN) python checks/restate.py $(ARGS)
 
 smoke:
 	python3 checks/smoke.py
