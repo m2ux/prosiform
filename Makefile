@@ -9,10 +9,11 @@
 #
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `src/uv.lock` records and resolves
-# nothing. The corpus, invocation, conformance and independence checks reach
-# the build under test through the corpus runner, and the last two read the
-# corpus through the manifest reader beside it, which reads `jsonschema` from
-# that same group, so the four run through it. The smoke, layout, table, link
+# nothing. The corpus, invocation, conformance, independence and releases checks
+# reach the build under test through the corpus runner, and the conformance
+# and independence checks read the corpus through the manifest reader beside
+# it, which reads `jsonschema` from that same group, so the five run through
+# it. The smoke, layout, table, link
 # and vocabulary checks depend on the standard library alone and run under
 # `python3` directly.
 #
@@ -39,6 +40,11 @@
 # same build's own help output, `make conformance` reads the codes it reports
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
+#
+# `make releases` reads the release tags naming HEAD and holds each build tag to
+# the version that same build reports, and a contract tag beside it to the
+# build tag's major and minor. A commit carrying no release tag passes
+# without running the build, so the check constrains a release alone.
 #
 # `make triage` runs the corpus the same way and names each fixture the run
 # fails under the drift category its run falls in, and each whose run failed
@@ -90,9 +96,9 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence triage restate render examples eval-diagrams
+.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence releases triage restate render examples eval-diagrams
 
-CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
+CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence releases
 
 check: $(CHECKS)
 
@@ -157,6 +163,9 @@ conformance:
 
 independence:
 	$(UV_RUN) python checks/independence.py
+
+releases:
+	$(UV_RUN) python checks/releases.py
 
 render:
 	python3 checks/render.py
