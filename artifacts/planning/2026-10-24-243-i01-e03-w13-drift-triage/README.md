@@ -1,12 +1,16 @@
 # W13 and W14: Drift Triage — October 2026
 
-> Plan · Created 2026-10-24
+> Plan · Created 2026-10-24 · Revised 2026-11-26
 
 ## Executive Summary
 
 Two tools keep the corpus honest after a behaviour change. Triage names each stale fixture under the category its difference falls in, so a change accepts the drift it intended rather than every fixture a red run touched. Restatement writes exactly two things and refuses a fixture whose run failed in itself.
 
 This record carries the planning for [W13](w13.md), [W14](w14.md) and [W15](w15.md) under [E03 Repository Checks](https://github.com/m2ux/prosiform/issues/187). The work is raised as [#243](https://github.com/m2ux/prosiform/issues/243), which states W13's criteria and keeps the evidence both rows came from.
+
+## Superseded Work Items
+
+W14 and W15 are planned in the [test turnaround record](../2026-11-26-test-turnaround/README.md) as rows W03 and W04 of [I19 E01](https://github.com/m2ux/prosiform/issues/858). Restatement there writes the expected bundles and the manifest's `bundles` entry, where [W14](w14.md) writes the whole `[expected]` block. W13 is that epic's W02.
 
 ## Artifacts
 

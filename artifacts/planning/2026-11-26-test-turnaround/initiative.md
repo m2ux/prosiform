@@ -48,7 +48,7 @@ The repository's checks and design record state some rules imprecisely, and noth
 ## Non-Goals
 
 - It does not change what a run of `pf` produces.
-- It does not add a rule the design or an existing check does not already state.
+- It adds no rule to a check that the design or that check does not already state.
 - It does not restate a fixture without a passing run behind it.
 - It does not remove a test whose assertion no fixture holds.
 
