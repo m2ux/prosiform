@@ -13,6 +13,7 @@ Restatement reads these categories before it writes anything, so this row is the
 | Artifact | What it holds |
 | --- | --- |
 | [w02.md](w02.md) | The work item: the drift categories, their order and why, and the plan for the triage command |
+| [test-results.md](test-results.md) | The test plan's evidence: each check, the revision it ran on and what it showed |
 
 ## Links
 
