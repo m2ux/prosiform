@@ -34,7 +34,11 @@ The removal takes 122 whole functions (141 cases) and 64 cases from 25 functions
 
 ## AC14 check
 
-`make conformance` ran at `81c5ca0` and at the removal's head. The two reports are byte-identical: 311 clauses list at least one fixture at both, and the same 90 list none.
+`make conformance` ran at `81c5ca0` and at the removal's head `7afaed8`. The two reports are byte-identical: 311 clauses list at least one fixture at both, and the same 90 list none.
+
+## Make check
+
+`make check` at `041a19b`, with `PROSIFORM_BUILD` naming the worktree's own `pf`, exits 0: 2125 build tests pass (2330 collected at `81c5ca0`), 1182 harness tests pass, and the corpus runs 708 fixtures, 708 pass.
 
 ## Links
 
