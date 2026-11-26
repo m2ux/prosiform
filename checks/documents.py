@@ -28,14 +28,16 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from markdown_it import MarkdownIt
+
 ROOT = Path(__file__).resolve().parent.parent
 
 MANIFEST = "manifest.toml"
 MARKDOWN = (".md", ".markdown")
 BUNDLE = ".bundle.md"
 FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
-INDENTED = re.compile(r"^(?: {4}|\t)")
-LIST_ITEM = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:\s|$)")
+BLOCK_READER = MarkdownIt("commonmark")
+CODE_BLOCK = "code_block"
 BACKTICK_RUN = re.compile(r"`+")
 CELL_SEPARATOR = re.compile(r"(?<!\\)\|")
 DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
@@ -86,34 +88,20 @@ def strip_code_fences(text: str) -> str:
 
 
 def strip_indented_blocks(text: str) -> str:
-    """Blank out indented blocks, whose contents are examples rather than content.
+    """Blank out indented code blocks, whose contents are examples rather than content.
 
-    A block opens at a four-space or tab indent on a line following a blank
-    one, and closes at the first line indented less than that. A line below a
-    list marker is that list's own content however far it is indented, so a
-    nested bullet carrying a link is read as the link it is.
+    The blocks are the ones the CommonMark parser finds, so a list item's
+    content column decides what an indented line is: four or more columns
+    past it is that item's code block, and less is the item's own content, a
+    nested bullet carrying a link among it. Every line of a block is blanked
+    and every other line is kept as written.
     """
-    out: list[str] = []
-    indented_block = False
-    listed = False
-    after_blank = True
-    for line in text.splitlines():
-        if not line.strip():
-            out.append("")
-            after_blank = True
-            continue
-        indented = bool(INDENTED.match(line))
-        if indented_block and not indented:
-            indented_block = False
-        if not indented_block:
-            if LIST_ITEM.match(line):
-                listed = True
-            elif not indented:
-                listed = False
-            indented_block = indented and after_blank and not listed
-        out.append("" if indented_block else line)
-        after_blank = False
-    return "\n".join(out)
+    lines = text.splitlines()
+    for token in BLOCK_READER.parse("\n".join(lines)):
+        if token.type == CODE_BLOCK and token.map:
+            start, end = token.map
+            lines[start:end] = [""] * (end - start)
+    return "\n".join(lines)
 
 
 def strip_code_spans(text: str) -> str:

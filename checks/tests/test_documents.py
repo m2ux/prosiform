@@ -11,8 +11,8 @@ on the same ground, and is excepted too.
 
 The reading the checks share is held to the input it would read wrongly: a
 code span and an indented block holding a link form, an opener that never
-closes, and a list's continuation, which is content however far it is
-indented.
+closes, and a list item's code block beside that item's own content, a
+nested bullet among it.
 """
 
 from pathlib import Path
@@ -113,9 +113,38 @@ def test_an_indented_block_after_a_blank_line_is_blanked() -> None:
     assert strip_indented_blocks(text) == "Prose.\n\n\n\n\nProse."
 
 
-def test_a_list_continuation_is_content_however_far_it_is_indented() -> None:
+def test_a_nested_bullet_short_of_a_code_block_indent_is_content() -> None:
     text = "- A bullet.\n\n    - A nested bullet.\n"
     assert strip_indented_blocks(text) == text.rstrip("\n")
+
+
+def test_a_code_block_inside_a_bullet_is_blanked() -> None:
+    text = "- A bullet.\n\n      [an example](missing.md)\n"
+    assert strip_indented_blocks(text) == "- A bullet.\n\n"
+
+
+def test_a_nested_bullet_beneath_a_bullet_holding_a_code_block_is_read() -> None:
+    text = (
+        "- A bullet.\n"
+        "\n"
+        "      [an example](missing.md)\n"
+        "\n"
+        "  - A nested bullet with [a link](present.md).\n"
+    )
+    assert strip_indented_blocks(text) == (
+        "- A bullet.\n\n\n\n  - A nested bullet with [a link](present.md)."
+    )
+
+
+def test_a_code_block_beneath_a_list_items_paragraph_is_blanked() -> None:
+    item = "1. An item.\n\n   Its second paragraph.\n\n"
+    text = item + "       [an example](missing.md)\n"
+    assert strip_indented_blocks(text) == item
+
+
+def test_a_code_block_beneath_a_paragraph_at_the_margin_is_blanked() -> None:
+    text = "A paragraph.\n\n    [an example](missing.md)\n\n[A link](present.md).\n"
+    assert strip_indented_blocks(text) == "A paragraph.\n\n\n\n[A link](present.md)."
 
 
 def test_an_indented_block_closes_at_the_first_line_indented_less() -> None:
