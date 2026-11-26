@@ -89,6 +89,21 @@ Not planned here, recorded so they are not lost.
 | W13 | W02 | AC14, AC15, AC16 | AC3, AC4, AC5 |
 | W14 | W03 | AC17, AC18, AC19 | AC6, AC7, AC8 |
 | W15 | W04 | AC22 | AC9, AC10, AC11 |
+| W08 | W07 | AC9 | AC15 |
+
+## I19 Review
+
+Each remaining row of E00 read against `main` at b0eb7a233 on 2026-11-26.
+
+| Row | Finding | Action |
+| --- | --- | --- |
+| W01, #158 | The indented-block reading is as the issue states it. Fencing the block is a workaround. | Kept. |
+| W02, #160 | No check names an uncalled definition. The delivery wrapper its second criterion decides is absent from `src/prosiform`. | That criterion, E00 AC23, and the two bullets about the wrapper removed. |
+| W04, #162 | An online link run resolves three issues and the project board, which the eval runbook cites. | Row ticked, issue closed with the run as evidence. |
+| W06, #185 and W07, #186 | The design still states `crate`, one fixture still states `branches`, and the independence check reads neither rule. | Kept. |
+| W08, #189 | The corpus runner takes `--awaiting` alone. | Moved to E01 as W07. |
+| W09, #191 | No check reads a tag. The versioning policy is on `main`. | The bullet placing the policy in a planning record removed. |
+| W10, #193 | The checks read tracked files, which the shared reading's own docstring states as its rule. | Kept. |
 
 ## Artifacts
 

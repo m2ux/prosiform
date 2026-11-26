@@ -10,6 +10,8 @@ A change to the build is paid for again in the tests and fixtures around it.
   [The bundle comparison](https://github.com/m2ux/prosiform/blob/b0eb7a2335436f2ce9c35546d3bfd2e39f7ae3be/checks/runner.py#L284-L342) reports a difference and writes nothing, so a change to bundle text or names is typed into each fixture it reaches.
 - **A failing tree reports one failure.**
   [The check target](https://github.com/m2ux/prosiform/blob/b0eb7a2335436f2ce9c35546d3bfd2e39f7ae3be/Makefile#L78) stops at its first failing target, so each further failure costs another run.
+- **One fixture's verdict costs a run of every fixture.**
+  [The corpus runner](https://github.com/m2ux/prosiform/blob/b0eb7a2335436f2ce9c35546d3bfd2e39f7ae3be/checks/corpus.py#L256) takes no fixture to run, so a change to one is read from a run of all.
 - **A crash and a drift are one verdict.**
   [The result's passed check](https://github.com/m2ux/prosiform/blob/b0eb7a2335436f2ce9c35546d3bfd2e39f7ae3be/checks/runner.py#L127) is false for a fixture whose output moved and for one whose run failed in itself.
 - **One behaviour is held twice.**
@@ -19,6 +21,8 @@ A change to the build is paid for again in the tests and fixtures around it.
 
 - **One run reports the set.**
   A second make target runs every check whether or not an earlier one failed, and names each that did.
+- **The runner takes a fixture's identity.**
+  The selected fixture is run by the comparison the corpus run performs and reported under the same identity.
 - **A fixture's verdict has three states.**
   A run met its manifest, its output moved, or it failed in itself. Only the second is drift.
 - **Drift is classified before it is restated.**
@@ -42,6 +46,7 @@ A change to the build is paid for again in the tests and fixtures around it.
 | [W04](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-test-turnaround/w04.md) | Restatement refuses what a reader decides | AC9, AC10, AC11 | | W03 | | |
 | [W05](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-test-turnaround/w05.md) | Command-line tests read against the corpus | AC12 | | | | |
 | [W06](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-test-turnaround/w06.md) | Approved command-line tests removed | AC13, AC14 | W05 | | | |
+| [W07](https://github.com/m2ux/prosiform/issues/189) | One fixture run by its identity | AC15 | | | | |
 
 ## Acceptance Criteria
 
@@ -59,6 +64,7 @@ A change to the build is paid for again in the tests and fixtures around it.
 - [ ] **AC12.** Every test in `src/tests/test_cli.py` has a row in the overlap table naming the fixtures that hold its assertion or stating that none does, as the table compared with the tests pytest collects from that file shows.
 - [ ] **AC13.** No test the overlap table records as approved for removal is collected from `src/tests/test_cli.py`, as the table compared with pytest's collection shows.
 - [ ] **AC14.** Every clause the conformance report lists as covered at the revision before the removal is listed as covered after it, as `make conformance` at both revisions shows.
+- [ ] **AC15.** The corpus runner asked for one fixture by its identity reports that fixture's verdict under that identity, by the comparison the corpus run performs, and refuses an identity no fixture carries, as the corpus harness shows.
 
 ## References
 

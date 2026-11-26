@@ -34,11 +34,10 @@ Debt that impairs nothing still has to be somewhere, and placed beside product w
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/issues/158) | A code block indented inside a list item | AC1 | | | | |
-| [W02](https://github.com/m2ux/prosiform/issues/160) | Uncalled functions named only by a check | AC2, AC23 | | | | |
-| [W04](https://github.com/m2ux/prosiform/issues/162) | Tracker route exercised by the repository check | AC4 | | | | |
+| [W02](https://github.com/m2ux/prosiform/issues/160) | Uncalled functions named only by a check | AC2 | | | | |
+| [W04](https://github.com/m2ux/prosiform/issues/162) | Tracker route exercised by the repository check | AC4 | | | | ✓ |
 | [W06](https://github.com/m2ux/prosiform/issues/185) | Lowercase build words in the design | AC7 | [I00:E11:W34](https://github.com/m2ux/prosiform/issues/39) | W07 | | |
 | [W07](https://github.com/m2ux/prosiform/issues/186) | An avoided term in a corpus declaration | AC8 | [I00:E11:W34](https://github.com/m2ux/prosiform/issues/39) | W06 | | |
-| [W08](https://github.com/m2ux/prosiform/issues/189) | One fixture run by its identity | AC9 | | | | |
 | [W09](https://github.com/m2ux/prosiform/issues/191) | Build tags matching the reported version | AC10 | | | | |
 | [W10](https://github.com/m2ux/prosiform/issues/193) | A document present and not read | AC11 | | | | |
 
@@ -46,14 +45,11 @@ Debt that impairs nothing still has to be somewhere, and placed beside product w
 
 - [ ] **AC1.** A code block indented inside a list item is passed over by the link check while that item's own content, a nested bullet included, is read, as the shared reading's own tests show.
 - [ ] **AC2.** Every function and method `src/prosiform` defines is named by the package itself or by a stated reason it is reached from outside it, as a repository check run by `make check` shows.
-- [ ] **AC4.** An online run of the link check over the repository's own documents makes at least one tracker call and resolves it, as the check's own output naming that reference shows.
+- [x] **AC4.** An online run of the link check over the repository's own documents makes at least one tracker call and resolves it, as the check's own output naming that reference shows.
 - [ ] **AC7.** A fixture declaration or a report entry naming a word that only a section of the design stating no behaviour carries is reported, as the independence check over a corpus declaring one shows.
 - [ ] **AC8.** A fixture declaration stating a term `docs/glossary.md` names as deliberately not used is reported with the reason that table gives, as the independence check shows.
-- [ ] **AC9.** The corpus runner asked for one fixture by its identity reports that fixture's verdict under that identity, by the comparison the corpus run performs, and refuses an identity no fixture carries, as the corpus harness shows.
 - [ ] **AC10.** A commit carrying a build tag whose version the build does not report fails a repository check, and a commit carrying a build tag and a contract tag whose major and minor differ fails it, as that check's run over each case shows.
 - [ ] **AC11.** A Markdown document present in the working tree and not tracked is read by the checks that read this repository's documents, or named by their run as present and unread, as those checks' run over a working tree carrying one shows.
-
-- [ ] **AC23.** The delivery wrapper's place is stated where a reader of the package meets it, and the check treats it as that statement says, as the check's own tests and a reading of the README show.
 
 ## References
 

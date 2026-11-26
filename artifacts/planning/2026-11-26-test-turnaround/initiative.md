@@ -7,7 +7,7 @@ Every rule the repository's checks and its design record state is stated exactly
 The repository's checks and design record state some rules imprecisely, and nothing a run of the tool produces shows it.
 
 - **A check passes over what its rule says it reads.**
-  The link check skips content inside a list item that holds an indented code block, the document checks skip a Markdown file present and not tracked, and an online run of the link check need not resolve a tracker reference at all.
+  The link check skips content inside a list item that holds an indented code block, and the document checks skip a Markdown file present and not tracked.
 - **A check accepts what its rule says it refuses.**
   A build tag whose version the build does not report, a corpus declaration naming a build word or an avoided term, and a function nothing calls all pass today.
 - **A failing run does not say what failed.**
