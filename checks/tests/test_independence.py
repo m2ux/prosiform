@@ -15,10 +15,10 @@ written in is passed over however unfamiliar it is, because ordinary prose
 is not what the check is looking for.
 
 Two kinds of word are refused whatever their shape. The design supplied here
-carries a section stating no behaviour, and a word only that section marks
-is reported in a declaration, in a fixture's identity and in the report
-entry naming that fixture, while a word it writes unmarked, and a term it
-marks that a behavioural section also states, pass. The glossary supplied
+carries a section stating no behaviour, and a word only that section writes
+in a code span is reported in a declaration, in a fixture's identity and in
+the report entry naming that fixture, while a word it writes outside one,
+and a code-span term a behavioural section also states, pass. The glossary supplied
 here names terms it deliberately does not use, and a description or a
 fixture identity stating one, in any segment of the identity's path, is
 reported with the reason the glossary gives.
@@ -62,8 +62,8 @@ DESIGN = (
 
 ## Design status
 
-The production build ships as one `crate`; meanwhile the **oracle** stays in
-use beside it. Each **build** emits the regions the sections below state.
+The production build ships as one `crate`; meanwhile the `oracle` stays in
+use beside it. Each `build` emits the regions the sections below state.
 
 ## File heading
 

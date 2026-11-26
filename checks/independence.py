@@ -42,8 +42,8 @@ configuration, as the corpus names it — and fails without one.
 The design states the contract where it states behaviour. A section the
 conformance report records as stating no behaviour states what the project
 decided about its builds, what each is made with, what remains to be proven
-of them and what an upstream contribution would say, so the terms it marks
-are a build's words rather than the contract's. Such a term is a build's
+of them and what an upstream contribution would say, so the terms it writes
+in code spans are a build's words rather than the contract's. Such a term is a build's
 however it is written: `crate` names packaging in lower case as plainly as
 `Cargo` does with a capital, so it is reported whatever its shape. The rest
 of that section's prose is the ordinary words its sentences are written in,
@@ -105,7 +105,6 @@ PATH_NAME = re.compile(r"\.(?:md|toml|json|ya?ml|txt)$", re.IGNORECASE)
 CODE_SPAN = re.compile(r"`[^`\n]*`")
 LINK_DESTINATION = re.compile(r"\]\([^)\n]*\)")
 TABLE_TERM = re.compile(r"^\|\s*\*\*([^*]+)\*\*", re.MULTILINE)
-MARK = re.compile(r"`([^`\n]*)`|\*\*([^*\n]+)\*\*")
 
 CARRIED = "message_contains"
 DESCRIPTION = "description"
@@ -198,8 +197,8 @@ def prose(text: str) -> str:
 
 
 def marked(text: str) -> list[str]:
-    """Every term one text marks: a code span's code, and a bold term."""
-    return [code or bold for code, bold in MARK.findall(text)]
+    """Every term one text marks, as the code of its code spans."""
+    return [span[1:-1] for span in CODE_SPAN.findall(text)]
 
 
 def registered(text: str) -> list[str]:
