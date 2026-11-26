@@ -203,6 +203,36 @@ def test_a_clause_is_a_heading_or_an_enumerated_rule_under_one() -> None:
     ]
 
 
+INDENTED_FENCE = """# A design
+
+## Resource limits
+
+- **Example:** a table a rule shows is an example of the markup.
+
+  ```markdown
+  | Budget | Default |
+  | --- | --- |
+  | `bytes` | `1` |
+  ## Design status
+  ```
+
+## Design status
+
+This section states what the project has decided about its builds.
+"""
+
+
+def test_a_fence_indented_in_a_list_item_states_no_clause() -> None:
+    assert names(INDENTED_FENCE) == ["Resource limits", "Resource limits — Example"]
+
+
+def test_a_fence_indented_in_a_list_item_stays_in_its_section_as_written() -> None:
+    behavioural, silent = partition(INDENTED_FENCE)
+    assert "  | `bytes` | `1` |" in behavioural
+    assert "  ## Design status" in behavioural
+    assert list(silent) == ["Design status"]
+
+
 def test_a_clause_a_fixture_names_carries_that_fixture(corpus: Path) -> None:
     mapped = dict(
         (clause.name, where)

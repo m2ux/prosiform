@@ -45,8 +45,7 @@ read no further than its frontmatter, so it counts against no source budget, and
 
 ## The closure
 
-It is this repository's own history. The `work-planner` skill sits on the `workspace`
-branch, and the proposal measured it at
+It is this repository's own history. The proposal measured the `work-planner` skill at
 [acac858](https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md),
 so the tree is recovered from a clone rather than fetched from elsewhere. The 39
 documents are the skill's own 38 plus `skills/guidelines.md`, which
