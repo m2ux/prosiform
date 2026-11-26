@@ -16,9 +16,10 @@ document, an ignored one and an untracked fixture, since the repository's
 own tree carries whatever its contributor happens to have written.
 
 The reading the checks share is held to the input it would read wrongly: a
-code span and an indented block holding a link form, an opener that never
-closes, and a list item's code block beside that item's own content, a
-nested bullet among it.
+code span, an indented block and a fence holding a link form, an opener that
+never closes, a fence holding the other fence character, and a list item's
+code block, fenced or indented, beside that item's own content, a nested
+bullet among it.
 """
 
 import shutil
@@ -33,8 +34,8 @@ from documents import (
     ROOT,
     corpus,
     documents,
+    strip_code_blocks,
     strip_code_spans,
-    strip_indented_blocks,
     strip_literal,
     tracked,
 )
@@ -176,17 +177,17 @@ def test_a_code_span_spanning_lines_keeps_the_lines_it_covers() -> None:
 
 def test_an_indented_block_after_a_blank_line_is_blanked() -> None:
     text = "Prose.\n\n    an example\n    a second line\n\nProse.\n"
-    assert strip_indented_blocks(text) == "Prose.\n\n\n\n\nProse."
+    assert strip_code_blocks(text) == "Prose.\n\n\n\n\nProse."
 
 
 def test_a_nested_bullet_short_of_a_code_block_indent_is_content() -> None:
     text = "- A bullet.\n\n    - A nested bullet.\n"
-    assert strip_indented_blocks(text) == text.rstrip("\n")
+    assert strip_code_blocks(text) == text.rstrip("\n")
 
 
 def test_a_code_block_inside_a_bullet_is_blanked() -> None:
     text = "- A bullet.\n\n      [an example](missing.md)\n"
-    assert strip_indented_blocks(text) == "- A bullet.\n\n"
+    assert strip_code_blocks(text) == "- A bullet.\n\n"
 
 
 def test_a_nested_bullet_beneath_a_bullet_holding_a_code_block_is_read() -> None:
@@ -197,7 +198,7 @@ def test_a_nested_bullet_beneath_a_bullet_holding_a_code_block_is_read() -> None
         "\n"
         "  - A nested bullet with [a link](present.md).\n"
     )
-    assert strip_indented_blocks(text) == (
+    assert strip_code_blocks(text) == (
         "- A bullet.\n\n\n\n  - A nested bullet with [a link](present.md)."
     )
 
@@ -205,17 +206,44 @@ def test_a_nested_bullet_beneath_a_bullet_holding_a_code_block_is_read() -> None
 def test_a_code_block_beneath_a_list_items_paragraph_is_blanked() -> None:
     item = "1. An item.\n\n   Its second paragraph.\n\n"
     text = item + "       [an example](missing.md)\n"
-    assert strip_indented_blocks(text) == item
+    assert strip_code_blocks(text) == item
 
 
 def test_a_code_block_beneath_a_paragraph_at_the_margin_is_blanked() -> None:
     text = "A paragraph.\n\n    [an example](missing.md)\n\n[A link](present.md).\n"
-    assert strip_indented_blocks(text) == "A paragraph.\n\n\n\n[A link](present.md)."
+    assert strip_code_blocks(text) == "A paragraph.\n\n\n\n[A link](present.md)."
 
 
 def test_an_indented_block_closes_at_the_first_line_indented_less() -> None:
     text = "Prose.\n\n    an example\nProse again.\n"
-    assert strip_indented_blocks(text) == "Prose.\n\n\nProse again."
+    assert strip_code_blocks(text) == "Prose.\n\n\nProse again."
+
+
+def test_a_fence_at_the_margin_is_blanked_with_its_delimiters() -> None:
+    text = "Prose.\n\n```markdown\n[an example](missing.md)\n```\n\nProse.\n"
+    assert strip_code_blocks(text) == "Prose.\n\n\n\n\n\nProse."
+
+
+def test_a_fence_inside_a_bullet_is_blanked_and_the_bullet_is_read() -> None:
+    text = (
+        "- A bullet with [a link](present.md).\n"
+        "\n"
+        "  ```markdown\n"
+        "  [an example](missing.md)\n"
+        "  ```\n"
+        "\n"
+        "  - A nested bullet with [a link](nested.md).\n"
+    )
+    assert strip_literal(text) == (
+        "- A bullet with [a link](present.md).\n"
+        "\n\n\n\n\n"
+        "  - A nested bullet with [a link](nested.md)."
+    )
+
+
+def test_a_fence_closes_only_at_a_fence_of_its_own_character() -> None:
+    text = "~~~\n```\n[an example](missing.md)\n~~~\n\n[A link](present.md).\n"
+    assert strip_code_blocks(text) == "\n\n\n\n\n[A link](present.md)."
 
 
 def test_every_literal_form_is_blanked_together() -> None:

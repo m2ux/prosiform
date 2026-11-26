@@ -22,9 +22,9 @@ an example's expected output, is excepted on the same ground: its deferred
 links are spelled from the folder its run started in, not from the bundle.
 
 Literal content holds examples rather than content, so it is blanked out
-before a document is read. A fenced block goes before a document is read for
-references or for tables; a reference scan blanks indented blocks and code
-spans beside it, because a link form written in either is the spelling of a
+before a document is read. A code block, fenced or indented, goes before a
+document is read for references, headings or tables; a reference scan blanks
+code spans beside it, because a link form written in one is the spelling of a
 link rather than a link, which is the rule the product applies to the same
 bytes. A heading's slug and a table's cell reduce a code span to its code
 instead, since that is what the rendering leaves behind.
@@ -42,9 +42,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = "manifest.toml"
 MARKDOWN = (".md", ".markdown")
 BUNDLE = ".bundle.md"
-FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
 BLOCK_READER = MarkdownIt("commonmark")
-CODE_BLOCK = "code_block"
+CODE_BLOCKS = ("fence", "code_block")
 BACKTICK_RUN = re.compile(r"`+")
 CELL_SEPARATOR = re.compile(r"(?<!\\)\|")
 DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
@@ -106,30 +105,20 @@ def unread() -> list[Path]:
     return readable(paths, corpus(tracked() + paths))
 
 
-def strip_code_fences(text: str) -> str:
-    """Blank out fenced blocks, whose contents are examples rather than content."""
-    out, fenced = [], False
-    for line in text.splitlines():
-        if FENCE.match(line):
-            fenced = not fenced
-            out.append("")
-            continue
-        out.append("" if fenced else line)
-    return "\n".join(out)
+def strip_code_blocks(text: str) -> str:
+    """Blank out code blocks, fenced or indented, whose contents are examples.
 
-
-def strip_indented_blocks(text: str) -> str:
-    """Blank out indented code blocks, whose contents are examples rather than content.
-
-    The blocks are the ones the CommonMark parser finds, so a list item's
+    The blocks are the ones the CommonMark parser finds. A fence opens
+    wherever a block can, a list item's content included, and closes at the
+    first fence line of its own character at least as long. A list item's
     content column decides what an indented line is: four or more columns
     past it is that item's code block, and less is the item's own content, a
-    nested bullet carrying a link among it. Every line of a block is blanked
-    and every other line is kept as written.
+    nested bullet carrying a link among it. Every line of a block, a fence's
+    delimiters included, is blanked and every other line is kept as written.
     """
     lines = text.splitlines()
     for token in BLOCK_READER.parse("\n".join(lines)):
-        if token.type == CODE_BLOCK and token.map:
+        if token.type in CODE_BLOCKS and token.map:
             start, end = token.map
             lines[start:end] = [""] * (end - start)
     return "\n".join(lines)
@@ -165,12 +154,12 @@ def strip_code_spans(text: str) -> str:
 
 
 def strip_literal(text: str) -> str:
-    """Blank out every literal form: a fenced block, an indented block, a code span.
+    """Blank out every literal form: a code block, fenced or indented, and a code span.
 
     What survives is what a renderer turns into content, so a link form
     written to show the syntax is passed over and a link beside it is read.
     """
-    return strip_code_spans(strip_indented_blocks(strip_code_fences(text)))
+    return strip_code_spans(strip_code_blocks(text))
 
 
 MARKDOWN_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
@@ -208,12 +197,12 @@ def is_delimiter(line: str) -> bool:
 
 
 def tables(text: str) -> list[Table]:
-    """Every pipe table the document carries, outside its fenced blocks.
+    """Every pipe table the document carries, outside its code blocks.
 
     A table is a header row, a delimiter row, and the rows that follow until
     the first line that does not open with a pipe.
     """
-    lines = strip_code_fences(text).splitlines()
+    lines = strip_code_blocks(text).splitlines()
     found: list[Table] = []
     index = 0
     while index + 1 < len(lines):

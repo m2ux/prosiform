@@ -151,10 +151,6 @@ class Range:
         """Whether a directive's composition placed this range."""
         return bool(self.placing)
 
-    def kept(self) -> list[int]:
-        """Each line of the source the bundle carries, in source order."""
-        return [at for at in range(*self.lines) if at not in self.removed]
-
 
 @dataclass(frozen=True)
 class Instruction:
