@@ -18,7 +18,6 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 | Term | Definition |
 | --- | --- |
-| **boundary** | The deepest directory holding every local Markdown path a document's own links name, normalised from that document's directory; a document naming none has its own directory. It is derived from the links, so it admits every authored link. |
 | **source document** | One captured local Markdown file, recognized by its `.md` or `.markdown` suffix. |
 | **section** | A document-level heading and its subsections, ending before the next heading of equal or higher level. The smallest unit a reference can select. |
 | **region** | A contiguous span of a source document selected for inclusion: a whole document, or a section. |

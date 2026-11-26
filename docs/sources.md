@@ -33,9 +33,7 @@ flowchart LR
 
 Every entry reference names a document that declares. One naming a document that declares nothing fails with `E_TARGET_NOT_FOUND` before any source is read.
 
-## The boundary
-
-A document's **boundary** is the deepest directory holding every local Markdown path its own links name, normalised from the document's directory; a document naming none has its own directory. `modes/plan-mode.md` above links `../rules/common.md` and `../library/guide.md`, so its boundary is the skill's directory, the deepest one holding both. The boundary is derived from the links, so it admits every link its author wrote and is never stated beside them.
+## The working directory
 
 What confines a run is the invocation working directory, captured once at the start. An entry reference resolves from it, and every path a diagnostic names is written from it; an entry's parent segments resolve from it too. An entry written as an absolute path, a drive path, or with a scheme or an authority names nothing the working directory resolves, and fails with `E_SOURCE_OUTSIDE_ROOT`; inside a source, such a link is text.
 
@@ -45,7 +43,7 @@ Leading YAML frontmatter is read for metadata and excluded from the body. It ope
 
 The block is one YAML 1.2 Core mapping. Malformed YAML, a root that is not a mapping, duplicate keys, aliases, merge keys and custom tags fail the run with `E_INVALID_FRONTMATTER`, and an opener with no closer with `E_UNTERMINATED_FRONTMATTER`.
 
-`prosiform` holds the conversion settings, and its presence is the declaration. Every key in `prosiform` is a **preset** name, and its value is a mapping of that preset's settings; a key holding anything else fails the run with `E_INVALID_CONVERSION_METADATA`. A document's `default` preset is in force wherever it is bundled, and a link selects its other presets by comma-separated names in that link's title, as [Selection](selection.md#presets-in-force) states. A preset holds the keys below, and a key outside them fails the run as an unknown field. A key naming a budget (`files`, `file-bytes`, `input-bytes`, `output-bytes`, `targets`, `links`, `nesting`, `depth`) or a caller's option (the output folder, the diagnostics format, check mode, the version, the help) is such a key: a budget bounds a bundle rather than a document, and those options are the caller's. `root` fails, at the top level or within a preset, with `E_INVALID_CONVERSION_METADATA`, naming the field: a boundary is derived from a document's links, so a declared one states nothing a run reads.
+`prosiform` holds the conversion settings, and its presence is the declaration. Every key in `prosiform` is a **preset** name, and its value is a mapping of that preset's settings; a key holding anything else fails the run with `E_INVALID_CONVERSION_METADATA`. A document's `default` preset is in force wherever it is bundled, and a link selects its other presets by comma-separated names in that link's title, as [Selection](selection.md#presets-in-force) states. A preset holds the keys below, and a key outside them fails the run as an unknown field. A key naming a budget (`files`, `file-bytes`, `input-bytes`, `output-bytes`, `targets`, `links`, `nesting`, `depth`) or a caller's option (the output folder, the diagnostics format, check mode, the version, the help) is such a key: a budget bounds a bundle rather than a document, and those options are the caller's. `root` fails, at the top level or within a preset, with `E_INVALID_CONVERSION_METADATA`, naming the field: a link resolves from its own file's directory and its target's declaration decides its inclusion, while the working directory confines the run, so a declared root states nothing a run reads.
 
 | Key | Holds |
 | --- | --- |
