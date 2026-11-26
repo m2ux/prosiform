@@ -8,6 +8,12 @@ One make target names every failing check, and a fixture's verdict tells a run t
 
 Restatement reads that verdict to refuse a failed run, so this row is first on the chain to it, and a failing tree stops costing one run per failure.
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [W01](w01.md) | The task's work item: the files it changes, its design and its checks |
+
 ## Links
 
 | Resource | URL |
