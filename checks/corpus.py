@@ -39,6 +39,12 @@ the manifest declares it, so a marker naming an epic and one naming a
 task within it are separate requests. The report reads manifests alone
 and needs no build.
 
+Naming fixtures by identity runs those fixtures alone, by the comparison
+and under the report the corpus run gives, so a session reading the
+fixture its change moves reads that fixture's verdict without a run of
+every fixture. `manifests.selected` owns which fixtures a request names
+and its refusal of an identity no fixture carries.
+
 The build under test comes from configuration and from nowhere else. An
 absent `PROSIFORM_BUILD` fails the run: a corpus that skips because it
 found no build sits inside a passing suite saying nothing, and a fixture
@@ -53,10 +59,19 @@ from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import Enum
+from functools import partial
 from pathlib import Path
 from typing import Any
 
-from manifests import CORPUS, MANIFEST_NAME, fixtures, identity, read
+from manifests import (
+    CORPUS,
+    MANIFEST_NAME,
+    UnknownFixture,
+    fixtures,
+    identity,
+    read,
+    selected,
+)
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from runner import BuildNotConfigured, Result, build_under_test, run_fixture
@@ -196,10 +211,13 @@ def undeclared(fixture: Path) -> tuple[str, ...]:
     return tuple(found)
 
 
-def outcome(fixture: Path) -> Outcome:
-    """One fixture run against the build, read against its marker and sources."""
+def outcome(fixture: Path, corpus: Path = CORPUS) -> Outcome:
+    """One fixture run against the build, read against its marker and sources.
+
+    The outcome names the fixture by its identity under `corpus`.
+    """
     return Outcome(
-        run_fixture(fixture),
+        run_fixture(fixture, corpus),
         awaiting(read(fixture / MANIFEST_NAME)),
         undeclared(fixture),
     )
@@ -250,20 +268,42 @@ def unblocked_report(work: str, corpus: Path = CORPUS) -> list[str]:
     ]
 
 
-def requested(argv: list[str]) -> str | None:
-    """The work a request names, or nothing when the corpus is to be run."""
+@dataclass(frozen=True)
+class Request:
+    """What one invocation of the corpus runner asks for.
+
+    `awaited` holds the work whose fixtures are reported, or nothing when
+    fixtures are run; `names` holds the identities of the fixtures to run,
+    and is empty when every fixture is.
+    """
+
+    awaited: str | None = None
+    names: tuple[str, ...] = ()
+
+
+def requested(argv: list[str]) -> Request:
+    """The request a command line makes; a report and a run are exclusive."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
+    asked = parser.add_mutually_exclusive_group()
+    asked.add_argument(
         "--awaiting",
         metavar="WORK",
         help="report the fixtures declaring they await this work, in place of "
         "running the corpus",
     )
-    named: str | None = parser.parse_args(argv).awaiting
-    return named
+    asked.add_argument(
+        "names",
+        nargs="*",
+        default=[],
+        metavar="IDENTITY",
+        help="run only the fixtures carrying these identities, each a path "
+        "under fixtures/",
+    )
+    parsed = parser.parse_args(argv)
+    return Request(parsed.awaiting, tuple(parsed.names))
 
 
-def run_all(found: list[Path]) -> list[Outcome]:
+def run_all(found: list[Path], corpus: Path = CORPUS) -> list[Outcome]:
     """Every fixture's outcome, in the corpus's own path order.
 
     Each fixture runs in its own process and reads its own tree, so the runs
@@ -272,29 +312,37 @@ def run_all(found: list[Path]) -> list[Outcome]:
     is the same whichever machine and however many workers ran it.
     """
     with ThreadPoolExecutor(max_workers=workers()) as pool:
-        return list(pool.map(outcome, found))
+        return list(pool.map(partial(outcome, corpus=corpus), found))
 
 
-def main(corpus: Path = CORPUS, *, awaited: str | None = None) -> int:
-    """Run the corpus, or report what one piece of work unblocks."""
-    if awaited is not None:
-        for line in unblocked_report(awaited, corpus):
+def main(corpus: Path = CORPUS, request: Request | None = None) -> int:
+    """Run the corpus or the fixtures named, or report what one work unblocks.
+
+    A request naming an identity no fixture carries fails before any run.
+    """
+    asked = request or Request()
+    if asked.awaited is not None:
+        for line in unblocked_report(asked.awaited, corpus):
             print(line)
         return 0
+    try:
+        found = selected(asked.names, corpus) if asked.names else fixtures(corpus)
+    except UnknownFixture as unknown:
+        print(f"corpus check: {unknown}", file=sys.stderr)
+        return 1
     try:
         build_under_test()
     except BuildNotConfigured as absent:
         print(f"corpus check: {absent}", file=sys.stderr)
         return 1
-    found = fixtures(corpus)
     if not found:
         print(f"corpus check: no fixture under {corpus}", file=sys.stderr)
         return 1
-    outcomes = run_all(found)
+    outcomes = run_all(found, corpus)
     for line in report(outcomes):
         print(line)
     return 1 if any(one.verdict.fails_the_run for one in outcomes) else 0
 
 
 if __name__ == "__main__":
-    sys.exit(main(awaited=requested(sys.argv[1:])))
+    sys.exit(main(request=requested(sys.argv[1:])))
