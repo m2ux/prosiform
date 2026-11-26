@@ -4,7 +4,7 @@ Every check is a named `make` command. Continuous integration runs these same na
 
 ## Running the Checks
 
-Two commands run every check in the sections below, from [Python](#python) to [The Contract](#the-contract). `make check` answers whether the tree is sound, and `make check-all` what is wrong with it.
+Two commands run every check in the sections below, from [Python](#python) to [Releases](#releases). `make check` answers whether the tree is sound, and `make check-all` what is wrong with it.
 
 | Command | Runs |
 | --- | --- |
@@ -38,6 +38,7 @@ A pull request that touches none of those paths is reported as not checked: the 
 | `make lint` | The repository's Python has no lint errors. |
 | `make format-check` | That Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That Python type checks in strict mode. |
+| `make reachability` | Every function and method the package defines is named by the package itself, or by a stated reason that reaches it from outside: a console script the project declares, a method Python calls by its name, or a framework hook listed in [`checks/reachability.py`](checks/reachability.py) with what calls it. A test naming a definition does not reach it. |
 | `make test` | The Python build's test suite passes. A run that collects no test fails. |
 
 ### The Corpus
@@ -123,8 +124,25 @@ These two checks keep the corpus tied to the design rather than to any one build
 `make independence` reads the same three inputs as conformance, plus the report between them. It keeps the corpus bound to the behaviour the design states, not to the build that happens to sit beside it.
 
 - **The rule.** Any term written the way a type, function, field, constant, package or language is written must be one the contract names.
-- **Where contract names come from.** The design's prose and clause names, the terms the [glossary](docs/glossary.md) defines, and the interface the contract declares.
+- **Where contract names come from.** The prose of the design's behavioural sections and its clause names, the terms the [glossary](docs/glossary.md) defines, and the interface the contract declares.
+- **Build words.** A word only a design section stating no behaviour carries is refused whatever its shape, unless it names a file the fixture carries.
+- **Avoided terms.** A fixture description stating a term the glossary deliberately does not use is refused, with the reason the glossary gives.
 - **Needs a build.** It renders the conformance report, so it fails when no build is configured.
+
+### Releases
+
+| Command | Asserts |
+| --- | --- |
+| `make releases` | Each build tag naming HEAD names the version the build under test reports for `-v`, and a contract tag beside it shares its major and minor, as the [versioning policy](docs/versioning.md) states. See [Release Tags](#release-tags). |
+
+#### Release Tags
+
+`make releases` reads the tags `git tag --points-at HEAD` lists, so it checks the commit under test and nothing else.
+
+- **What it reads.** Tags under `python/` and `contract/`. A tag under another prefix names something other than a release and is passed over.
+- **What fails it.** A `python/vX.Y.Z` tag on a build that reports another version, a `contract/vX.Y.Z` tag beside it naming another major or minor, and a release tag not spelled `vX.Y.Z`.
+- **No tag, no build.** A commit carrying no release tag passes without running the build, and so does one carrying a contract tag alone. A build tag with no build configured fails.
+- **Where it observes a release.** Release tags are made after the release merge, so the run that checks the merge sees none, and a tag push starts no workflow. The release procedure runs `make releases` locally once both tags name the merge and before they are pushed, as [Cutting a release](docs/versioning.md#cutting-a-release) states. A manual dispatch of the `Checks` workflow on a release tag observes it in continuous integration: the checkout fetches every tag, since `fetch-depth: 0` fetches the whole history and its tags.
 
 ## Outside `make check`
 
@@ -185,8 +203,8 @@ make restate ARGS="--write"
 ### Tool Environments
 
 - **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make triage`, `make restate`, `make examples` and `make eval-diagrams`.
-- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
-- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
+- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too, and `make releases` reads the build through `make invocation`'s reading of it. `make tables` and `make links` read documents through a reading that finds code blocks with the build's Markdown parser, so they run from it as well.
+- **Standard library only.** `make smoke`, `make layout`, `make vocabulary`, `make reachability` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 
 ### Network Access
 
@@ -195,7 +213,7 @@ make restate ARGS="--write"
 
 ### Choosing the Build Under Test
 
-`make corpus`, `make triage`, `make restate`, `make invocation`, `make conformance` and `make independence` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation and one declared surface bind every implementation of the contract.
+`make corpus`, `make triage`, `make restate`, `make invocation`, `make conformance`, `make independence` and `make releases` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation and one declared surface bind every implementation of the contract.
 
 `PROSIFORM_BUILD` holds that build's command line, split the way a shell splits one. A corpus run resolves it from the fixture's own directory.
 

@@ -1,4 +1,4 @@
-description = "A raw HTML anchor naming a declaring Markdown document fails the run and names the source line carrying it, so a local dependency written in a syntax the profile does not support is refused rather than quietly left out of the bundle."
+description = "A raw HTML link naming a declaring Markdown document fails the run and names the source line carrying it, so a local dependency written in a syntax the profile does not support is refused rather than quietly left out of the bundle."
 
 clauses = [
   "Link classification and resource handling — Unsupported local-document syntax",

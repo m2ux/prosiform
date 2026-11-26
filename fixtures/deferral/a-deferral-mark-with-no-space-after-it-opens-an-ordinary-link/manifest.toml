@@ -1,4 +1,4 @@
-description = "A link whose text opens with the deferral mark and no space after it opens no operator: it is bundled like any other link, its target contributing content and its destination rewritten to the bundled heading, and the bundle carries the link's text exactly as its author wrote it, mark included, with no diagnostic."
+description = "A link whose text opens with the deferral mark and no space after it opens no operator: it is bundled like any other link, its target contributing content and its destination rewritten to the bundled heading, and the bundle carries the link's text exactly as its author wrote it, mark and all, with no diagnostic."
 
 clauses = [
   "Link classification and resource handling — The deferral mark",

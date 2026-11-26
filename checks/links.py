@@ -2,11 +2,12 @@
 """Assert every reference every document the repository owns resolves.
 
 The documents are found rather than listed, so a document added later comes
-into the check by being committed. The fixture corpus is excepted: a fixture's
-source carries references a run is meant to refuse, and its expected bundle is
-output rather than a document a reader follows, as is any bundle tracked
-outside the corpus. Naming documents on the command
-line checks those instead, which is for reading one document while editing it.
+into the check by being committed, and until then the run names it as present
+and unread, which `documents.unread` defines. The fixture corpus is excepted:
+a fixture's source carries references a run is meant to refuse, and its
+expected bundle is output rather than a document a reader follows, as is any
+bundle tracked outside the corpus. Naming documents on the command line checks
+those instead, which is for reading one document while editing it.
 
 A link form written inside literal content — a code span, a fenced block or
 an indented block — is the spelling of a link rather than a link, so it is
@@ -51,7 +52,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from documents import ROOT, documents, strip_code_fences, strip_literal
+from documents import ROOT, documents, strip_code_fences, strip_literal, unread
 
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
@@ -475,6 +476,7 @@ def main() -> int:
     resolved_branches.clear()
     named = [(ROOT / name).resolve() for name in arguments.documents]
     selected = named or documents()
+    skipped = [] if named else unread()
     failures: list[str] = []
     unanswered: list[str] = []
     for document in selected:
@@ -490,6 +492,8 @@ def main() -> int:
         failures += [f"{name}: {failure}" for failure in unresolved]
         unanswered += [f"{name}: {one}" for one in unreached]
 
+    for path in skipped:
+        print(f"unread {path.relative_to(ROOT).as_posix()} — present and untracked")
     for one in unanswered:
         print(f"WARN {one}", file=sys.stderr)
     for failure in failures:
@@ -500,6 +504,8 @@ def main() -> int:
             print(line, file=sys.stderr)
         return 1
     resolved = f"link check: every reference in {len(selected)} document(s) resolved"
+    if skipped:
+        resolved += f"; {len(skipped)} untracked document(s) unread"
     if unanswered:
         print(f"\n{resolved}, except {len(unanswered)} whose host did not answer")
     else:

@@ -1,4 +1,4 @@
-description = "A directive resolves by the rules every reference resolves by, the writing document's subst included: the guide's default preset maps read.md to stub.md, so its directive naming read.md's Inputs composes the stub's Inputs, the contribution heading names the stub, the directive's link points at it, and the route raises nothing."
+description = "A directive resolves by the rules every reference resolves by, the writing document's subst among them: the guide's default preset maps read.md to stub.md, so its directive naming read.md's Inputs composes the stub's Inputs, the contribution heading names the stub, the directive's link points at it, and the route raises nothing."
 
 clauses = [
   "Section composition — The eligible target",

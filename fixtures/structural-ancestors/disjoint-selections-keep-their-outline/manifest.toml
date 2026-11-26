@@ -1,4 +1,4 @@
-description = "Two selections from disjoint branches of one outline each keep the ancestor chain their source gave them, the unselected parent of the deeper one emitted as a heading alone."
+description = "Two selections from disjoint subtrees of one outline each keep the ancestor chain their source gave them, the unselected parent of the deeper one emitted as a heading alone."
 
 clauses = [
   "Heading-only structural ancestors",

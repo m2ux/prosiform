@@ -5,6 +5,13 @@ a tree: an untracked file is invisible to a fresh checkout. The documents are
 found rather than listed, so a tree added later is read by every check that
 reads them, without any of those checks being edited.
 
+A document present in the working tree and untracked is named as unread
+rather than read. The checks' subject is the repository's own content, which
+is what a fresh checkout and continuous integration hold, so it fails nothing;
+naming it keeps a run's count from reading as coverage of a document it never
+saw. A document git ignores is not present in this sense: the repository has
+declared it none of its content.
+
 The fixture corpus is excepted. A fixture is a directory holding a manifest,
 which is what the corpus check calls one, and a fixture's source deliberately
 carries references a run is meant to refuse, while its expected bundle is
@@ -28,29 +35,41 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from markdown_it import MarkdownIt
+
 ROOT = Path(__file__).resolve().parent.parent
 
 MANIFEST = "manifest.toml"
 MARKDOWN = (".md", ".markdown")
 BUNDLE = ".bundle.md"
 FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
-INDENTED = re.compile(r"^(?: {4}|\t)")
-LIST_ITEM = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:\s|$)")
+BLOCK_READER = MarkdownIt("commonmark")
+CODE_BLOCK = "code_block"
 BACKTICK_RUN = re.compile(r"`+")
 CELL_SEPARATOR = re.compile(r"(?<!\\)\|")
 DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
 
 
-def tracked() -> list[str]:
-    """Every path git tracks, each relative to the repository root."""
+def listed(*options: str) -> list[str]:
+    """Every path `git ls-files` lists under those options, relative to the root."""
     result = subprocess.run(
-        ["git", "ls-files"],
+        ["git", "ls-files", *options],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=True,
     )
     return [line for line in result.stdout.splitlines() if line]
+
+
+def tracked() -> list[str]:
+    """Every path git tracks, each relative to the repository root."""
+    return listed()
+
+
+def untracked() -> list[str]:
+    """Every path present in the working tree that git neither tracks nor ignores."""
+    return listed("--others", "--exclude-standard")
 
 
 def corpus(paths: list[str]) -> list[str]:
@@ -60,10 +79,8 @@ def corpus(paths: list[str]) -> list[str]:
     ]
 
 
-def documents() -> list[Path]:
-    """Every Markdown document git tracks outside the corpus, in path order."""
-    paths = tracked()
-    fixtures = corpus(paths)
+def readable(paths: list[str], fixtures: list[str]) -> list[Path]:
+    """Each Markdown document among those paths outside the corpus, in path order."""
     return sorted(
         ROOT / path
         for path in paths
@@ -71,6 +88,22 @@ def documents() -> list[Path]:
         and not path.endswith(BUNDLE)
         and not any(path.startswith(f"{fixture}/") for fixture in fixtures)
     )
+
+
+def documents() -> list[Path]:
+    """Every Markdown document git tracks outside the corpus, in path order."""
+    paths = tracked()
+    return readable(paths, corpus(paths))
+
+
+def unread() -> list[Path]:
+    """Every Markdown document present and untracked outside the corpus.
+
+    A fixture is excepted whether or not git tracks its manifest, so a fixture
+    being written is held out like one already committed.
+    """
+    paths = untracked()
+    return readable(paths, corpus(tracked() + paths))
 
 
 def strip_code_fences(text: str) -> str:
@@ -86,34 +119,20 @@ def strip_code_fences(text: str) -> str:
 
 
 def strip_indented_blocks(text: str) -> str:
-    """Blank out indented blocks, whose contents are examples rather than content.
+    """Blank out indented code blocks, whose contents are examples rather than content.
 
-    A block opens at a four-space or tab indent on a line following a blank
-    one, and closes at the first line indented less than that. A line below a
-    list marker is that list's own content however far it is indented, so a
-    nested bullet carrying a link is read as the link it is.
+    The blocks are the ones the CommonMark parser finds, so a list item's
+    content column decides what an indented line is: four or more columns
+    past it is that item's code block, and less is the item's own content, a
+    nested bullet carrying a link among it. Every line of a block is blanked
+    and every other line is kept as written.
     """
-    out: list[str] = []
-    indented_block = False
-    listed = False
-    after_blank = True
-    for line in text.splitlines():
-        if not line.strip():
-            out.append("")
-            after_blank = True
-            continue
-        indented = bool(INDENTED.match(line))
-        if indented_block and not indented:
-            indented_block = False
-        if not indented_block:
-            if LIST_ITEM.match(line):
-                listed = True
-            elif not indented:
-                listed = False
-            indented_block = indented and after_blank and not listed
-        out.append("" if indented_block else line)
-        after_blank = False
-    return "\n".join(out)
+    lines = text.splitlines()
+    for token in BLOCK_READER.parse("\n".join(lines)):
+        if token.type == CODE_BLOCK and token.map:
+            start, end = token.map
+            lines[start:end] = [""] * (end - start)
+    return "\n".join(lines)
 
 
 def strip_code_spans(text: str) -> str:
