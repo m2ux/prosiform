@@ -697,7 +697,7 @@ def test_a_range_names_the_lines_of_its_source_it_occupies() -> None:
 def test_a_definition_line_is_recorded_as_removed_rather_than_absent() -> None:
     one = built({"guide.md": DEFINED, "rules.md": RULES}, ["guide.md"])
     quote = next(one for one in one.groups[0].record.ranges if one.lines == (2, 5))
-    assert quote.kept() == [2, 3]
+    assert quote.removed == (4,)
 
 
 UNTERMINATED = """# Guide
