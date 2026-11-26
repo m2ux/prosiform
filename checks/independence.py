@@ -41,8 +41,8 @@ configuration, as the corpus names it — and fails without one.
 
 The design states the contract where it states behaviour. A section the
 conformance report records as stating no behaviour states what the project
-decided about its builds, what remains to be proven of them and what an
-upstream contribution would say, so its prose states a build's words
+decided about its builds, what each is made with, what remains to be proven
+of them and what an upstream contribution would say, so its prose states a build's words
 rather than the contract's. A word only such a section carries is a build's
 however it is written: `crate` names packaging in lower case as plainly as
 `Cargo` does with a capital, so it is reported whatever its shape. A claim
