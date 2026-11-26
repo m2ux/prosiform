@@ -49,9 +49,9 @@ It is this repository's own history. The proposal measured the `work-planner` sk
 [acac858](https://github.com/m2ux/prosiform/blob/acac85867ca963df00251e4cf00a4db11b14bf24/skills/work-planner/modes/plan-mode.md),
 so the tree is recovered from a clone rather than fetched from elsewhere. The 39
 documents are the skill's own 38 plus `skills/guidelines.md`, which
-`skills/work-planner/guidelines.md` cites from the directory above. That document's
-derived boundary is therefore `skills/` rather than the skill, and the run below is made
-from `skills/` so that every path it names sits under its working directory.
+`skills/work-planner/guidelines.md` cites from the directory above. The run below is
+therefore made from `skills/` so that every path it names sits under its working
+directory.
 
 ## The tree as it stands
 
