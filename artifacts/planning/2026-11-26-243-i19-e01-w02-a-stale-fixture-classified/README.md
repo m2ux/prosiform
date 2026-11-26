@@ -8,6 +8,12 @@ Triage names each stale fixture under one declared drift category, and a categor
 
 Restatement reads these categories before it writes anything, so this row is the next step on the chain to it. The earlier work item for this row is [w13.md](../2026-10-24-243-i01-e03-w13-drift-triage/w13.md).
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [w02.md](w02.md) | The work item: the drift categories, their order and why, and the plan for the triage command |
+
 ## Links
 
 | Resource | URL |
