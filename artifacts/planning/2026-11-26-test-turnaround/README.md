@@ -69,7 +69,7 @@ Not planned here, recorded so they are not lost.
 - [x] W05: the overlap table, then the user's review of it: 205 approved, 33 refused.
 - [x] W06: the approved removals and the layer rule, #862.
 - [x] W07: one fixture run by its identity, #859.
-- [ ] Review pull request #864 into `main`, merged by the user.
+- [x] Review pull request #864 into `main`, merged by the user at 794922d41; epic #858 closed.
 
 ## Decisions
 
