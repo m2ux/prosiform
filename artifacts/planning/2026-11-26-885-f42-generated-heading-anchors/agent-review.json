@@ -8,27 +8,8 @@
     "reviewer": "Codex /root",
     "reviewed_at": "2026-11-26T16:29:10.382240+00:00",
     "scope": "Complete target-to-head product diff, all four synthetic corpus cases, removed obsolete refusal assertions, changed shipped documentation and immutable design links. Affected callers inspected: cli.compose, source.fragments, cli.destination_map, dispatch.anchors, Placing.named and composition scope refusal. Repeated visible headings with distinct source/emitted identities are legitimate; speculative replacement of the destination allocator is unnecessary. Existing conformance coverage limits remain explicit, not claimed as native or complete contract proof.",
-    "criteria": {
-      "AC1": "Both heading orders and ordinary/Mermaid dispatch destination identities pass in complete expected bundles; sets and picks publish distinct destinations.",
-      "AC2": "Distinct-selection, routed-copy and composition-scope refusal fixtures pass unchanged in the focused controls and complete corpus.",
-      "AC3": "Governing design pin119c12e2e223cf32d18b71186ba274d8da75c8d2, shipped docs and implementation agree; complete repository checks pass."
-    },
-    "validation": [
-      {
-        "command": "env UV_PROJECT_ENVIRONMENT=/tmp/f42-product-venv PROSIFORM_BUILD=/tmp/f42-product-venv/bin/pf make check",
-        "exit": 0,
-        "build_tests": 2121,
-        "harness_passed": 1235,
-        "harness_skipped": 1,
-        "corpus_passed": 710,
-        "log": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/make-check.log",
-        "sha256": "2a9f8519b20de2f924b684fbd7844980adad12be3f583f1442da36bb0f49167b"
-      },
-      {
-        "command": "git diff --check",
-        "exit": 0
-      }
-    ],
+    "criteria": "AC1: Both heading orders and ordinary/Mermaid dispatch destination identities pass in complete expected bundles; sets and picks publish distinct destinations.; AC2: Distinct-selection, routed-copy and composition-scope refusal fixtures pass unchanged in the focused controls and complete corpus.; AC3: Governing design pin119c12e2e223cf32d18b71186ba274d8da75c8d2, shipped docs and implementation agree; complete repository checks pass.",
+    "validation": "{\"build_tests\": 2121, \"command\": \"env UV_PROJECT_ENVIRONMENT=/tmp/f42-product-venv PROSIFORM_BUILD=/tmp/f42-product-venv/bin/pf make check\", \"corpus_passed\": 710, \"exit\": 0, \"harness_passed\": 1235, \"harness_skipped\": 1, \"log\": \"https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/make-check.log\", \"sha256\": \"2a9f8519b20de2f924b684fbd7844980adad12be3f583f1442da36bb0f49167b\"}; {\"command\": \"git diff --check\", \"exit\": 0}",
     "findings": []
   }
 ]
