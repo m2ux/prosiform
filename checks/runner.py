@@ -71,6 +71,7 @@ from pathlib import Path
 from typing import Any
 
 from manifests import (
+    CORPUS,
     MANIFEST_NAME,
     errors,
     identity,
@@ -532,9 +533,12 @@ def environment(fault: str | None) -> dict[str, str]:
     return child
 
 
-def run_fixture(fixture: Path) -> Result:
-    """One fixture run against the configured build and compared with its manifest."""
-    name = identity(fixture)
+def run_fixture(fixture: Path, corpus: Path = CORPUS) -> Result:
+    """One fixture run against the configured build and compared with its manifest.
+
+    The result names the fixture by its identity under `corpus`.
+    """
+    name = identity(fixture, corpus)
     manifest = read(fixture / MANIFEST_NAME)
     malformed = errors(manifest) + missing_files(fixture, manifest)
     if malformed:
