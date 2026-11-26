@@ -15,7 +15,7 @@ The user placed them in the initiative rather than as standalone issues, so the 
 | Where the gaps go | Decided by the user: a new I19 epic. |
 | Epic priority | 1: it is the initiative's only open epic once E02 merges. |
 | W01 and W03 | One pull request: both change the vocabulary check and its tests. |
-| The boundary | Open. Recommended: remove it from the documentation, since the build computes none and the confinement the pages need is the working directory's. |
+| The boundary | Decided by the user: removed from the documentation. If the design on the engineering branch states it as behaviour, the session asks the user before changing the contract. |
 
 ## Sources
 
@@ -33,7 +33,7 @@ The user placed them in the initiative rather than as standalone issues, so the 
 | [w01.md](w01.md) | Work item: every check reads the shared code-block reading. |
 | [w02.md](w02.md) | Work item: build words are marked terms. |
 | [w03.md](w03.md) | Work item: avoided terms in the documentation. |
-| [w04.md](w04.md) | Work item: the boundary as the build computes it. |
+| [w04.md](w04.md) | Work item: the documentation without a boundary. |
 
 ## Links
 

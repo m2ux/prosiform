@@ -22,7 +22,7 @@ This epic finishes the reading the repository checks share and the vocabulary ru
 - **The documentation obeys the avoided-term rule.**
   The vocabulary check reads every page under `docs/` for avoided terms, the glossary's own table excepted, and each page stating one is reworded.
 - **The documentation states what the build computes.**
-  The boundary is stated as the build computes it, or removed where the build computes nothing.
+  The boundary leaves the documentation; the working directory, which the pages already state, is what confines a run.
 
 ## Work Breakdown
 
@@ -31,7 +31,7 @@ This epic finishes the reading the repository checks share and the vocabulary ru
 | [W01](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-770-i19-e03-check-refinements/w01.md) | Every check reads the shared code-block reading | AC1 | | W03 | | |
 | [W02](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-770-i19-e03-check-refinements/w02.md) | Build words are marked terms | AC2 | | | | |
 | [W03](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-770-i19-e03-check-refinements/w03.md) | Avoided terms in the documentation | AC3 | | W01 | | |
-| [W04](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-770-i19-e03-check-refinements/w04.md) | The boundary as the build computes it | AC4 | | | | |
+| [W04](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-26-770-i19-e03-check-refinements/w04.md) | The documentation without a boundary | AC4 | | | | |
 
 ## Acceptance Criteria
 
@@ -39,10 +39,6 @@ This epic finishes the reading the repository checks share and the vocabulary ru
 - [ ] **AC2.** A word a section stating no behaviour writes unmarked is not reported by the independence check, while a term that section marks is, as its tests show.
 - [ ] **AC3.** No page under `docs/` states a term the glossary names as deliberately not used, outside the glossary's own table, as the vocabulary check over the repository shows.
 - [ ] **AC4.** No page under `docs/` defines a document boundary the build does not compute, as a reading of the build's sources against `docs/sources.md`, `docs/glossary.md` and `docs/output-budget.md` shows.
-
-## Open Questions
-
-- Whether the documentation drops the document boundary or the build computes it again. The planning record recommends dropping it.
 
 ## References
 
