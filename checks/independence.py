@@ -51,12 +51,14 @@ naming one of the tree's files is the tree's rather than a build's.
 
 The glossary names the terms it deliberately does not use and why each was
 refused. A fixture's description is the text a second implementor reads
-for what the contract means, which is the text that avoidance was written
-for, so a description stating an avoided term is reported with the reason
-the glossary gives, whatever the design's prose states: the design writes
-some of those words in their ordinary sense. The other claims are names
-rather than statements — a clause the design names, the bytes a build
-writes and a fixture's identity — and are held to the design's words by
+for what the contract means, and its identity is the name a reader meets
+first, printed by the corpus report and named in every request for that
+fixture, so each is the text that avoidance was written for. A description
+or an identity stating an avoided term, in any segment of the identity's
+path, is reported with the reason the glossary gives, whatever the design's
+prose states: the design writes some of those words in their ordinary
+sense. The other claims quote the design or a build — a clause the design
+names and the bytes a build writes — and are held to the design's words by
 the rules above.
 
 A term is read as the contract states it rather than as a sentence inflects
@@ -384,8 +386,8 @@ def tree_words(fixture: Path) -> set[str]:
 def corpus_references(corpus: Path, vocabulary: Vocabulary) -> list[Reference]:
     """Every term the corpus's declarations state that the contract refuses.
 
-    A fixture's description is read for the glossary's avoided terms too,
-    and a term the description and another claim both state is one
+    A fixture's identity and description are read for the glossary's
+    avoided terms too, and a term they and another claim both state is one
     reference. The words naming the files a fixture carries are its tree.
     """
     found = []
@@ -393,7 +395,8 @@ def corpus_references(corpus: Path, vocabulary: Vocabulary) -> list[Reference]:
         where = identity(fixture, corpus)
         manifest = read(fixture / MANIFEST_NAME)
         tree = tree_words(fixture)
-        described = scan(manifest.get(DESCRIPTION, ""), where, vocabulary, True, tree)
+        named = "\n".join([where, manifest.get(DESCRIPTION, "")])
+        described = scan(named, where, vocabulary, True, tree)
         own = {reference.found.lower(): reference for reference in described}
         declared = "\n".join(claims(manifest, where))
         for reference in scan(declared, where, vocabulary, False, tree):
@@ -468,8 +471,8 @@ def main() -> int:
     print(
         "\nindependence check: every shaped term of every fixture declaration and "
         "every report entry is one the contract names, none is a word only a "
-        "section stating no behaviour carries, and no description states an "
-        "avoided term"
+        "section stating no behaviour carries, and no identity or description "
+        "states an avoided term"
     )
     return 0
 

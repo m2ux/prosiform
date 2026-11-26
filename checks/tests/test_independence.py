@@ -19,8 +19,9 @@ carries a section stating no behaviour, and a word only that section
 carries is reported in a declaration, in a fixture's identity and in the
 report entry naming that fixture, while a word it shares with a
 behavioural section passes. The glossary supplied here names terms it
-deliberately does not use, and a description stating one is reported with
-the reason the glossary gives.
+deliberately does not use, and a description or a fixture identity stating
+one, in any segment of the identity's path, is reported with the reason the
+glossary gives.
 
 One case reads the design the README pins in place of the one supplied here,
 so a declaration naming the build words that design states apart from its
@@ -439,6 +440,34 @@ def test_a_description_stating_an_avoided_term_is_reported_with_its_reason(
     assert found[0].reason == (
         f"is a term docs/glossary.md deliberately does not use: {BRANCH}"
     )
+
+
+def test_an_identity_stating_an_avoided_term_is_reported_with_its_reason(
+    tmp_path: Path, vocabulary: Vocabulary
+) -> None:
+    corpus = fixture(
+        tmp_path / "fixtures",
+        "a-region-from-another-branch",
+        manifest("Two emitted regions and one blank line between them."),
+    )
+    found = corpus_references(corpus, vocabulary)
+    assert [reference.found for reference in found] == ["branch"]
+    assert found[0].where == "family/a-region-from-another-branch"
+    assert found[0].reason == (
+        f"is a term docs/glossary.md deliberately does not use: {BRANCH}"
+    )
+
+
+def test_an_avoided_term_in_any_segment_of_an_identity_is_reported(
+    tmp_path: Path, vocabulary: Vocabulary
+) -> None:
+    corpus = fixture(
+        tmp_path / "fixtures" / "included",
+        "a-boundary-between-emitted-regions",
+        manifest("Two emitted regions and one blank line between them."),
+    )
+    found = corpus_references(corpus.parent, vocabulary)
+    assert [reference.found for reference in found] == ["included"]
 
 
 def test_an_avoided_term_the_design_s_prose_states_is_still_reported(
