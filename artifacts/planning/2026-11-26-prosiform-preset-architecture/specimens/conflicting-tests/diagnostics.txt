@@ -1,0 +1,6 @@
+E_INVALID_USAGE: prosiform.small.subst and prosiform.large.subst, both selected by tags ['alpha', 'large', 'small'], map 'test.md' to 'small.md' and 'large.md'
+  reference: worker.md
+  chain: worker.md
+  remedy: map the reference to one substitute in the selected presets
+  location: worker.md:15:9
+  related: worker.md:18:9: prosiform.large.subst maps 'test.md' to 'large.md'

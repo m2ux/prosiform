@@ -1,0 +1,34 @@
+{
+  "initiative_prefix": "I20",
+  "prefix_requires_fresh_publication_readback": true,
+  "board": 18,
+  "theme": "theme:python",
+  "map_confirmed": true,
+  "epics": {
+    "E00": {
+      "title": "[I20:E00] Effective Manifest: Each Bundle Identifies Its Effective Sources and Selections",
+      "priority": 3,
+      "lanes": false
+    },
+    "E01": {
+      "title": "[I20:E01] Preset Imports: Pure Settings Retain Their Scope and Origins",
+      "priority": 2,
+      "lanes": false
+    },
+    "E02": {
+      "title": "[I20:E02] Local Choice Groups: Independent Component and Test Alternatives",
+      "priority": 1,
+      "lanes": false
+    }
+  },
+  "task_counts": {
+    "E00": 4,
+    "E01": 4,
+    "E02": 5
+  },
+  "unpublished_issue_placeholders": [
+    "NEW_E00",
+    "NEW_E01",
+    "NEW_E02"
+  ]
+}

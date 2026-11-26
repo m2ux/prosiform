@@ -1,0 +1,5 @@
+E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:
+  alpha  The requested component is alpha.
+  beta   The requested component is beta.
+  source: worker.md
+  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them

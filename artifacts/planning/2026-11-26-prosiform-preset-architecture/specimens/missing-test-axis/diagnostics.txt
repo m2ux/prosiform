@@ -1,0 +1,6 @@
+W_PRESET_UNUSED: the preset 'small' of 'worker.md' is selected by no reference the run bundled, so it governs nothing
+  source: worker.md
+  remedy: name the preset in the reaching link's title, or drop the preset
+W_PRESET_UNUSED: the preset 'large' of 'worker.md' is selected by no reference the run bundled, so it governs nothing
+  source: worker.md
+  remedy: name the preset in the reaching link's title, or drop the preset

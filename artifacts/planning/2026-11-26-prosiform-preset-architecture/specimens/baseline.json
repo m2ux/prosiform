@@ -1,0 +1,98 @@
+{
+  "compiler": "pf0.34.0",
+  "revision": "191c0cf8d2a8fa39b17f674b579daee413c0e655",
+  "scope": "Existing grammar observations only; future feature behavior is not executed.",
+  "cases": [
+    {
+      "case": "valid-two-bindings",
+      "tags": "alpha, small",
+      "exit": 0,
+      "diagnostics": "W_PRESET_UNUSED: the preset 'large' of 'worker.md' is selected by no reference the run bundled, so it governs nothing\n  source: worker.md\n  remedy: name the preset in the reaching link's title, or drop the preset\n",
+      "bundles": {
+        "bundles/entry.bundles/entry.bundle.md": "609a17884dedfc5d077890f0846885ce486739da9878d9492cb36695baef8a5b",
+        "bundles/entry.bundles/worker-alpha+small.bundle.md": "33d3c874d0d8e93b281c2cf5b76a34326d6f82fb5295f7fb50def3d5619ecb6d"
+      },
+      "source_sha256": {
+        "worker.md": "717d3abc23f57da755374ec9927b7dde3594f92ec91e5875525618b505b85113",
+        "component.md": "229819c85e925977920541308c1c99daa372602646cc42882b0be27c859e75f3",
+        "test.md": "6d7903224316d8c649516c662b9708c619fba16e60e04bdffae89ef73ea01531",
+        "alpha.md": "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de",
+        "beta.md": "f56cb332bd3e9c2390e7fab6be5bea964b71d68a34e093a4a4d63cfa2fcf18a3",
+        "small.md": "8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6",
+        "large.md": "dde232453e259747ab630f26c75c13a45f7b5e967020b70dabd6064827f54ef7",
+        "entry.md": "b0eb861833c268dd2bff4bb06b07c45fc9637a9e2b29cad00ead722208b9361a"
+      }
+    },
+    {
+      "case": "missing-component",
+      "tags": "small",
+      "exit": 2,
+      "diagnostics": "E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:\n  alpha  The requested component is alpha.\n  beta   The requested component is beta.\n  source: worker.md\n  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them\n",
+      "bundles": {},
+      "source_sha256": {
+        "worker.md": "717d3abc23f57da755374ec9927b7dde3594f92ec91e5875525618b505b85113",
+        "component.md": "229819c85e925977920541308c1c99daa372602646cc42882b0be27c859e75f3",
+        "test.md": "6d7903224316d8c649516c662b9708c619fba16e60e04bdffae89ef73ea01531",
+        "alpha.md": "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de",
+        "beta.md": "f56cb332bd3e9c2390e7fab6be5bea964b71d68a34e093a4a4d63cfa2fcf18a3",
+        "small.md": "8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6",
+        "large.md": "dde232453e259747ab630f26c75c13a45f7b5e967020b70dabd6064827f54ef7",
+        "entry.md": "9c795f9c05b00366c6629eb28727d025a775cc56d892f43882ec2d8e6505e858"
+      }
+    },
+    {
+      "case": "missing-test-axis",
+      "tags": "alpha",
+      "exit": 0,
+      "diagnostics": "W_PRESET_UNUSED: the preset 'small' of 'worker.md' is selected by no reference the run bundled, so it governs nothing\n  source: worker.md\n  remedy: name the preset in the reaching link's title, or drop the preset\nW_PRESET_UNUSED: the preset 'large' of 'worker.md' is selected by no reference the run bundled, so it governs nothing\n  source: worker.md\n  remedy: name the preset in the reaching link's title, or drop the preset\n",
+      "bundles": {
+        "bundles/entry.bundles/entry.bundle.md": "ce4fa91c1a81735219c3b093e5778283a26d5d8ea4e891673ac702ecec7ed10c",
+        "bundles/entry.bundles/worker-alpha.bundle.md": "6c079ae306f7313ea1d41d97d183c3f1a06c40018e86aa62af4738c86ce836f0"
+      },
+      "source_sha256": {
+        "worker.md": "717d3abc23f57da755374ec9927b7dde3594f92ec91e5875525618b505b85113",
+        "component.md": "229819c85e925977920541308c1c99daa372602646cc42882b0be27c859e75f3",
+        "test.md": "6d7903224316d8c649516c662b9708c619fba16e60e04bdffae89ef73ea01531",
+        "alpha.md": "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de",
+        "beta.md": "f56cb332bd3e9c2390e7fab6be5bea964b71d68a34e093a4a4d63cfa2fcf18a3",
+        "small.md": "8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6",
+        "large.md": "dde232453e259747ab630f26c75c13a45f7b5e967020b70dabd6064827f54ef7",
+        "entry.md": "def6462551e5cd0903c06f7915d422a959de3bcf93ee3489a22c46bdb65481b3"
+      }
+    },
+    {
+      "case": "conflicting-components",
+      "tags": "alpha, beta, small",
+      "exit": 2,
+      "diagnostics": "E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:\n  alpha  The requested component is alpha.\n  beta   The requested component is beta.\n  source: worker.md\n  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them\n",
+      "bundles": {},
+      "source_sha256": {
+        "worker.md": "717d3abc23f57da755374ec9927b7dde3594f92ec91e5875525618b505b85113",
+        "component.md": "229819c85e925977920541308c1c99daa372602646cc42882b0be27c859e75f3",
+        "test.md": "6d7903224316d8c649516c662b9708c619fba16e60e04bdffae89ef73ea01531",
+        "alpha.md": "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de",
+        "beta.md": "f56cb332bd3e9c2390e7fab6be5bea964b71d68a34e093a4a4d63cfa2fcf18a3",
+        "small.md": "8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6",
+        "large.md": "dde232453e259747ab630f26c75c13a45f7b5e967020b70dabd6064827f54ef7",
+        "entry.md": "6d0ad109ddf75541bec589f6d7943f603e3c46d4b2198df1dd3ff6b416e46c88"
+      }
+    },
+    {
+      "case": "conflicting-tests",
+      "tags": "alpha, small, large",
+      "exit": 2,
+      "diagnostics": "E_INVALID_USAGE: prosiform.small.subst and prosiform.large.subst, both selected by tags ['alpha', 'large', 'small'], map 'test.md' to 'small.md' and 'large.md'\n  reference: worker.md\n  chain: worker.md\n  remedy: map the reference to one substitute in the selected presets\n  location: worker.md:15:9\n  related: worker.md:18:9: prosiform.large.subst maps 'test.md' to 'large.md'\n",
+      "bundles": {},
+      "source_sha256": {
+        "worker.md": "717d3abc23f57da755374ec9927b7dde3594f92ec91e5875525618b505b85113",
+        "component.md": "229819c85e925977920541308c1c99daa372602646cc42882b0be27c859e75f3",
+        "test.md": "6d7903224316d8c649516c662b9708c619fba16e60e04bdffae89ef73ea01531",
+        "alpha.md": "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de",
+        "beta.md": "f56cb332bd3e9c2390e7fab6be5bea964b71d68a34e093a4a4d63cfa2fcf18a3",
+        "small.md": "8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6",
+        "large.md": "dde232453e259747ab630f26c75c13a45f7b5e967020b70dabd6064827f54ef7",
+        "entry.md": "53f1853568b9722a03fde12960f636f74f6704485872d6e8908b1375b67a64bd"
+      }
+    }
+  ]
+}
