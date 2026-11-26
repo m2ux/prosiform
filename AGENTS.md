@@ -12,3 +12,10 @@ This section holds for all code in the repository. A rule the code implements is
 - **Comment.** Why the code is as it is, where the code cannot say it. A comment never states what the code does or how it came to be.
 
 A change to a rule edits its owner's docstring and the code that implements it, and no other docstring or comment.
+
+## Tests
+
+A behaviour's test belongs to one layer.
+
+- **Fixture.** A behaviour a source tree and an invocation can state is held by a fixture in the corpus under `fixtures/`.
+- **Build test.** A test under `src/tests/` holds what no fixture reaches: a result returned in process, the human diagnostic format, and a field no manifest declares.
