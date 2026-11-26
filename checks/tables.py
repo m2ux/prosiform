@@ -21,7 +21,8 @@ after something the project does not have.
 
 A table is located by its header and a document by git, so a table moved
 within a document, and a document a new tree brings with it, are both read
-without this check being edited.
+without this check being edited. A document present and untracked, which
+`documents.unread` defines, is named as unread and fails nothing.
 
 A row that names a declared item under another version is one fault, not two:
 the item is documented, and what it is documented as is wrong.
@@ -31,7 +32,7 @@ import re
 import sys
 import tomllib
 
-from documents import ROOT, documents, plain, tables
+from documents import ROOT, documents, plain, tables, unread
 
 MAKEFILE = ROOT / "Makefile"
 PYPROJECT = ROOT / "src" / "pyproject.toml"
@@ -148,6 +149,10 @@ def main() -> int:
             f"no declaration table names it"
         )
 
+    skipped = unread()
+    for path in skipped:
+        print(f"unread {path.relative_to(ROOT).as_posix()} — present and untracked")
+
     for failure in failures:
         print(f"FAIL {failure}", file=sys.stderr)
     if failures:
@@ -157,6 +162,7 @@ def main() -> int:
         f"\ntable check: {len(declared_targets)} command(s) and "
         f"{len(declared_items)} declaration(s), each declared by the project "
         f"and named by a table"
+        + (f"; {len(skipped)} untracked document(s) unread" if skipped else "")
     )
     return 0
 
