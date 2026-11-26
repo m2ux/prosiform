@@ -8,6 +8,13 @@ A repository check names every function and method the package defines that noth
 
 The row belongs to the repository checks epic, whose rows state a rule a check makes imprecisely.
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [w02](w02.md) | The task's work item: the reachability check over `src/prosiform`. |
+| [Test Results](test-results.md) | The validation observed for the task's pull request. |
+
 ## Links
 
 | Resource | URL |
