@@ -1,18 +1,18 @@
-# F41: Branch Declaration
+# F41: Corpus Entry Docstring
 
 > Hot-fix record. Created 2026-11-26.
 
 ## Executive Summary
 
-`main` declares the long-lived branches in `config/branches`, so the work-planner can read them at an epic base cut from `main`, and the corpus runner's entry docstring names what it reports.
+The corpus runner's entry docstring names the fixtures a work item unblocks.
 
-The epic syncs of I19 E01 reported every branch-based check as not run for want of that declaration.
+The hot-fix first also declared the long-lived branches on `main` in `config/branches`. The user decided `config/` is a workspace file that does not belong in the project, so the branch was rewritten to the docstring alone. The work-planner's reading of `config/branches` at an epic base is a gap in the skill, not in this repository.
 
 ## Artifacts
 
 | Artifact | Purpose |
 | --- | --- |
-| [agent-review.json](agent-review.json) | The agent review of #866 at b74bc52e2: one nonblocking finding, fixed. |
+| [agent-review.json](agent-review.json) | The agent reviews of #866: at b74bc52e2, one nonblocking finding fixed; at 42e742f2e, after the rewrite, none. |
 
 ## Links
 

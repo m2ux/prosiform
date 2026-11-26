@@ -18,5 +18,18 @@
         "evidence": "https://github.com/m2ux/prosiform/commit/b74bc52e256a1adc103aa33e3b82394c7ec089d3"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/866",
+    "head": "42e742f2e8c33310c748846808f330172354520f",
+    "base": "794922d41465b91deb4edb3a7484506cb8f519cd",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-865-f41-branch-declaration/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-26T13:45:00Z",
+    "scope": "The full main-to-head diff after the branch was rewritten: one line, the main docstring of checks/corpus.py. config/branches is no longer in the diff. The docstring carries the wording the previous record's finding fixed; nothing calls or parses it.",
+    "criteria": "AC1: the docstring at 42e742f2e names the fixtures a work item unblocks. AC2: the Checks run at 42e742f2e.",
+    "validation": "ruff check and ruff format --check passed over checks/ at 42e742f2e; the Checks run is linked from the pull request's Test Plan.",
+    "findings": []
   }
 ]
