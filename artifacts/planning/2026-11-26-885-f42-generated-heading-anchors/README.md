@@ -13,7 +13,7 @@ The public reproduction uses synthetic sources only.
 - Branch: f42-generated-heading-anchors
 - Base: 6eb02cb5c44bf8942ad16e5c4e6104438a969438
 - Worktree: .worktrees/f42-generated-heading-anchors
-- State: In Review; [PR #887](https://github.com/m2ux/prosiform/pull/887) is ready and awaits human merge into main
+- State: Done; [PR #887](https://github.com/m2ux/prosiform/pull/887) merged into main at b1c369cb833aa0b92fb88536fd65cd320b6f0ab6. Issue #885 is closed as completed.
 
 ## Checks
 

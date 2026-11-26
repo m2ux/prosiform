@@ -1,0 +1,12 @@
+{
+  "issue": 885,
+  "issue_state": "closed",
+  "reason": "completed",
+  "board": 18,
+  "status": "Done",
+  "pull_request": 887,
+  "merged": true,
+  "head": "e271c2252afb5ff3f23845dac3860ed0b6832fad",
+  "merge_commit": "b1c369cb833aa0b92fb88536fd65cd320b6f0ab6",
+  "candidate_matches_merged_code_docs_fixtures": true
+}
