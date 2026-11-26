@@ -43,7 +43,7 @@ Lines changed across the 33 most recent merges into `main` that touch source:
 
 - **Written.** The files under `expected/`, and the manifest's `bundles` list where the names changed. A bundle the run no longer writes is removed.
 - **Never written.** `exit_status`, `diagnostics`, `stdout_contains`, `clauses`, `description` and `awaiting`. These state the contract and stay authored.
-- **Refused.** A fixture whose exit status or diagnostics differ is reported as failing and left untouched, so accepting cannot hide a behaviour change behind a bundle rewrite.
+- **Refused.** A fixture whose exit status or diagnostics differ, or whose run writes a different number of bundles than its manifest declares, is reported as failing and left untouched, so accepting cannot hide a behaviour change behind a bundle rewrite.
 - **Local only.** Continuous integration never passes `--accept`. The check stays the comparison; accepting is an authoring aid whose output is a reviewed diff.
 - **Manifest edits.** The `bundles` line is replaced in place so comments and layout survive.
 
@@ -79,5 +79,5 @@ Not planned here, recorded so they are not lost.
 | Decision | State |
 | --- | --- |
 | Order of work | Decided by the user: accept mode, then the overlap audit. |
-| Whether accept mode may write a manifest's `bundles` list | Open. |
+| Whether accept mode may write a manifest's `bundles` list | Decided by the user: names only. A run writing a different number of bundles than the manifest declares is refused. |
 | Whether the two pieces are raised as one issue or two | Open. |
