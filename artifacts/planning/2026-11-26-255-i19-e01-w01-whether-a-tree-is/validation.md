@@ -1,6 +1,6 @@
 # W01 Validation
 
-Each check the pull request's Test Plan records, run at `776e976acfada8181bff046c05d04c39e07478aa` on `i19/e01/w01-whether-tree-is-sound`, with `PROSIFORM_BUILD` set to `uv run --project <worktree>/src --frozen pf`.
+Each check the pull request's Test Plan records, run at `775b1bb4546af40963530a5bbb57ca5a7231ded7` on `i19/e01/w01-whether-tree-is-sound`, the task's commits merged with `i19/e01/main` at `b2b2a965fc2ee3befc18b1abc80fe7b2d741459b`, with `PROSIFORM_BUILD` set to `uv run --project <worktree>/src --frozen pf`.
 
 ## T1 check-all over two failing checks
 
@@ -22,10 +22,10 @@ In `checks/tests/test_runner.py`:
 - `test_a_run_meeting_its_manifest_is_met` and `test_a_declared_internal_error_meets_its_manifest` reach `State.MET`, the second for a fixture declaring the internal error as its outcome.
 - `test_a_run_ended_by_a_signal_failed_in_itself`, `test_a_run_that_does_not_complete_is_reported` and `test_a_malformed_fixture_is_refused_without_invoking_the_build` reach `State.FAILED_IN_ITSELF`.
 
-`make harness`: 1162 passed.
+`make harness`: 1169 passed.
 
 ## T5 the repository's checks
 
-`make check` exited 0: 2330 build tests and 1162 harness tests passed, and the corpus check reported `708 fixture(s), 708 pass, 0 fail, 0 awaited, 0 unexpected pass`. The link check resolved every reference in 445 documents, run with network. The table check found 21 commands, `make check-all` among them, each declared and named by a table.
+`make check` exited 0: 2330 build tests and 1169 harness tests passed, and the corpus check reported `708 fixture(s), 708 pass, 0 fail, 0 awaited, 0 unexpected pass`. The link check resolved every reference in 445 documents, run with network. The table check found 21 commands, `make check-all` among them, each declared and named by a table.
 
 `make check-all` over the same tree exited 0 and printed `check-all: every check passed`.
