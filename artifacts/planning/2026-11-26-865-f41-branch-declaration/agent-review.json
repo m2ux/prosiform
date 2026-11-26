@@ -1,0 +1,22 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/866",
+    "head": "b74bc52e256a1adc103aa33e3b82394c7ec089d3",
+    "base": "794922d41465b91deb4edb3a7484506cb8f519cd",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-865-f41-branch-declaration/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-26T13:20:00Z",
+    "scope": "The full main-to-head diff: config/branches (new, three lines) and the main docstring of checks/corpus.py. Callers inspected: the work-planner's sync.py --names, which reads config/branches at a revision; every check under checks/ and the Makefile, none of which reads config/; checks.md, README.md, docs/README.md and AGENTS.md, none of which lists the repository's top-level folders; the workflow's CHECKED_PATHS, which omits config/, so a change to config/branches alone reports the checks as not run, which is correct because no check reads it. Rejected as speculative: the declaration on main and the one on workspace drifting apart; they are identical today, and the skill reports disagreeing declarations as unevaluable rather than acting on either.",
+    "criteria": "AC1: sync.py --names --revision HEAD at 3f40be78d printed engineering, main and workspace from config/branches at that commit. AC2: the docstring at b74bc52e2 names the fixtures a work item unblocks. AC3: the Checks run at b74bc52e2 passed.",
+    "validation": "Checks run 45823522862 passed at b74bc52e256a1adc103aa33e3b82394c7ec089d3; ruff check and ruff format --check passed locally over checks/.",
+    "findings": [
+      {
+        "description": "The corpus entry docstring read 'report the fixtures a work unblocks', which is still ungrammatical and does not state what AC2 asks: the fixtures a piece of work unblocks.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/b74bc52e256a1adc103aa33e3b82394c7ec089d3"
+      }
+    ]
+  }
+]
