@@ -186,8 +186,8 @@ make restate ARGS="--write"
 ### Tool Environments
 
 - **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make triage`, `make restate`, `make examples` and `make eval-diagrams`.
-- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
-- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make reachability` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
+- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too. `make tables` and `make links` read documents through a reading that finds code blocks with the build's Markdown parser, so they run from it as well.
+- **Standard library only.** `make smoke`, `make layout`, `make vocabulary`, `make reachability` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 
 ### Network Access
 
