@@ -25,7 +25,7 @@ flowchart TD
 
 A selection's name is its path relative to the working directory, without the Markdown suffix, with each separator written as `_`. A section adds `__` and the fragment.
 
-A selection includes the effective named presets its destination declares. A nonempty set appends `-` and the distinct matched names, preserving declaration spelling, sorted by Unicode code point and joined with `+`. Each name is UTF-8 percent-encoded except ASCII letters, digits, `-`, `.`, `_` and `~`, so a literal plus or slash within a name cannot become a separator. For example, selecting `codex` gives `workflow-codex.bundle.md`; selecting `recorded` and `codex` gives `workflow-codex+recorded.bundle.md`. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier. Links URL-encode the resulting filename. Two distinct selections producing the same name fail before publication.
+A selection carries the effective named presets its destination declares. A nonempty set appends `-` and the distinct matched names, preserving declaration spelling, sorted by Unicode code point and joined with `+`. Each name is UTF-8 percent-encoded except ASCII letters, digits, `-`, `.`, `_` and `~`, so a literal plus or slash within a name cannot become a separator. For example, selecting `codex` gives `workflow-codex.bundle.md`; selecting `recorded` and `codex` gives `workflow-codex+recorded.bundle.md`. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier. Links URL-encode the resulting filename. Two distinct selections producing the same name fail before publication.
 
 The entry name with `.bundles` appended names the run folder; with `.bundle.md` appended it names the entry bundle. Each dispatched selection uses its own name inside that same folder.
 
@@ -58,7 +58,7 @@ A backslash ending a line is a hard line break, so the lines keep the breaks the
 
 The run folder is written whole beside the earlier one and renamed onto it. An earlier set standing there is renamed aside first and removed once the new folder stands, so a reader sees one run's set or the one before it, never a mixture.
 
-Nothing else in the output folder is touched, including an author's folder named like the entry. A symbolic link standing at the run folder's path is replaced as the link it is, and whatever it names is left as it was. Anything else at that path, a regular file among them, is material no run wrote: the run refuses it with `E_PUBLICATION_FAILED`, under `-c` as without it, and leaves it where it stands.
+Nothing else in the output folder is touched, not even an author's folder named like the entry. A symbolic link standing at the run folder's path is replaced as the link it is, and whatever it names is left as it was. Anything else at that path, a regular file among them, is material no run wrote: the run refuses it with `E_PUBLICATION_FAILED`, under `-c` as without it, and leaves it where it stands.
 
 A failure before the new folder stands removes it and leaves the output folder as it was. An earlier set that cannot be removed once the new one stands leaves the run published, and warns with the path that holds it.
 

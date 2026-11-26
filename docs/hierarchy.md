@@ -14,7 +14,7 @@ A merged group is where this shows most: several files declaring one name share 
 
 *One heading for the group, one subsection naming each member, and the `Tests` both files declare pooled into one section split by document.*
 
-Generated grouping scaffolding follows [Empty Generated Wrappers](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping).
+Generated grouping wrappers follow [Empty Generated Wrappers](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping).
 
 ## File headings
 

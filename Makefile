@@ -13,9 +13,9 @@
 # reach the build under test through the corpus runner, and the conformance
 # and independence checks read the corpus through the manifest reader beside
 # it, which reads `jsonschema` from that same group, so the five run through
-# it. The table and link checks read documents through the shared reading,
-# which finds code blocks with the build's own Markdown parser, so they run
-# through it too. The smoke, layout, vocabulary and reachability checks depend
+# it. The table, link and vocabulary checks read documents through the shared
+# reading, which finds code blocks with the build's own Markdown parser, so
+# they run through it too. The smoke, layout and reachability checks depend
 # on the standard library alone and run under `python3` directly.
 #
 # `make smoke` is the one check that does not run the build from this
@@ -157,7 +157,7 @@ links:
 	$(UV_RUN) python checks/links.py --online
 
 vocabulary:
-	python3 checks/vocabulary.py
+	$(UV_RUN) python checks/vocabulary.py
 
 invocation:
 	$(UV_RUN) python checks/invocation.py

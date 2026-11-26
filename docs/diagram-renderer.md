@@ -48,7 +48,7 @@ Use a clean Prosiform bundler checkout. In its `src/` directory, run `uv sync --
 | `--compact` | Retain headings and links; omit other body content in both image panels. |
 | `--input-section-level N` | Input panels: show content through HN (1–6) and titles one level deeper. Defaults to all content. |
 | `--bundled-section-level N` | Bundled panel: same cutoff, independently selected. Defaults to all content. |
-| `--branch NAME` | Bundler branch; required for a detached checkout. Must point to its current commit. |
+| `--branch NAME` | Bundler ref name; required for a detached checkout. Must point to its current commit. |
 | `--revision SHA` | Require an exact bundler commit. |
 
 Grouping comes from each source file's [conversion metadata](../invocation.md#conversion-metadata). Call the tool again for another entry, using a different output prefix.
@@ -63,7 +63,7 @@ Use `--compact --input-section-level 2 --bundled-section-level 2` to show H3 tit
 
 Each prefix produces `.svg`, `.review.md`, `.bundle.md`, `.stderr.txt`, `.command.txt` and `.run.json`.
 
-The image header contains only the bundler branch and commit. The review Markdown carries the command, image, exit status and diagnostics. The run record pins the bundler revision and hashes the source bytes and output.
+The image header contains only the bundler ref name and commit. The review Markdown carries the command, image, exit status and diagnostics. The run record pins the bundler revision and hashes the source bytes and output.
 
 Body content and links are indented one step beyond their containing heading in both panels.
 
