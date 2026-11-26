@@ -33,4 +33,4 @@ Each page covers one part of a run, and they read in the order a run happens.
 
 ## Commands
 
-[Checks](../checks.md) states each target the [`Makefile`](../Makefile) declares and what it asserts. `make check` runs the set, stopping at the first failure.
+[Checks](../checks.md) states each target the [`Makefile`](../Makefile) declares and what it asserts. `make check` runs the set, stopping at the first failure, and `make check-all` runs the whole set and names every check that failed.
