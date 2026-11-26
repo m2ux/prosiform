@@ -174,21 +174,6 @@ def test_distinct_pick_dispatches_keep_their_names_and_choices(
     assert (tmp_path / "guide.md").read_text() == source
 
 
-def test_a_plain_lifted_heading_colliding_with_authored_text_is_refused(
-    tmp_path: Path,
-) -> None:
-    written(tmp_path, "read.md", BRIEF)
-    written(
-        tmp_path,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\n## Work\n\n[⇉ Inspect](read.md)\n\n### Inspect\n\nAuthored.\n",
-    )
-    run = invoke("guide.md", cwd=tmp_path)
-    assert run.status == 1
-    assert "E_HEADING_COLLISION" in run.stderr
-
-
 def test_a_lift_can_use_dispatch_pick_as_its_authored_name(tmp_path: Path) -> None:
     written(tmp_path, "read.md", BRIEF)
     written(tmp_path, "guide.md", DECLARED + "# Guide\n\n[⇉ Dispatch Pick](read.md)\n")

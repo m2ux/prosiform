@@ -135,7 +135,6 @@ from prosiform.dispatch import (
     Refused,
     analysed,
     anchors,
-    collisions,
     cycle,
     region_of,
     selfward,
@@ -3918,7 +3917,6 @@ def compose(
             headed, read, parsed, entries, chains, declarations, substitution
         )
         headed, removed, positions = prune(headed, parsed, protected)
-        collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
     # `bundle.opened` adds a heading after dispatch positions are recorded.

@@ -120,7 +120,7 @@ A `⇉` link carrying `?` places its brief in its named pick sub-section around 
 
 In a `⫽ Dispatch Set` sub-section holding a member that carries a brief, every member is lifted into a sub-section of its own one level below the set's, headed by its link text, as `#### Investigate`, in the set's written order. A briefed member's sub-section holds the brief's lead content, the member's own dispatch line, and the brief's sections one level further down; a member carrying no brief holds its dispatch line alone. Each member's line therefore stays with its brief, and no line stands beneath another member's headings. A set none of whose members carries a brief lists its bare lines as the sections above state.
 
-Two `⇉` links in one section with the same text and effective selection share one sub-section, and so do two naming one target with the same title tags, under the first one's text, as they share one destination. A lifted sub-section, or a heading a brief emits, past H6 fails with `E_HEADING_DEPTH_OVERFLOW`, as a set's does. A pick or lifted heading equal to an authored heading, or using the same dispatch text for a different selection, fails with `E_HEADING_COLLISION`. A `brief` naming another document, or a fragment no reference decodes, fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
+Two `⇉` links in one section with the same text and effective selection share one sub-section, and so do two naming one target with the same title tags, under the first one's text, as they share one destination. A lifted sub-section, or a heading a brief emits, past H6 fails with `E_HEADING_DEPTH_OVERFLOW`, as a set's does. Using the same dispatch text for a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document, or a fragment no reference decodes, fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
 
 ## Models
 
@@ -192,11 +192,9 @@ A dispatched link naming the document that writes it warns where it closes no cy
 
 ## Generated headings
 
-An authored heading whose text equals the dispatch-set, dispatch-pick or a lifted [brief](#briefs) heading pf emits in the same bundle would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
+Authored headings and generated dispatch-set, dispatch-pick and lifted [brief](#briefs) headings may share visible text. Their destinations take the ordinals assigned in bundle heading order, as [Destinations](destinations.md) describes. An ordinary source link retains its authored target, and a dispatch link points at its generated sub-section.
 
-The comparison is exact, and case-sensitive: an authored heading differs from the derived one in any character publishes, and takes the ordinal the renderer gives a repeated slug.
-
-A heading the run does not emit in that bundle is the author's there: a bundle carrying no set and no `⇉` link carrying `?` may carry any heading, `In parallel` among them.
+Two generated dispatch sub-sections using the same text for different effective selections fail with `E_HEADING_COLLISION`, naming the dispatch. Their link text must identify one selection throughout the bundle.
 
 ## Target shape
 

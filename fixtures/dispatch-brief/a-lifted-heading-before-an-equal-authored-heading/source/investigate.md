@@ -7,7 +7,11 @@ prosiform:
 
 ## Given
 
-Write the case number to the case file before you dispatch.
+Use [Inputs](#inputs) before you dispatch.
+
+### Inputs
+
+The case number.
 
 ## Steps
 

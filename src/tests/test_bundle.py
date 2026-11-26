@@ -8,7 +8,6 @@ about its own headings, and the run-pf line and dispatch links a bundle
 carries.
 """
 
-import json
 from collections.abc import Mapping
 from contextlib import chdir
 from io import StringIO
@@ -28,8 +27,7 @@ from prosiform.bundle import (
     openings,
     rewrite,
 )
-from prosiform.cli import INPUT_FAILURE, SUCCESS, main
-from prosiform.dispatch import HEADING_COLLISION
+from prosiform.cli import SUCCESS, main
 from prosiform.heading import title_cased
 from prosiform.profile import parse
 from prosiform.provenance import STRUCTURAL_ANCESTOR, Origin
@@ -787,23 +785,3 @@ def test_an_authored_heading_pf_does_not_emit_publishes(
     )
     assert status == SUCCESS
     assert f"## {heading}\n\nMine.\n" in bundles["guide.bundle.md"]
-
-
-def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
-    tmp_path: Path,
-) -> None:
-    status, bundles, errors = built(
-        tmp_path,
-        {
-            "guide.md": DECLARED
-            + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-            "## \u2afd Dispatch Set\n\nMine.\n",
-            "plan.md": DECLARED + "# Plan\n",
-            "check.md": DECLARED + "# Check\n",
-        },
-        "guide.md",
-    )
-    assert status == INPUT_FAILURE
-    assert bundles == {}
-    [diagnostic] = [json.loads(line) for line in errors.splitlines()]
-    assert diagnostic["code"] == HEADING_COLLISION
