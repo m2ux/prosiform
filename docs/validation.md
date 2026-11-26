@@ -73,7 +73,7 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 ## What a run refuses
 
-Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
+Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/119c12e2e223cf32d18b71186ba274d8da75c8d2/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
 
 | Check | Code | Exit |
 | --- | --- | --- |
@@ -96,7 +96,7 @@ Each check below ends the run before anything is written, under the code it name
 | A construct the profile does not support, an operator or directive refused, a composition cycle | `E_UNSUPPORTED_CONSTRUCT` | `1` |
 | A parser limit suppressing a reference lookup | `E_PARSER_REFERENCE_LIMIT` | `1` |
 | A heading beyond H6 | `E_HEADING_DEPTH_OVERFLOW` | `1` |
-| An authored heading equal to one the run generates | `E_HEADING_COLLISION` | `1` |
+| Distinct dispatch selections using one heading, or an authored child heading equal to a composed destination section | `E_HEADING_COLLISION` | `1` |
 | A chain of dispatches returning to a bundle already on it | `E_DISPATCH_CYCLE` | `1` |
 | A budget crossed, or a numeric scalar beyond its ceiling | `E_RESOURCE_LIMIT` | `1` |
 | A boundary that absorbs one region into another | `E_UNSAFE_BUNDLE_BOUNDARY` | `1` |
