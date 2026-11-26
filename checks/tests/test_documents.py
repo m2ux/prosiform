@@ -9,14 +9,24 @@ holding a manifest, so one added anywhere is excepted and a document
 added anywhere else is read. A tracked bundle outside the corpus is output
 on the same ground, and is excepted too.
 
+A document present and untracked is named by each reading check's run as
+unread, and fails nothing. Those runs are held over a working tree of their
+own, a copy of the checks in a fresh repository carrying an untracked
+document, an ignored one and an untracked fixture, since the repository's
+own tree carries whatever its contributor happens to have written.
+
 The reading the checks share is held to the input it would read wrongly: a
 code span and an indented block holding a link form, an opener that never
 closes, and a list item's code block beside that item's own content, a
 nested bullet among it.
 """
 
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
 from documents import (
     BUNDLE,
     MARKDOWN,
@@ -87,6 +97,62 @@ def test_a_document_that_is_not_a_readme_is_found() -> None:
     assert any(path.name != "README.md" for path in FOUND), (
         "discovery found the READMEs alone, so the check reads no other document"
     )
+
+
+CHECKS = Path(__file__).resolve().parent.parent
+READING_CHECKS = ("links.py", "tables.py")
+
+
+@pytest.fixture
+def working_tree(tmp_path: Path) -> Path:
+    """A repository whose index holds the checks and one document.
+
+    Its working tree also carries an untracked document holding a reference
+    that resolves nowhere, a document git ignores, and an untracked fixture
+    holding a document of its own.
+    """
+    (tmp_path / "checks").mkdir()
+    for name in ("documents.py", *READING_CHECKS):
+        shutil.copy(CHECKS / name, tmp_path / "checks" / name)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "pyproject.toml").write_text(
+        '[project]\nrequires-python = ">=3.11"\n'
+    )
+    (tmp_path / "Makefile").write_text("")
+    (tmp_path / "README.md").write_text(
+        "| Declared | Value |\n| --- | --- |\n| Python | >=3.11 |\n"
+    )
+    (tmp_path / ".gitignore").write_text("ignored.md\n")
+    (tmp_path / "ignored.md").write_text("[gone](missing.md)\n")
+    (tmp_path / "draft.md").write_text("[gone](missing.md)\n")
+    fixture = tmp_path / "fixtures" / "new"
+    fixture.mkdir(parents=True)
+    (fixture / "manifest.toml").write_text("")
+    (fixture / "source.md").write_text("[gone](missing.md)\n")
+    git = ["git", "-C", str(tmp_path)]
+    subprocess.run([*git, "init", "-q"], check=True)
+    subprocess.run(
+        [*git, "add", "checks", "src", "Makefile", "README.md", ".gitignore"],
+        check=True,
+    )
+    return tmp_path
+
+
+@pytest.mark.parametrize("check", READING_CHECKS)
+def test_a_reading_check_names_an_untracked_document_as_unread(
+    working_tree: Path, check: str
+) -> None:
+    run = subprocess.run(
+        [sys.executable, str(working_tree / "checks" / check)],
+        cwd=working_tree,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode == 0, run.stderr
+    unread = [line for line in run.stdout.splitlines() if line.startswith("unread ")]
+    assert unread == ["unread draft.md — present and untracked"]
+    assert "1 untracked document(s) unread" in run.stdout
 
 
 def test_a_code_span_is_blanked_and_its_line_keeps_its_length() -> None:
