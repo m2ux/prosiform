@@ -84,7 +84,7 @@ from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
 
-from documents import ROOT, cells, is_delimiter, plain
+from documents import ROOT, cells, is_delimiter, plain, strip_code_blocks
 from manifests import (
     CORPUS,
     MANIFEST_NAME,
@@ -99,7 +99,6 @@ from runner import BUILD, BuildNotConfigured, build_under_test
 from smoke import OBSERVED
 from vocabulary import design_reference, git_ref, git_show
 
-FENCE = re.compile(r"^(?:```|~~~)")
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)\s*#*$")
 BULLET = re.compile(r"^- \*\*(.+?)[:.]?\*\*")
 STEP = re.compile(r"^(\d+)\.\s+\S")
@@ -478,19 +477,14 @@ def clauses(design: str) -> list[Clause]:
     """Every behavioural clause the design states, in the order it states them.
 
     A section declared as stating no behaviour carries no clause, nor does
-    any rule beneath it.
+    any rule beneath it. A code block, as `documents.strip_code_blocks`
+    finds one, states neither a heading nor a rule.
     """
     silent = {section.name for section in SECTIONS}
     found: list[Clause] = []
     heading: str | None = None
-    fenced = False
     delimited = False
-    for line in design.splitlines():
-        if FENCE.match(line):
-            fenced = not fenced
-            continue
-        if fenced:
-            continue
+    for line in strip_code_blocks(design).splitlines():
         marked = HEADING.match(line)
         if marked:
             title = None if len(marked.group(1)) == 1 else text(marked.group(2))
@@ -526,17 +520,17 @@ def partition(design: str) -> tuple[str, dict[str, str]]:
     reads it, and a section `SECTIONS` declares is silent. A heading is the
     design's name for its section and this report lists every section by
     that name, so each heading, a silent section's among them, is
-    behavioural text.
+    behavioural text. A code block opens no section and stays in the text
+    of the section it sits in, as written.
     """
     silent = {section.name for section in SECTIONS}
     behavioural: list[str] = []
     stating: dict[str, list[str]] = {}
     current = behavioural
-    fenced = False
-    for line in design.splitlines():
-        if FENCE.match(line):
-            fenced = not fenced
-        marked = None if fenced else HEADING.match(line)
+    for line, prose in zip(
+        design.splitlines(), strip_code_blocks(design).splitlines(), strict=True
+    ):
+        marked = HEADING.match(prose)
         if marked:
             title = None if len(marked.group(1)) == 1 else text(marked.group(2))
             behavioural.append(line)
