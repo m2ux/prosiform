@@ -107,7 +107,6 @@ from prosiform.dispatch import (
     DISPATCH_CYCLE,
     DISPATCH_DEPTH,
     DISPATCH_SELF,
-    HEADING_COLLISION,
     TOGETHER,  # noqa: F401 - re-exported for tests that assert the set heading
 )
 from prosiform.limits import (
@@ -2595,44 +2594,6 @@ def test_a_picking_dispatch_in_a_level_six_section_is_refused(kinds: Path) -> No
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_DEPTH_OVERFLOW
-
-
-def test_an_authored_heading_equal_to_the_dispatch_pick_is_refused(
-    kinds: Path,
-) -> None:
-    written(
-        kinds,
-        "guide.md",
-        DECLARED + '# Guide\n\nRun [⇉ the body](work-kind.md "?").\n\n'
-        "## the body\n\nText.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=kinds)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == HEADING_COLLISION
-    assert "the body" in diagnostic["message"]
-
-
-def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
-    root: Path,
-) -> None:
-    written(
-        root,
-        "guide.md",
-        DECLARED
-        + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-        "## \u2afd Dispatch Set\n\nText.\n",
-    )
-    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
-    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == HEADING_COLLISION
-    assert "\u2afd Dispatch Set" in diagnostic["message"]
-    assert diagnostic["location"] == {"file": "guide.md", "line": 8, "column": 1}
 
 
 @pytest.mark.parametrize(

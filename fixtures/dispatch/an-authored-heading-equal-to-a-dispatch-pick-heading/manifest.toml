@@ -1,0 +1,16 @@
+description = "A dispatch-pick heading and an equal authored heading publish with distinct destinations; the pick link and ordinary source link reach their own sections."
+
+clauses = [
+  "Link classification and resource handling — Generated heading collisions",
+  "Link classification and resource handling — The pick token",
+  "Presets — Alternatives",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/work-kind-task.bundle.md", "expected/work-kind-epic.bundle.md"]
+diagnostics = []

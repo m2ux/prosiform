@@ -7,4 +7,4 @@ prosiform: {}
 
 ## ⫽ Dispatch Set
 
-How this guide reviews.
+How this guide reviews. Read [this section](#⫽-dispatch-set).

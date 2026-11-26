@@ -6,7 +6,7 @@ to assigned fragments. Link operations use `closure`, and diagram
 links use `source.Click`.
 """
 
-from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Mapping, Sequence
 from dataclasses import dataclass, replace
 from urllib.parse import quote
 
@@ -50,11 +50,9 @@ from prosiform.marks import DISPATCH_MARK
 from prosiform.provenance import (
     BRIEF_SECTION,
     COMPOSED_HEADINGS,
-    FILENAME_WRAPPER,
     PARALLEL_SECTION,
     PICK_SECTION,
     Ancestor,
-    Carried,
     Dispatching,
     Emitted,
     Generated,
@@ -63,7 +61,6 @@ from prosiform.provenance import (
     Part,
     Preamble,
     Range,
-    Record,
     Region,
     Served,
     Target,
@@ -118,7 +115,6 @@ SELF_REMEDY = (
 )
 CYCLE_REMEDY = "bundle or cite one target of the cycle rather than dispatching it"
 LEVEL_REMEDY = "move the dispatch to a shallower section"
-COLLISION_REMEDY = "retitle the authored heading"
 NAMED_REMEDY = (
     "write one of the two dispatches with other link text, or compose the "
     "section writing it under presets routing it alike"
@@ -1094,54 +1090,6 @@ def subsections(
     )
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.shared()
-
-
-def authored(
-    record: Record, read: Mapping[str, Source]
-) -> Iterator[tuple[Emitted, Location | None]]:
-    """Each heading of a group whose text an author or a source path gave it.
-
-    An authored heading is located at the line of the file it stands on,
-    which its origin states as a line of its source's content.
-    """
-    for one in record.headings:
-        if isinstance(one, Carried | Ancestor):
-            origin = one.origins[0]
-            yield (
-                one,
-                Location(origin.path, read[origin.path].line(origin.line) or 1, 1),
-            )
-        elif isinstance(one, Generated) and one.kind == FILENAME_WRAPPER:
-            yield one, None
-
-
-def collisions(groups: Sequence[Group], read: Mapping[str, Source]) -> None:
-    """Refuse an authored heading whose text equals one pf emits in the bundle."""
-    emitted = {
-        one.text
-        for group in groups
-        for one in group.record.headings
-        if isinstance(one, Generated)
-        and one.kind in (PARALLEL_SECTION, PICK_SECTION, BRIEF_SECTION)
-    }
-    for group in groups:
-        for one, at in authored(group.record, read):
-            if one.text not in emitted:
-                continue
-            where = (
-                f"{at.file}:{at.line}" if at is not None else f"{group.record.path!r}"
-            )
-            raise Refused(
-                Diagnostic(
-                    ERROR,
-                    f"the heading {one.text!r} at {where} equals the heading "
-                    f"{one.text!r} pf emits in the same bundle",
-                    code=HEADING_COLLISION,
-                    source=group.record.path if at is None else at.file,
-                    remedy=COLLISION_REMEDY,
-                    location=at,
-                )
-            )
 
 
 def anchors(placed: Placed, assigned: Sequence[str]) -> dict[Region, dict[Served, str]]:

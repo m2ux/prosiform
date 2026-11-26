@@ -14,7 +14,7 @@ A merged group is where this shows most: several files declaring one name share 
 
 *One heading for the group, one subsection naming each member, and the `Tests` both files declare pooled into one section split by document.*
 
-Generated grouping wrappers follow [Empty Generated Wrappers](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping).
+Generated grouping wrappers follow [Empty Generated Wrappers](https://github.com/m2ux/prosiform/blob/119c12e2e223cf32d18b71186ba274d8da75c8d2/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping).
 
 ## File headings
 
@@ -63,7 +63,7 @@ A pair places its own document's sections and no other's. A linked document is p
 
 ## Where a group stands
 
-A merged group stands inside the division holding the document whose link placed its first member in that group, after everything that division carries of its own, so a document two links place under different pairs has each group standing where its own link was written. A group an entry places its first member in stands at the top level, and so does a group whose first member is placed by a document standing inside that group. A later member joins the group where it stands. The design's [Grouping](https://github.com/m2ux/prosiform/blob/c394f23056ad69400277b008fdd2ccd8841ded5e/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) carries the rule in full.
+A merged group stands inside the division holding the document whose link placed its first member in that group, after everything that division carries of its own, so a document two links place under different pairs has each group standing where its own link was written. A group an entry places its first member in stands at the top level, and so does a group whose first member is placed by a document standing inside that group. A later member joins the group where it stands. The design's [Grouping](https://github.com/m2ux/prosiform/blob/119c12e2e223cf32d18b71186ba274d8da75c8d2/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) carries the rule in full.
 
 Each division enclosing a group moves every heading of the group one level deeper, so the group's heading takes the level below the heading of the division holding it:
 
