@@ -1,0 +1,204 @@
+[
+  {
+    "specimen": "generated-first",
+    "phase": "before",
+    "compiler_revision": "6eb02cb5c44bf8942ad16e5c4e6104438a969438",
+    "compiler_entry": "/tmp/f42-product-venv/bin/python",
+    "compiler_sources": {
+      "src/prosiform/__init__.py": "baf371533409bb23fb4de79ab2f3c22d8b546bc79de63c87afb7fe1937b55896",
+      "src/prosiform/access.py": "ec2b8230a3b7ce07c59b016f93291643f3884e9a64ede086af67e83174ebbc44",
+      "src/prosiform/bundle.py": "035b4149a2fab7742722130a84d824a845e23069a8820a70b6cde078dfaf92ca",
+      "src/prosiform/candidate.py": "5a9ee48e703f9ae4963d1dc628189c30ddb670bee5dd8972743a1ace4d7dc8ac",
+      "src/prosiform/cli.py": "da031945140658d2ab287680046a62be98673468315c541e6c01e5f62230d1e3",
+      "src/prosiform/closure.py": "abcce6da59ee93e1b2cc666614774c27bd6e15ac67567d23931a298668deac1f",
+      "src/prosiform/composition.py": "c32e3dccf8edaed8be5081d3ecb8c2c70ef964b325215d498a7ae4090444c382",
+      "src/prosiform/diagnostics.py": "c83d57db8facdf4d4c81ff693153edaabfeaa784f89df6a71fade1fc4e1bc340",
+      "src/prosiform/dispatch.py": "f5f094217fe69fbaa62567aef7b4ae39cda10039761558bc4d501f8c42355d70",
+      "src/prosiform/entry.py": "958ba38faa4af2a097da07175327fd267cb3b7aa94a8d714727ba67f282cb497",
+      "src/prosiform/grouping.py": "131ef88d81bd22273ad4b3dafaf8f254dad9370911c481201bb63022ccb3a8b3",
+      "src/prosiform/heading.py": "c8ab1a93d5641faeda9a4bffab80187691ae96bb739ebed246324ff65f38bc46",
+      "src/prosiform/limits.py": "8376c8c624cf674605dc40dcb9fde5f9c8c5a0d52b91453b8348770a1d9ab1b2",
+      "src/prosiform/marks.py": "41cc73ada9362cb7a5b4f271a45e3cb700190058c72e92b644db0ddadfd00dd8",
+      "src/prosiform/metadata.py": "9fe8f247d194a331fe92ebcbbc767d46f46ad5311702c437848d452eede3d0dd",
+      "src/prosiform/preamble.py": "de3249b4adbf160553f0ce0205f5a0ead52bc3a6b44ad2d2e499b886586e80eb",
+      "src/prosiform/profile.py": "b57ce33645c2d040161c3e03f2fd8680bcb53189cc60368b3c6e7ffbd71a521f",
+      "src/prosiform/provenance.py": "2faf193751cb855be5280bb65b127568174f2a5b5204e5a8c3c53a72ad22aba4",
+      "src/prosiform/pruning.py": "6d0167f8d356274fea64b81748b0b403ca82b64ed7a25f3c63326c6ab0a67463",
+      "src/prosiform/rewrite.py": "e1c314b2e8d109bff3235ddc53f0d248ff81afe097f402108ec458eea0abd19e",
+      "src/prosiform/source.py": "fea02e5a78b7f1b541b24dcab5ba898032e4fbf78c0f4669d7795a41291debfd",
+      "src/prosiform/tags.py": "14ab40559b35699c2dc68cfcd83136bab247ac8aaef930f25eddcaf74382aa86"
+    },
+    "argv": [
+      "/tmp/f42-product-venv/bin/python",
+      "/tmp/f42-specimen-compiler.py",
+      "/tmp/f42-specimen-before-compiler/src",
+      "-d",
+      "json",
+      "-o",
+      "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/generated-first/before/bundles",
+      "guide.md"
+    ],
+    "cwd": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/generated-first/before/source",
+    "exit": 1,
+    "diagnostics": [
+      "E_HEADING_COLLISION"
+    ],
+    "source_files": {
+      "investigate.md": "dec26765fbae9bb59e75bbc5e22a49400af2cd181eef7cacddce6316233b1193",
+      "guide.md": "7d32c95a1e028f65d052588201fdbb6606d1f2552f5c1e99e235a4d81e6c9889"
+    },
+    "bundles": {}
+  },
+  {
+    "specimen": "generated-first",
+    "phase": "after",
+    "compiler_revision": "e271c2252afb5ff3f23845dac3860ed0b6832fad",
+    "compiler_entry": "/tmp/f42-product-venv/bin/python",
+    "compiler_sources": {
+      "src/prosiform/__init__.py": "baf371533409bb23fb4de79ab2f3c22d8b546bc79de63c87afb7fe1937b55896",
+      "src/prosiform/access.py": "ec2b8230a3b7ce07c59b016f93291643f3884e9a64ede086af67e83174ebbc44",
+      "src/prosiform/bundle.py": "035b4149a2fab7742722130a84d824a845e23069a8820a70b6cde078dfaf92ca",
+      "src/prosiform/candidate.py": "5a9ee48e703f9ae4963d1dc628189c30ddb670bee5dd8972743a1ace4d7dc8ac",
+      "src/prosiform/cli.py": "bff7ea0fb25daf2d84c35a4761cdfbfa37b6aeb5f8bba30a0183d99ecead6523",
+      "src/prosiform/closure.py": "abcce6da59ee93e1b2cc666614774c27bd6e15ac67567d23931a298668deac1f",
+      "src/prosiform/composition.py": "c32e3dccf8edaed8be5081d3ecb8c2c70ef964b325215d498a7ae4090444c382",
+      "src/prosiform/diagnostics.py": "c83d57db8facdf4d4c81ff693153edaabfeaa784f89df6a71fade1fc4e1bc340",
+      "src/prosiform/dispatch.py": "b3074a7ac26fcf18f0d3ad4d9b833194927b1627ac03a9215aec4d035074e9b3",
+      "src/prosiform/entry.py": "958ba38faa4af2a097da07175327fd267cb3b7aa94a8d714727ba67f282cb497",
+      "src/prosiform/grouping.py": "131ef88d81bd22273ad4b3dafaf8f254dad9370911c481201bb63022ccb3a8b3",
+      "src/prosiform/heading.py": "c8ab1a93d5641faeda9a4bffab80187691ae96bb739ebed246324ff65f38bc46",
+      "src/prosiform/limits.py": "8376c8c624cf674605dc40dcb9fde5f9c8c5a0d52b91453b8348770a1d9ab1b2",
+      "src/prosiform/marks.py": "41cc73ada9362cb7a5b4f271a45e3cb700190058c72e92b644db0ddadfd00dd8",
+      "src/prosiform/metadata.py": "9fe8f247d194a331fe92ebcbbc767d46f46ad5311702c437848d452eede3d0dd",
+      "src/prosiform/preamble.py": "de3249b4adbf160553f0ce0205f5a0ead52bc3a6b44ad2d2e499b886586e80eb",
+      "src/prosiform/profile.py": "b57ce33645c2d040161c3e03f2fd8680bcb53189cc60368b3c6e7ffbd71a521f",
+      "src/prosiform/provenance.py": "2faf193751cb855be5280bb65b127568174f2a5b5204e5a8c3c53a72ad22aba4",
+      "src/prosiform/pruning.py": "6d0167f8d356274fea64b81748b0b403ca82b64ed7a25f3c63326c6ab0a67463",
+      "src/prosiform/rewrite.py": "e1c314b2e8d109bff3235ddc53f0d248ff81afe097f402108ec458eea0abd19e",
+      "src/prosiform/source.py": "fea02e5a78b7f1b541b24dcab5ba898032e4fbf78c0f4669d7795a41291debfd",
+      "src/prosiform/tags.py": "14ab40559b35699c2dc68cfcd83136bab247ac8aaef930f25eddcaf74382aa86"
+    },
+    "argv": [
+      "/tmp/f42-product-venv/bin/python",
+      "/tmp/f42-specimen-compiler.py",
+      "/home/mike1/projects/dev/md-composer/.worktrees/f42-generated-heading-anchors/src",
+      "-d",
+      "json",
+      "-o",
+      "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/generated-first/after/bundles",
+      "guide.md"
+    ],
+    "cwd": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/generated-first/after/source",
+    "exit": 0,
+    "diagnostics": [],
+    "source_files": {
+      "investigate.md": "dec26765fbae9bb59e75bbc5e22a49400af2cd181eef7cacddce6316233b1193",
+      "guide.md": "7d32c95a1e028f65d052588201fdbb6606d1f2552f5c1e99e235a4d81e6c9889"
+    },
+    "bundles": {
+      "bundles/guide.bundles/guide.bundle.md": "2bef99eada53c0703dd593e5400a416e2abf23b5a39c38243d6945269f571217",
+      "bundles/guide.bundles/investigate.bundle.md": "35bdfbd2d870dd2177309ae8b5d76ab0d43136afce18cda561791da6c7ab4eb9"
+    }
+  },
+  {
+    "specimen": "authored-first",
+    "phase": "before",
+    "compiler_revision": "6eb02cb5c44bf8942ad16e5c4e6104438a969438",
+    "compiler_entry": "/tmp/f42-product-venv/bin/python",
+    "compiler_sources": {
+      "src/prosiform/__init__.py": "baf371533409bb23fb4de79ab2f3c22d8b546bc79de63c87afb7fe1937b55896",
+      "src/prosiform/access.py": "ec2b8230a3b7ce07c59b016f93291643f3884e9a64ede086af67e83174ebbc44",
+      "src/prosiform/bundle.py": "035b4149a2fab7742722130a84d824a845e23069a8820a70b6cde078dfaf92ca",
+      "src/prosiform/candidate.py": "5a9ee48e703f9ae4963d1dc628189c30ddb670bee5dd8972743a1ace4d7dc8ac",
+      "src/prosiform/cli.py": "da031945140658d2ab287680046a62be98673468315c541e6c01e5f62230d1e3",
+      "src/prosiform/closure.py": "abcce6da59ee93e1b2cc666614774c27bd6e15ac67567d23931a298668deac1f",
+      "src/prosiform/composition.py": "c32e3dccf8edaed8be5081d3ecb8c2c70ef964b325215d498a7ae4090444c382",
+      "src/prosiform/diagnostics.py": "c83d57db8facdf4d4c81ff693153edaabfeaa784f89df6a71fade1fc4e1bc340",
+      "src/prosiform/dispatch.py": "f5f094217fe69fbaa62567aef7b4ae39cda10039761558bc4d501f8c42355d70",
+      "src/prosiform/entry.py": "958ba38faa4af2a097da07175327fd267cb3b7aa94a8d714727ba67f282cb497",
+      "src/prosiform/grouping.py": "131ef88d81bd22273ad4b3dafaf8f254dad9370911c481201bb63022ccb3a8b3",
+      "src/prosiform/heading.py": "c8ab1a93d5641faeda9a4bffab80187691ae96bb739ebed246324ff65f38bc46",
+      "src/prosiform/limits.py": "8376c8c624cf674605dc40dcb9fde5f9c8c5a0d52b91453b8348770a1d9ab1b2",
+      "src/prosiform/marks.py": "41cc73ada9362cb7a5b4f271a45e3cb700190058c72e92b644db0ddadfd00dd8",
+      "src/prosiform/metadata.py": "9fe8f247d194a331fe92ebcbbc767d46f46ad5311702c437848d452eede3d0dd",
+      "src/prosiform/preamble.py": "de3249b4adbf160553f0ce0205f5a0ead52bc3a6b44ad2d2e499b886586e80eb",
+      "src/prosiform/profile.py": "b57ce33645c2d040161c3e03f2fd8680bcb53189cc60368b3c6e7ffbd71a521f",
+      "src/prosiform/provenance.py": "2faf193751cb855be5280bb65b127568174f2a5b5204e5a8c3c53a72ad22aba4",
+      "src/prosiform/pruning.py": "6d0167f8d356274fea64b81748b0b403ca82b64ed7a25f3c63326c6ab0a67463",
+      "src/prosiform/rewrite.py": "e1c314b2e8d109bff3235ddc53f0d248ff81afe097f402108ec458eea0abd19e",
+      "src/prosiform/source.py": "fea02e5a78b7f1b541b24dcab5ba898032e4fbf78c0f4669d7795a41291debfd",
+      "src/prosiform/tags.py": "14ab40559b35699c2dc68cfcd83136bab247ac8aaef930f25eddcaf74382aa86"
+    },
+    "argv": [
+      "/tmp/f42-product-venv/bin/python",
+      "/tmp/f42-specimen-compiler.py",
+      "/tmp/f42-specimen-before-compiler/src",
+      "-d",
+      "json",
+      "-o",
+      "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/authored-first/before/bundles",
+      "guide.md"
+    ],
+    "cwd": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/authored-first/before/source",
+    "exit": 1,
+    "diagnostics": [
+      "E_HEADING_COLLISION"
+    ],
+    "source_files": {
+      "investigate.md": "dec26765fbae9bb59e75bbc5e22a49400af2cd181eef7cacddce6316233b1193",
+      "guide.md": "13aa43f76fccafecd60ded547866ba9eecde6be083123e783776b69c2e93a5d7"
+    },
+    "bundles": {}
+  },
+  {
+    "specimen": "authored-first",
+    "phase": "after",
+    "compiler_revision": "e271c2252afb5ff3f23845dac3860ed0b6832fad",
+    "compiler_entry": "/tmp/f42-product-venv/bin/python",
+    "compiler_sources": {
+      "src/prosiform/__init__.py": "baf371533409bb23fb4de79ab2f3c22d8b546bc79de63c87afb7fe1937b55896",
+      "src/prosiform/access.py": "ec2b8230a3b7ce07c59b016f93291643f3884e9a64ede086af67e83174ebbc44",
+      "src/prosiform/bundle.py": "035b4149a2fab7742722130a84d824a845e23069a8820a70b6cde078dfaf92ca",
+      "src/prosiform/candidate.py": "5a9ee48e703f9ae4963d1dc628189c30ddb670bee5dd8972743a1ace4d7dc8ac",
+      "src/prosiform/cli.py": "bff7ea0fb25daf2d84c35a4761cdfbfa37b6aeb5f8bba30a0183d99ecead6523",
+      "src/prosiform/closure.py": "abcce6da59ee93e1b2cc666614774c27bd6e15ac67567d23931a298668deac1f",
+      "src/prosiform/composition.py": "c32e3dccf8edaed8be5081d3ecb8c2c70ef964b325215d498a7ae4090444c382",
+      "src/prosiform/diagnostics.py": "c83d57db8facdf4d4c81ff693153edaabfeaa784f89df6a71fade1fc4e1bc340",
+      "src/prosiform/dispatch.py": "b3074a7ac26fcf18f0d3ad4d9b833194927b1627ac03a9215aec4d035074e9b3",
+      "src/prosiform/entry.py": "958ba38faa4af2a097da07175327fd267cb3b7aa94a8d714727ba67f282cb497",
+      "src/prosiform/grouping.py": "131ef88d81bd22273ad4b3dafaf8f254dad9370911c481201bb63022ccb3a8b3",
+      "src/prosiform/heading.py": "c8ab1a93d5641faeda9a4bffab80187691ae96bb739ebed246324ff65f38bc46",
+      "src/prosiform/limits.py": "8376c8c624cf674605dc40dcb9fde5f9c8c5a0d52b91453b8348770a1d9ab1b2",
+      "src/prosiform/marks.py": "41cc73ada9362cb7a5b4f271a45e3cb700190058c72e92b644db0ddadfd00dd8",
+      "src/prosiform/metadata.py": "9fe8f247d194a331fe92ebcbbc767d46f46ad5311702c437848d452eede3d0dd",
+      "src/prosiform/preamble.py": "de3249b4adbf160553f0ce0205f5a0ead52bc3a6b44ad2d2e499b886586e80eb",
+      "src/prosiform/profile.py": "b57ce33645c2d040161c3e03f2fd8680bcb53189cc60368b3c6e7ffbd71a521f",
+      "src/prosiform/provenance.py": "2faf193751cb855be5280bb65b127568174f2a5b5204e5a8c3c53a72ad22aba4",
+      "src/prosiform/pruning.py": "6d0167f8d356274fea64b81748b0b403ca82b64ed7a25f3c63326c6ab0a67463",
+      "src/prosiform/rewrite.py": "e1c314b2e8d109bff3235ddc53f0d248ff81afe097f402108ec458eea0abd19e",
+      "src/prosiform/source.py": "fea02e5a78b7f1b541b24dcab5ba898032e4fbf78c0f4669d7795a41291debfd",
+      "src/prosiform/tags.py": "14ab40559b35699c2dc68cfcd83136bab247ac8aaef930f25eddcaf74382aa86"
+    },
+    "argv": [
+      "/tmp/f42-product-venv/bin/python",
+      "/tmp/f42-specimen-compiler.py",
+      "/home/mike1/projects/dev/md-composer/.worktrees/f42-generated-heading-anchors/src",
+      "-d",
+      "json",
+      "-o",
+      "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/authored-first/after/bundles",
+      "guide.md"
+    ],
+    "cwd": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-26-885-f42-generated-heading-anchors/specimens/authored-first/after/source",
+    "exit": 0,
+    "diagnostics": [],
+    "source_files": {
+      "investigate.md": "dec26765fbae9bb59e75bbc5e22a49400af2cd181eef7cacddce6316233b1193",
+      "guide.md": "13aa43f76fccafecd60ded547866ba9eecde6be083123e783776b69c2e93a5d7"
+    },
+    "bundles": {
+      "bundles/guide.bundles/guide.bundle.md": "9f9cd170a513b0e1525bdbcc499e1de8cd7e773d24e508da3ac7c7f7287565d4",
+      "bundles/guide.bundles/investigate.bundle.md": "35bdfbd2d870dd2177309ae8b5d76ab0d43136afce18cda561791da6c7ab4eb9"
+    }
+  }
+]

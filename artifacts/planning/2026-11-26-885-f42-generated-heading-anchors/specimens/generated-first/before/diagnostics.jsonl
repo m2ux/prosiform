@@ -1,0 +1,1 @@
+{"severity": "error", "message": "the heading 'Investigate' at guide.md:18 equals the heading 'Investigate' pf emits in the same bundle", "code": "E_HEADING_COLLISION", "source": "guide.md", "remedy": "retitle the authored heading", "location": {"file": "guide.md", "line": 18, "column": 1}}

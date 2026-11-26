@@ -13,8 +13,12 @@ The public reproduction uses synthetic sources only.
 - Branch: f42-generated-heading-anchors
 - Base: 6eb02cb5c44bf8942ad16e5c4e6104438a969438
 - Worktree: .worktrees/f42-generated-heading-anchors
-- State: In Progress
+- State: In Review; [PR #887](https://github.com/m2ux/prosiform/pull/887) is ready and awaits human merge into main
 
 ## Checks
 
 Corpus fixtures exercise authored/generated ordering, ordinary links, Mermaid dispatch links, sets and picks. Existing negative cases retain genuine ambiguity refusals. Complete repository checks and revision-bound review precede ready state.
+
+## Before and After
+
+[Local review specimens](specimens/README.md) provide identical source, the original refusal, and the actual fixed bundles for both heading orders.
