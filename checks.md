@@ -91,7 +91,7 @@ A pull request that touches none of those paths is reported as not checked: the 
 | `make layout` | Each of the four trees, `fixtures/`, `src/`, `docs/` and `evals/`, holds a tracked file. |
 | `make tables` | The command and dependency tables in the documentation name every target the [`Makefile`](Makefile) declares and every dependency [`src/pyproject.toml`](src/README.md) declares, and nothing else. |
 | `make links` | Every link in every document in this repository resolves, except those in the fixture corpus. |
-| `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
+| `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks, and no page under `docs/` states a term it deliberately does not use. |
 | `make invocation` | The documented invocation names every argument, budget and exit status the build under test reports for itself, and nothing else, each reproducing that build's own help output, and it names the profile `-v` reports and carries the statements the contract requires of it. |
 
 ### The Contract
@@ -203,8 +203,8 @@ make restate ARGS="--write"
 ### Tool Environments
 
 - **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make triage`, `make restate`, `make examples` and `make eval-diagrams`.
-- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too, and `make releases` reads the build through `make invocation`'s reading of it. `make tables` and `make links` read documents through a reading that finds code blocks with the build's Markdown parser, so they run from it as well.
-- **Standard library only.** `make smoke`, `make layout`, `make vocabulary`, `make reachability` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
+- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too, and `make releases` reads the build through `make invocation`'s reading of it. `make tables`, `make links` and `make vocabulary` read documents through a reading that finds code blocks with the build's Markdown parser, so they run from it as well.
+- **Standard library only.** `make smoke`, `make layout`, `make reachability` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 
 ### Network Access
 

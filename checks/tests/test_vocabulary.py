@@ -26,6 +26,12 @@ snake_case, whose underscore is a character of the word.
 A *fenced term* is an example of the marking rather than a mark.
 ```
 
+- A list item shows the marking in a fence of its own.
+
+  ```markdown
+  An *indented term* is an example too.
+  ```
+
 The *Source Root* is marked under the case the design writes it in.
 
 ## Acceptance Criteria
@@ -71,6 +77,10 @@ def test_a_mark_inside_a_code_span_or_a_fence_is_an_example() -> None:
     assert "fenced term" not in inventory
 
 
+def test_a_mark_inside_a_fence_indented_in_a_list_item_is_an_example() -> None:
+    assert "indented term" not in vocabulary.marked_terms(DESIGN)
+
+
 def test_a_marked_term_is_inventoried_in_the_case_the_glossary_compares() -> None:
     assert "source root" in vocabulary.marked_terms(DESIGN)
 
@@ -82,8 +92,70 @@ def test_a_glossary_defines_the_terms_of_its_definition_sections() -> None:
 
 def test_a_term_a_glossary_names_as_avoided_is_not_a_definition() -> None:
     defined, avoided = vocabulary.glossary_terms(GLOSSARY)
-    assert avoided == {"artifact"}
+    assert avoided == {"artifact": "It names anything, so it names nothing."}
     assert "artifact" not in defined
+
+
+AVOIDED = {
+    "include": "Selection decides what appears.",
+    "anchor": "A destination names a heading.",
+}
+
+PAGE = """\
+# A page
+
+A dependency is followed, its content Included, and the link rewritten.
+
+The `include` directive is quoted in a code span, and a word holding the
+term, such as inclusion or anchorage, is another word.
+
+- A list item shows a page in a fence of its own.
+
+  ```markdown
+  A fenced example includes an anchor.
+  ```
+
+[A link](other.md#an-anchor) names the destination of a heading.
+
+## Terms deliberately not used
+
+| Avoided | Why |
+| --- | --- |
+| **anchor** | A destination names a heading. |
+"""
+
+
+def test_a_page_stating_an_avoided_term_reports_it_by_line() -> None:
+    assert list(vocabulary.avoided_uses(PAGE, AVOIDED)) == [(3, "Included", "include")]
+
+
+def test_an_avoided_term_is_read_in_each_form_a_sentence_inflects_it_to() -> None:
+    pattern = vocabulary.avoidance_pattern("include")
+    for form in ("include", "includes", "included", "including"):
+        assert pattern.fullmatch(form)
+    assert not pattern.search("inclusion")
+    branch = vocabulary.avoidance_pattern("branch")
+    for form in ("branch", "branches", "branched", "branching"):
+        assert branch.fullmatch(form)
+    assert not vocabulary.avoidance_pattern("compile").search("compiler")
+
+
+def test_code_a_link_destination_and_the_avoided_table_are_not_prose() -> None:
+    read = vocabulary.prose(PAGE)
+    assert "include" not in read.lower().replace("included", "")
+    assert "anchor" not in read.lower().replace("anchorage", "")
+    assert "[A link] names the destination" in read
+
+
+def test_a_page_stating_no_avoided_term_reports_nothing() -> None:
+    page = "A selection bundles each section a link names.\n"
+    assert list(vocabulary.avoided_uses(page, AVOIDED)) == []
+
+
+def test_the_pages_read_are_those_under_docs() -> None:
+    read = vocabulary.pages()
+    assert vocabulary.SHIPPED_GLOSSARY in read
+    assert all(page.is_relative_to(vocabulary.DOCS) for page in read)
 
 
 def test_a_parenthetical_is_not_part_of_the_term() -> None:

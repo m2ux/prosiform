@@ -19,7 +19,7 @@ Two documents with the same heading text make the point, because the second has 
 #heading-slug-1      the second heading in the bundle to carry that slug
 ```
 
-The bundle carries no anchor elements and no identifiers. The headings it already emits are what a renderer indexes, so a destination is a name for a place rather than markup in it.
+The bundle adds no HTML elements and no identifiers to mark a destination. The headings it already emits are what a renderer indexes, so a destination is a name for a place rather than markup in it.
 
 ## Ordinals
 
@@ -66,7 +66,7 @@ flowchart LR
 
 Reference-style links resolve against their own source's definitions alone, so `[runner]` in one document stays literal even if another document defines it.
 
-Selected content's reference-style uses are converted to inline links, and every definition node is removed from the emitted content — the unused ones included. A definition left behind is an edge the bundle carries that validation does not account for.
+Selected content's reference-style uses are converted to inline links, and every definition node is removed from the emitted content — the unused ones too. A definition left behind is an edge the bundle carries that validation does not account for.
 
 ## What validation holds
 
