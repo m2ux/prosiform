@@ -13,6 +13,7 @@ The row closes a case the repository checks epic left outside its criteria.
 | Artifact | Purpose |
 | --- | --- |
 | [w01.md](w01.md) | Work item for W01. |
+| [test-evidence.md](test-evidence.md) | Test results for the W01 pull request. |
 
 ## Links
 
