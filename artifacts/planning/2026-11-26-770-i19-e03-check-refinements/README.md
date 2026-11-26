@@ -16,6 +16,7 @@ The user placed them in the initiative rather than as standalone issues, so the 
 | Epic priority | 1: it is the initiative's only open epic once E02 merges. |
 | W01 and W03 | One pull request: both change the vocabulary check and its tests. |
 | The boundary | Decided by the user: removed from the documentation. If the design on the engineering branch states it as behaviour, the session asks the user before changing the contract. |
+| The boundary in the contract | Decided by the user: the design states it in seven clauses, among them the `E_SOURCE_CHANGED` trigger, and the build computes none, so the design drops those clauses first and the documentation follows. |
 
 ## Sources
 
