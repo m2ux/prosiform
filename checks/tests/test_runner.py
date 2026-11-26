@@ -40,6 +40,7 @@ from runner import (
     STDOUT_TEXT,
     BuildNotConfigured,
     Result,
+    State,
     run_fixture,
 )
 
@@ -77,6 +78,10 @@ TARGET_NOT_FOUND = {
     "code": "E_TARGET_NOT_FOUND",
     "reference": "procedure.md#review",
     "resolved": "procedure.md",
+}
+INTERNAL_ERROR = {
+    "severity": "error",
+    "code": "E_UNEXPECTED_INTERNAL_ERROR",
 }
 BUNDLE_NAME = "guide.bundle.md"
 RUN_FOLDER = "guide.bundles"
@@ -331,7 +336,7 @@ def test_a_malformed_fixture_is_refused_without_invoking_the_build(
     record = tmp_path / "argv"
     configure(monkeypatch, recording(record))
     result = run_fixture(fixture)
-    assert not result.passed
+    assert result.state is State.FAILED_IN_ITSELF
     assert "exit_status" in detail_of(result, MANIFEST)
     assert not record.exists()
 
@@ -367,6 +372,17 @@ def test_a_file_the_run_writes_is_removed(
     configure(monkeypatch, publishing("../guide/bundle.md", "# Guide\n"))
     assert not run_fixture(fixture).passed
     assert not (fixture / "guide").exists()
+
+
+def test_the_result_carries_each_file_the_run_wrote(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Other\n"))
+    written = run_fixture(fixture).written
+    assert [(one.folder, one.name, one.data) for one in written] == [
+        (RUN_FOLDER, BUNDLE_NAME, b"# Other\n")
+    ]
 
 
 def test_a_file_written_outside_a_folder_of_the_run_is_reported(
@@ -828,7 +844,7 @@ def test_every_expectation_that_differed_is_reported(
     named = {difference.expectation for difference in result.differences}
     assert named == {EXIT_STATUS, BUNDLES, DIAGNOSTICS}
     report = result.report()
-    assert report.startswith(f"{identity(fixture)}: fail")
+    assert report.startswith(f"{identity(fixture)}: output moved")
     for expectation in named:
         assert f"  {expectation}: " in report
 
@@ -840,10 +856,66 @@ def test_a_run_that_does_not_complete_is_reported(
     monkeypatch.setenv(BUILD_TIMEOUT, "0.2")
     configure(monkeypatch, shlex.join(["/bin/sh", "-c", "sleep 5"]))
     result = run_fixture(fixture)
-    assert not result.passed
+    assert result.state is State.FAILED_IN_ITSELF
     assert "the run did not complete within 0.2 seconds" in detail_of(
         result, INVOCATION
     )
+
+
+def test_a_run_meeting_its_manifest_is_met(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture", bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path, b"", b"", 0, b"# Guide\n"))
+    assert run_fixture(fixture).state is State.MET
+
+
+def test_a_run_whose_output_moved_is_told_from_one_that_failed_in_itself(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Both runs differ from the same manifest; only the first is drift."""
+    moved = write_fixture(tmp_path / "moved", bundle=b"# Guide\n")
+    configure(monkeypatch, replaying(tmp_path / "a", b"", b"", 0, b"# Other\n"))
+    drifted = run_fixture(moved)
+
+    crashed = write_fixture(tmp_path / "crashed", bundle=b"# Guide\n")
+    stderr = diagnostic_lines(INTERNAL_ERROR)
+    configure(monkeypatch, replaying(tmp_path / "b", b"", stderr, 4, b"# Other\n"))
+    broken = run_fixture(crashed)
+
+    assert (drifted.passed, broken.passed) == (False, False)
+    assert drifted.state is State.MOVED
+    assert broken.state is State.FAILED_IN_ITSELF
+    assert drifted.report().startswith(f"{identity(moved)}: output moved")
+    assert broken.report().startswith(f"{identity(crashed)}: run failed in itself")
+    assert "the contract's unexpected internal error" in detail_of(broken, INVOCATION)
+
+
+def test_a_declared_internal_error_meets_its_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A fixture stating the internal error is the run's outcome is met by it."""
+    fixture = write_fixture(
+        tmp_path / "fixture",
+        exit_status=4,
+        diagnostics=(INTERNAL_ERROR,),
+        fault="internal",
+    )
+    configure(
+        monkeypatch, replaying(tmp_path, b"", diagnostic_lines(INTERNAL_ERROR), 4)
+    )
+    result = run_fixture(fixture)
+    assert result.state is State.MET, result.report()
+
+
+def test_a_run_ended_by_a_signal_failed_in_itself(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixture = write_fixture(tmp_path / "fixture")
+    configure(monkeypatch, shlex.join(["/bin/sh", "-c", "kill -KILL $$"]))
+    result = run_fixture(fixture)
+    assert result.state is State.FAILED_IN_ITSELF
+    assert "the run ended on signal 9" in detail_of(result, INVOCATION)
 
 
 def faulting(record: Path) -> str:

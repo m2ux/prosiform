@@ -350,6 +350,14 @@ make corpus
 
 Every fixture in this tree runs against the build `PROSIFORM_BUILD` names, and each one's verdict is printed under its identity — its path under `fixtures/` — in path order. Fixtures run a few at a time, as many as the host has cores; `PROSIFORM_CORPUS_WORKERS` says how many a machine may use. A fixture that differs from its manifest fails the run and its differences are printed under its name; one awaiting later work is reported as awaiting it; one awaiting work it already meets fails the run. The run ends on a count of the fixtures against each verdict, and returns a nonzero status when any fixture failed it or when no build is configured.
 
+## Running one fixture
+
+```bash
+uv run --project src --frozen python checks/corpus.py identity/whole-document
+```
+
+The fixtures named by identity run alone, by the comparison the corpus run performs, and each verdict is printed under the identity named, with its differences and the count beneath it as the corpus run prints them. Several identities may be named. An identity is a fixture's whole path under `fixtures/`, so a family directory names no fixture; a name no fixture carries fails the request before anything runs, naming each such name.
+
 ## Reading what a piece of work unblocks
 
 ```bash
@@ -357,6 +365,15 @@ uv run --project src --frozen python checks/corpus.py --awaiting I00:E11:W14
 ```
 
 The fixtures declaring they await the named work are printed by identity, with a count beneath them, so a session starting that work reads which fixtures it turns green before it changes anything. The request reads the manifests and runs nothing, so it needs no build and returns zero whatever it finds. The name is compared as a manifest declares it: `I00:E11` and `I00:E11:W14` are separate requests, and a fixture is found by the identity its marker carries.
+
+## Restating a stale fixture
+
+```bash
+make triage
+make restate ARGS="--write"
+```
+
+A change that moves what the build writes leaves each fixture pinning the old output stale. [Triage](../checks/triage.py) names each one under the category its difference falls in, and [restatement](../checks/restate.py) writes the expected bundles of each one whose bundle text or names moved, editing only the names in the manifest's `bundles` entry. It refuses and names a run that failed in itself and a fixture whose exit status, diagnostics, output or number of bundles moved, since a reader decides those. Without `--write` it names each fixture it would restate and writes nothing. Both are described under [Drift Triage](../checks.md#drift-triage) and [Restatement](../checks.md#restatement).
 
 ## Running the checks
 

@@ -2,7 +2,10 @@
 #
 # Every target exits nonzero when its check fails, so the target that failed
 # names the check that failed. `make check` runs the set and stops at the
-# first failure. Continuous integration calls these same targets.
+# first failure. `make check-all` runs the same set whatever fails, then
+# names each check that failed and exits nonzero when any did, so one run
+# reports every failure. `CHECKS` lists the set both run. Continuous
+# integration calls these same targets.
 #
 # The Python tools come from the build's locked development dependency group:
 # `uv run --frozen` installs what `src/uv.lock` records and resolves
@@ -36,6 +39,20 @@
 # same build's own help output, `make conformance` reads the codes it reports
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
+#
+# `make triage` runs the corpus the same way and names each fixture the run
+# fails under the drift category its run falls in, and each whose run failed
+# in itself apart. It reports and writes nothing, so `make check` leaves it
+# out. ARGS passes its options through: `--only CATEGORY` and the identities
+# of the fixtures to triage.
+#
+# `make restate` runs the corpus the same way and writes the expected bundles,
+# and the manifest's bundles entry, of each fixture triage files under a
+# category restatement writes. It refuses and names every other fixture triage
+# names, and then fails. It is a local authoring aid, so `make check` and
+# continuous integration leave it out. ARGS passes its options through:
+# `--write`, without which it names each fixture and writes nothing, and the
+# identities of the fixtures to restate.
 #
 # `make harness` holds the checks' own tests: the manifest schema and its
 # cases, the corpus runner's comparison, the catalogue, the conformance report
@@ -73,9 +90,19 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render examples eval-diagrams
+.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence triage restate render examples eval-diagrams
 
-check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
+CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
+
+check: $(CHECKS)
+
+check-all:
+	@failed=; \
+	for target in $(CHECKS); do \
+		$(MAKE) --no-print-directory $$target || failed="$$failed $$target"; \
+	done; \
+	if [ -n "$$failed" ]; then echo "check-all: failed:$$failed"; exit 1; fi; \
+	echo "check-all: every check passed"
 
 test:
 	cd src && uv run --frozen pytest
@@ -88,6 +115,12 @@ eval-harness:
 
 corpus:
 	$(UV_RUN) python checks/corpus.py
+
+triage:
+	$(UV_RUN) python checks/triage.py $(ARGS)
+
+restate:
+	$(UV_RUN) python checks/restate.py $(ARGS)
 
 smoke:
 	python3 checks/smoke.py
