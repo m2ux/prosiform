@@ -8,6 +8,12 @@ A repository check fails a commit whose build tag names a version the build does
 
 The row belongs to the repository checks epic, whose rows state a rule a check makes imprecisely.
 
+## Artifacts
+
+| Artifact | Purpose |
+| --- | --- |
+| [w09.md](w09.md) | Work item for W09. |
+
 ## Links
 
 | Resource | URL |
