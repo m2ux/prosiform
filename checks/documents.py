@@ -5,6 +5,13 @@ a tree: an untracked file is invisible to a fresh checkout. The documents are
 found rather than listed, so a tree added later is read by every check that
 reads them, without any of those checks being edited.
 
+A document present in the working tree and untracked is named as unread
+rather than read. The checks' subject is the repository's own content, which
+is what a fresh checkout and continuous integration hold, so it fails nothing;
+naming it keeps a run's count from reading as coverage of a document it never
+saw. A document git ignores is not present in this sense: the repository has
+declared it none of its content.
+
 The fixture corpus is excepted. A fixture is a directory holding a manifest,
 which is what the corpus check calls one, and a fixture's source deliberately
 carries references a run is meant to refuse, while its expected bundle is
@@ -41,16 +48,26 @@ CELL_SEPARATOR = re.compile(r"(?<!\\)\|")
 DELIMITER_CELL = re.compile(r"^:?-{3,}:?$")
 
 
-def tracked() -> list[str]:
-    """Every path git tracks, each relative to the repository root."""
+def listed(*options: str) -> list[str]:
+    """Every path `git ls-files` lists under those options, relative to the root."""
     result = subprocess.run(
-        ["git", "ls-files"],
+        ["git", "ls-files", *options],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=True,
     )
     return [line for line in result.stdout.splitlines() if line]
+
+
+def tracked() -> list[str]:
+    """Every path git tracks, each relative to the repository root."""
+    return listed()
+
+
+def untracked() -> list[str]:
+    """Every path present in the working tree that git neither tracks nor ignores."""
+    return listed("--others", "--exclude-standard")
 
 
 def corpus(paths: list[str]) -> list[str]:
@@ -60,10 +77,8 @@ def corpus(paths: list[str]) -> list[str]:
     ]
 
 
-def documents() -> list[Path]:
-    """Every Markdown document git tracks outside the corpus, in path order."""
-    paths = tracked()
-    fixtures = corpus(paths)
+def readable(paths: list[str], fixtures: list[str]) -> list[Path]:
+    """Each Markdown document among those paths outside the corpus, in path order."""
     return sorted(
         ROOT / path
         for path in paths
@@ -71,6 +86,22 @@ def documents() -> list[Path]:
         and not path.endswith(BUNDLE)
         and not any(path.startswith(f"{fixture}/") for fixture in fixtures)
     )
+
+
+def documents() -> list[Path]:
+    """Every Markdown document git tracks outside the corpus, in path order."""
+    paths = tracked()
+    return readable(paths, corpus(paths))
+
+
+def unread() -> list[Path]:
+    """Every Markdown document present and untracked outside the corpus.
+
+    A fixture is excepted whether or not git tracks its manifest, so a fixture
+    being written is held out like one already committed.
+    """
+    paths = untracked()
+    return readable(paths, corpus(tracked() + paths))
 
 
 def strip_code_fences(text: str) -> str:
