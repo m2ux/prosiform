@@ -41,22 +41,26 @@ configuration, as the corpus names it — and fails without one.
 
 The design states the contract where it states behaviour. A section the
 conformance report records as stating no behaviour states what the project
-decided about its builds, what remains to be proven of them and what an
-upstream contribution would say, so its prose states a build's words
-rather than the contract's. A word only such a section carries is a build's
+decided about its builds, what each is made with, what remains to be proven
+of them and what an upstream contribution would say, so the terms it writes
+in code spans are a build's words rather than the contract's. Such a term is a build's
 however it is written: `crate` names packaging in lower case as plainly as
-`Cargo` does with a capital, so it is reported whatever its shape. A claim
-quoting the tree its fixture carries states that tree's words, so a word
-naming one of the tree's files is the tree's rather than a build's.
+`Cargo` does with a capital, so it is reported whatever its shape. The rest
+of that section's prose is the ordinary words its sentences are written in,
+which name nothing. A claim quoting the tree its fixture carries states
+that tree's words, so a word naming one of the tree's files is the tree's
+rather than a build's.
 
 The glossary names the terms it deliberately does not use and why each was
 refused. A fixture's description is the text a second implementor reads
-for what the contract means, which is the text that avoidance was written
-for, so a description stating an avoided term is reported with the reason
-the glossary gives, whatever the design's prose states: the design writes
-some of those words in their ordinary sense. The other claims are names
-rather than statements — a clause the design names, the bytes a build
-writes and a fixture's identity — and are held to the design's words by
+for what the contract means, and its identity is the name a reader meets
+first, printed by the corpus report and named in every request for that
+fixture, so each is the text that avoidance was written for. A description
+or an identity stating an avoided term, in any segment of the identity's
+path, is reported with the reason the glossary gives, whatever the design's
+prose states: the design writes some of those words in their ordinary
+sense. The other claims quote the design or a build — a clause the design
+names and the bytes a build writes — and are held to the design's words by
 the rules above.
 
 A term is read as the contract states it rather than as a sentence inflects
@@ -126,8 +130,8 @@ class Vocabulary:
     """What the contract states, and the words it refuses.
 
     `names` holds every term the contract states, in each form a sentence
-    inflects it to. `built` holds each form of a word only a section stating
-    no behaviour carries, against that section's name. `avoided` holds each
+    inflects it to. `built` holds each form of a build word, against the
+    name of the section stating no behaviour that marks it. `avoided` holds each
     term the glossary deliberately does not use, against the reason it
     gives.
     """
@@ -192,6 +196,11 @@ def prose(text: str) -> str:
     return LINK_DESTINATION.sub("]", CODE_SPAN.sub(" ", text))
 
 
+def marked(text: str) -> list[str]:
+    """Every term one text marks, as the code of its code spans."""
+    return [span[1:-1] for span in CODE_SPAN.findall(text)]
+
+
 def registered(text: str) -> list[str]:
     """Every term the contract defines, as its tables name them."""
     return [plain(term).strip() for term in TABLE_TERM.findall(text)]
@@ -226,9 +235,10 @@ def stated(design: str, glossary: str, documentation: str) -> Vocabulary:
     The prose of the design's behavioural sections states the contract's
     own words, the design's clause names state what it calls things, the
     glossary's terms define them, the documented invocation and the schema
-    declare its interface. A word the prose of a section stating no
-    behaviour carries and none of those states is a build's, the design
-    divided as `conformance.partition` divides it.
+    declare its interface. A word of a term a section stating no behaviour
+    marks, as `marked` reads it, that none of those states in any of its
+    forms is a build's, the design divided as `conformance.partition`
+    divides it. A word that section writes unmarked is not.
     """
     behavioural, silent = partition(design)
     names: set[str] = set()
@@ -246,7 +256,7 @@ def stated(design: str, glossary: str, documentation: str) -> Vocabulary:
                 names |= forms(word)
     built: dict[str, str] = {}
     for section, carried in silent.items():
-        for word in WORD.findall(prose(carried)):
+        for word in WORD.findall(" ".join(marked(carried))):
             spellings = forms(word)
             if spellings & names:
                 continue
@@ -304,8 +314,8 @@ def refused(
     """Why the contract refuses one word a claim states, or nothing.
 
     An avoided term is refused whatever the design's prose states, where
-    the claim is one `avoiding` marks. A word only a section stating no
-    behaviour carries is refused whatever its shape, unless it is a word of
+    the claim is one `avoiding` marks. A build word, as `stated` reads it,
+    is refused whatever its shape, unless it is a word of
     the `tree` the claim's fixture carries, which a claim quoting that tree
     states as the tree's. A shaped word is refused where the contract does
     not name it.
@@ -320,8 +330,8 @@ def refused(
     for spelling in [] if spellings & set(tree) else sorted(spellings):
         if spelling in vocabulary.built:
             return (
-                f"is a word only the design's {vocabulary.built[spelling]!r} "
-                "section carries, which states no behaviour"
+                f"is a build word the design's {vocabulary.built[spelling]!r} "
+                "section marks, which states no behaviour"
             )
     if shaped(term, opening) and not PATH_NAME.search(term):
         return UNNAMED
@@ -384,8 +394,8 @@ def tree_words(fixture: Path) -> set[str]:
 def corpus_references(corpus: Path, vocabulary: Vocabulary) -> list[Reference]:
     """Every term the corpus's declarations state that the contract refuses.
 
-    A fixture's description is read for the glossary's avoided terms too,
-    and a term the description and another claim both state is one
+    A fixture's identity and description are read for the glossary's
+    avoided terms too, and a term they and another claim both state is one
     reference. The words naming the files a fixture carries are its tree.
     """
     found = []
@@ -393,7 +403,8 @@ def corpus_references(corpus: Path, vocabulary: Vocabulary) -> list[Reference]:
         where = identity(fixture, corpus)
         manifest = read(fixture / MANIFEST_NAME)
         tree = tree_words(fixture)
-        described = scan(manifest.get(DESCRIPTION, ""), where, vocabulary, True, tree)
+        named = "\n".join([where, manifest.get(DESCRIPTION, "")])
+        described = scan(named, where, vocabulary, True, tree)
         own = {reference.found.lower(): reference for reference in described}
         declared = "\n".join(claims(manifest, where))
         for reference in scan(declared, where, vocabulary, False, tree):
@@ -467,9 +478,9 @@ def main() -> int:
         return 1
     print(
         "\nindependence check: every shaped term of every fixture declaration and "
-        "every report entry is one the contract names, none is a word only a "
-        "section stating no behaviour carries, and no description states an "
-        "avoided term"
+        "every report entry is one the contract names, none is a build word a "
+        "section stating no behaviour marks, and no identity or description "
+        "states an avoided term"
     )
     return 0
 

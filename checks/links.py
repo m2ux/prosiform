@@ -52,7 +52,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from documents import ROOT, documents, strip_code_fences, strip_literal, unread
+from documents import ROOT, documents, strip_code_blocks, strip_literal, unread
 
 REPOSITORY_URL_PREFIX = "https://github.com/m2ux/prosiform/"
 
@@ -132,7 +132,7 @@ def slug(heading: str) -> str:
 def fragments_of(text: str) -> set[str]:
     seen: dict[str, int] = {}
     fragments = set()
-    for _, heading in HEADING.findall(strip_code_fences(text)):
+    for _, heading in HEADING.findall(strip_code_blocks(text)):
         base = slug(heading)
         count = seen.get(base, 0)
         seen[base] = count + 1

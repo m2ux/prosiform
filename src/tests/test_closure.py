@@ -23,7 +23,6 @@ from prosiform.closure import (
     Probed,
     Reference,
     arrowed,
-    boundary,
     bundled,
     conflicting,
     contradicting,
@@ -44,7 +43,6 @@ from prosiform.closure import (
     withholding,
     withholding_target,
 )
-from prosiform.profile import parse
 
 
 def test_a_reference_names_its_document_and_no_section() -> None:
@@ -559,65 +557,6 @@ def test_the_probe_is_handed_the_occurrence_that_asked() -> None:
     [occurrence] = asked
     assert occurrence.origin == "docs/guide.md:3"
     assert occurrence.chain == ("docs/guide.md", "docs/rules.md")
-
-
-def bounded(document: str, text: str) -> str:
-    return boundary(document, parse(text))
-
-
-def test_a_document_naming_no_local_markdown_path_has_its_own_directory() -> None:
-    text = "# Guide\n\n[Site](https://example.com/a.md) ![Map](map.png)\n"
-    assert bounded("skills/plan/guide.md", text) == "skills/plan"
-    assert bounded("guide.md", "# Guide\n") == ""
-
-
-def test_the_boundary_is_the_deepest_directory_holding_every_named_path() -> None:
-    text = "[Review](modes/review.md) [Rules](rules/common.md) [Self](#guide)\n"
-    assert bounded("skill/guide.md", text) == "skill"
-    assert bounded("skill/guide.md", "[A](rules/a.md) [B](rules/b.md)\n") == (
-        "skill/rules"
-    )
-
-
-def test_a_link_above_the_writing_directory_widens_the_boundary_to_hold_it() -> None:
-    text = "# Review\n\n[Rules](../rules.md) [Self](#review)\n"
-    assert bounded("skill/modes/review.md", text) == "skill"
-
-
-def test_the_boundary_reads_every_link_the_document_writes() -> None:
-    text = (
-        "# Guide\n\n## Kept\n\n[A](a/one.md)\n\n"
-        "## Elsewhere\n\n[¬ Later](../b/two.md)\n\n"
-        '```mermaid\nflowchart LR\n  X\n  click X "../c/three.md"\n```\n'
-    )
-    assert bounded("skill/guide.md", text) == ""
-
-
-def test_the_boundary_refuses_no_link_it_was_derived_from() -> None:
-    document = "skill/modes/review.md"
-    links = ["../rules.md", "deep/er/note.md", "#review", "../../top.md"]
-    found = bounded(document, " ".join(f"[x]({link})" for link in links) + "\n")
-    for link in links:
-        named = inside(document, link).path
-        assert found == "" or named.startswith(f"{found}/")
-
-
-def test_a_path_above_the_working_directory_widens_the_boundary_above_it() -> None:
-    assert bounded("skill/guide.md", "[Out](../../outside.md)\n") == ".."
-
-
-@pytest.mark.parametrize(
-    ("links", "expected"),
-    [
-        ("[A](../../x/a.md) [B](b.md)", ".."),
-        ("[A](../../../a/b.md) [B](../../c.md)", "../.."),
-        ("[A](../../a/one.md) [B](../../b/two.md)", ".."),
-    ],
-)
-def test_the_boundary_holds_paths_climbing_different_distances(
-    links: str, expected: str
-) -> None:
-    assert bounded("skill/guide.md", links + "\n") == expected
 
 
 def test_the_composition_mark_opens_a_directive() -> None:

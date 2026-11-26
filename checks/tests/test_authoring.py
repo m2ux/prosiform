@@ -43,7 +43,7 @@ INSTRUCTIONS = (
     (BUNDLES, "A section adds `__` and the fragment."),
     (
         BUNDLES,
-        "A selection includes the effective named presets its destination declares.",
+        "A selection carries the effective named presets its destination declares.",
     ),
     (BUNDLES, "File and directory names use hyphens rather than underscores."),
 )

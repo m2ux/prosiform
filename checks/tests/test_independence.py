@@ -15,12 +15,17 @@ written in is passed over however unfamiliar it is, because ordinary prose
 is not what the check is looking for.
 
 Two kinds of word are refused whatever their shape. The design supplied here
-carries a section stating no behaviour, and a word only that section
-carries is reported in a declaration, in a fixture's identity and in the
-report entry naming that fixture, while a word it shares with a
-behavioural section passes. The glossary supplied here names terms it
-deliberately does not use, and a description stating one is reported with
-the reason the glossary gives.
+carries a section stating no behaviour, and a word only that section writes
+in a code span is reported in a declaration, in a fixture's identity and in
+the report entry naming that fixture, while a word it writes outside one,
+and a code-span term a behavioural section also states, pass. The glossary supplied
+here names terms it deliberately does not use, and a description or a
+fixture identity stating one, in any segment of the identity's path, is
+reported with the reason the glossary gives.
+
+One case reads the design the README pins in place of the one supplied here,
+so a declaration naming a build word that design marks apart from its
+behaviour is shown reported over the contract the corpus is held to.
 """
 
 import json
@@ -30,6 +35,7 @@ from typing import Any
 import pytest
 from conformance import CLAIMS, RECORDED, SECTIONS
 from independence import (
+    INVOCATION,
     UNNAMED,
     Vocabulary,
     avoided,
@@ -40,8 +46,10 @@ from independence import (
     report_references,
     scan,
     shaped,
+    sources,
     stated,
 )
+from vocabulary import SHIPPED_GLOSSARY
 
 REPORT_TEXT = " ".join(
     text
@@ -54,8 +62,8 @@ DESIGN = (
 
 ## Design status
 
-The production build ships as one crate, and the oracle stays in use beside
-it. Each build emits the regions the sections below state.
+The production build ships as one `crate`; meanwhile the `oracle` stays in
+use beside it. Each `build` emits the regions the sections below state.
 
 ## File heading
 
@@ -351,7 +359,40 @@ def test_a_declaration_naming_a_word_only_a_silent_section_carries_is_reported(
     assert "states no behaviour" in found[0].reason
 
 
-def test_a_word_a_silent_section_shares_with_the_contract_is_admitted(
+def test_a_declaration_naming_the_pinned_design_s_build_words_is_reported(
+    tmp_path: Path,
+) -> None:
+    design, _ = sources()
+    pinned = stated(design, SHIPPED_GLOSSARY.read_text(), INVOCATION.read_text())
+    corpus = fixture(
+        tmp_path / "fixtures",
+        "a-boundary-between-emitted-regions",
+        manifest("The crate and the wheel emit two regions with a blank line."),
+    )
+    found = corpus_references(corpus, pinned)
+    assert [reference.found for reference in found] == ["crate", "wheel"]
+    assert all(
+        "'Production build obligations' section" in reference.reason
+        for reference in found
+    )
+
+
+def test_a_bold_label_the_pinned_design_s_silent_sections_carry_is_admitted() -> None:
+    design, _ = sources()
+    pinned = stated(design, SHIPPED_GLOSSARY.read_text(), INVOCATION.read_text())
+    claim = "Calibration of the iterator is no regression."
+    assert scan(claim, "where", pinned) == []
+
+
+def test_a_word_a_silent_section_writes_unmarked_is_admitted(
+    vocabulary: Vocabulary,
+) -> None:
+    assert "meanwhile" not in vocabulary.names
+    claim = "Meanwhile the regions are emitted with one blank line between them."
+    assert scan(claim, "where", vocabulary) == []
+
+
+def test_a_term_a_silent_section_marks_and_the_contract_states_is_admitted(
     vocabulary: Vocabulary,
 ) -> None:
     assert "build" in vocabulary.names
@@ -414,6 +455,34 @@ def test_a_description_stating_an_avoided_term_is_reported_with_its_reason(
     assert found[0].reason == (
         f"is a term docs/glossary.md deliberately does not use: {BRANCH}"
     )
+
+
+def test_an_identity_stating_an_avoided_term_is_reported_with_its_reason(
+    tmp_path: Path, vocabulary: Vocabulary
+) -> None:
+    corpus = fixture(
+        tmp_path / "fixtures",
+        "a-region-from-another-branch",
+        manifest("Two emitted regions and one blank line between them."),
+    )
+    found = corpus_references(corpus, vocabulary)
+    assert [reference.found for reference in found] == ["branch"]
+    assert found[0].where == "family/a-region-from-another-branch"
+    assert found[0].reason == (
+        f"is a term docs/glossary.md deliberately does not use: {BRANCH}"
+    )
+
+
+def test_an_avoided_term_in_any_segment_of_an_identity_is_reported(
+    tmp_path: Path, vocabulary: Vocabulary
+) -> None:
+    corpus = fixture(
+        tmp_path / "fixtures" / "included",
+        "a-boundary-between-emitted-regions",
+        manifest("Two emitted regions and one blank line between them."),
+    )
+    found = corpus_references(corpus.parent, vocabulary)
+    assert [reference.found for reference in found] == ["included"]
 
 
 def test_an_avoided_term_the_design_s_prose_states_is_still_reported(

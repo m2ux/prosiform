@@ -1,8 +1,7 @@
 """Resolve references, classify their targets, and select link operations.
 
-Reference discovery and diagram-link data use `source.uses` and
-`source.Click`; operator recognition uses `marks.opened`. The module
-also supplies substitution mappings and preset-selection helpers.
+Operator recognition uses `marks.opened`. The module also supplies
+substitution mappings and preset-selection helpers.
 """
 
 import posixpath
@@ -13,8 +12,6 @@ from enum import Enum
 from types import MappingProxyType
 from unicodedata import category, name
 from urllib.parse import quote
-
-from markdown_it.token import Token
 
 from prosiform.marks import (
     BLANKS,
@@ -28,7 +25,7 @@ from prosiform.marks import (
 )
 from prosiform.metadata import DEFAULT, Conversion, Preset
 from prosiform.profile import is_markdown
-from prosiform.source import ANCHOR, ENCODING, external, regions, uses
+from prosiform.source import ANCHOR, ENCODING, external
 from prosiform.tags import PICK, picks
 
 MARKS = (DISPATCH_MARK, INLINE_MARK)
@@ -957,36 +954,6 @@ def named(
     if found.external or not is_markdown(found.path):
         return None
     return replace(found, origin=origin, chain=(*reached, identity(found)))
-
-
-def boundary(document: str, tokens: Sequence[Token]) -> str:
-    """Find the deepest directory holding a document's local Markdown targets.
-
-    Read every nonresource use through `source.uses` and `named`, with
-    `inside` owning relative resolution. A document with no such targets
-    uses its own directory. Paths with different leading-parent counts
-    use the furthest climb; otherwise their common directory is returned.
-    """
-    directories = [
-        posixpath.dirname(found.path)
-        for use in uses(tokens, tuple(regions(tokens)))
-        if not use.resource and (found := named(document, use.destination)) is not None
-    ]
-    if not directories:
-        return posixpath.dirname(document)
-    climbs = {climb(directory) for directory in directories}
-    if len(climbs) > 1:
-        return SEPARATOR.join([PARENT] * max(climbs))
-    return posixpath.commonpath(directories)
-
-
-def climb(path: str) -> int:
-    """How many leading parent segments a normalized path opens with."""
-    parts = path.split(SEPARATOR)
-    count = 0
-    while count < len(parts) and parts[count] == PARENT:
-        count += 1
-    return count
 
 
 @dataclass(frozen=True)
