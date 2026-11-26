@@ -367,11 +367,21 @@ def test_a_declaration_naming_the_pinned_design_s_build_words_is_reported(
     corpus = fixture(
         tmp_path / "fixtures",
         "a-boundary-between-emitted-regions",
-        manifest("The pulldown-cmark parser emits two regions with a blank line."),
+        manifest("The crate and the wheel emit two regions with a blank line."),
     )
     found = corpus_references(corpus, pinned)
-    assert [reference.found for reference in found] == ["cmark", "pulldown"]
-    assert all("states no behaviour" in reference.reason for reference in found)
+    assert [reference.found for reference in found] == ["crate", "wheel"]
+    assert all(
+        "'Production build obligations' section" in reference.reason
+        for reference in found
+    )
+
+
+def test_a_bold_label_the_pinned_design_s_silent_sections_carry_is_admitted() -> None:
+    design, _ = sources()
+    pinned = stated(design, SHIPPED_GLOSSARY.read_text(), INVOCATION.read_text())
+    claim = "Calibration of the iterator is no regression."
+    assert scan(claim, "where", pinned) == []
 
 
 def test_a_word_a_silent_section_writes_unmarked_is_admitted(
