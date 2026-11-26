@@ -14,6 +14,7 @@ locked development group carries.
 
 import json
 import tomllib
+from collections.abc import Sequence
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -122,6 +123,34 @@ def fixtures(corpus: Path = CORPUS) -> list[Path]:
     directory and a fixture's identity is its path under the corpus.
     """
     return sorted(path.parent for path in corpus.rglob(MANIFEST_NAME))
+
+
+class UnknownFixture(ValueError):
+    """Identities a request names that no fixture of the corpus carries.
+
+    `names` holds each such identity, in the order the request gave them.
+    """
+
+    def __init__(self, names: Sequence[str]) -> None:
+        self.names = tuple(names)
+        super().__init__(
+            "no fixture carries the identity " + ", ".join(self.names)
+        )
+
+
+def selected(names: Sequence[str], corpus: Path = CORPUS) -> list[Path]:
+    """The fixtures carrying the named identities, in path order.
+
+    A name is matched as `identity` writes it, whole, so a family directory,
+    which holds fixtures and is none, carries no identity. A request naming
+    any identity no fixture carries raises `UnknownFixture` naming each, so
+    a request the corpus cannot answer is never read as a run of nothing.
+    """
+    carried = {identity(fixture, corpus): fixture for fixture in fixtures(corpus)}
+    unknown = [name for name in names if name not in carried]
+    if unknown:
+        raise UnknownFixture(unknown)
+    return sorted({carried[name] for name in names})
 
 
 def declared_codes(severity: str, corpus: Path = CORPUS) -> set[str]:

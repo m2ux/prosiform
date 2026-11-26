@@ -16,6 +16,10 @@ A fixture's sources declare every setting in a preset, so a source key
 naming a setting or holding anything but a preset's mapping fails its
 fixture, unless the fixture expects the run to refuse that declaration.
 
+A request may name fixtures by identity instead, and the fixtures named
+run alone by the comparison and under the report the whole run gives; an
+identity no fixture carries is refused rather than run as nothing.
+
 The build under test is a canned program each case configures, as in the
 runner's own tests: the comparison belongs to the runner and what these
 cases exercise is the verdict drawn from it. A corpus with no build
@@ -31,6 +35,7 @@ import pytest
 from corpus import (
     WORKERS_VARIABLE,
     Outcome,
+    Request,
     Verdict,
     awaiting,
     main,
@@ -44,7 +49,14 @@ from corpus import (
     undeclared,
     workers,
 )
-from manifests import MANIFEST_NAME, errors, missing_files, read
+from manifests import (
+    MANIFEST_NAME,
+    UnknownFixture,
+    errors,
+    missing_files,
+    read,
+    selected,
+)
 from runner import BUILD, Difference, Result
 
 BODY = b"# Guide\n"
@@ -311,10 +323,10 @@ def test_the_whole_corpus_runs_against_the_build(
         write_fixture(tmp_path / "corpus" / name)
     monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
     assert main(tmp_path / "corpus") == 0
-    printed = capsys.readouterr().out
-    assert "3 fixture(s), 3 pass" in printed
+    printed = capsys.readouterr().out.splitlines()
+    assert "corpus check: 3 fixture(s), 3 pass, 0 fail, 0 awaited, 0 unexpected pass" in printed
     for name in ("one", "two", "three"):
-        assert str(tmp_path / "corpus" / name) in printed
+        assert f"{name}: pass" in printed
 
 
 def awaiting_corpus(tmp_path: Path) -> Path:
@@ -355,18 +367,90 @@ def test_the_report_answers_without_a_build(
 ) -> None:
     corpus = awaiting_corpus(tmp_path)
     monkeypatch.delenv(BUILD, raising=False)
-    assert main(corpus, awaited="I00:E03") == 0
+    assert main(corpus, Request(awaited="I00:E03")) == 0
     printed = capsys.readouterr().out
     assert "one" in printed
     assert "two" not in printed
 
 
 def test_a_request_names_the_work_it_asks_about() -> None:
-    assert requested(["--awaiting", "I00:E03"]) == "I00:E03"
+    assert requested(["--awaiting", "I00:E03"]) == Request(awaited="I00:E03")
 
 
 def test_a_run_naming_no_work_runs_the_corpus() -> None:
-    assert requested([]) is None
+    assert requested([]) == Request()
+
+
+def test_a_request_names_the_fixtures_it_runs() -> None:
+    assert requested(["family/one", "two"]) == Request(names=("family/one", "two"))
+
+
+def test_a_request_both_reporting_and_running_is_refused() -> None:
+    with pytest.raises(SystemExit):
+        requested(["--awaiting", "I00:E03", "family/one"])
+
+
+def family_corpus(tmp_path: Path) -> Path:
+    """A corpus holding a family of two fixtures, one failing, and one beside it."""
+    corpus = tmp_path / "corpus"
+    write_fixture(corpus / "family" / "met")
+    write_fixture(corpus / "family" / "moved", bundle=b"# Other\n")
+    write_fixture(corpus / "beside")
+    return corpus
+
+
+def test_an_identity_selects_the_fixture_carrying_it(tmp_path: Path) -> None:
+    corpus = family_corpus(tmp_path)
+    assert selected(["family/moved", "beside"], corpus) == [
+        corpus / "beside",
+        corpus / "family" / "moved",
+    ]
+
+
+def test_an_identity_no_fixture_carries_is_refused(tmp_path: Path) -> None:
+    corpus = family_corpus(tmp_path)
+    with pytest.raises(UnknownFixture) as raised:
+        selected(["family/met", "family/absent", "family"], corpus)
+    assert raised.value.names == ("family/absent", "family")
+
+
+def test_a_named_fixture_reports_its_verdict_under_its_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    corpus = family_corpus(tmp_path)
+    monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
+    assert main(corpus, Request(names=("family/met",))) == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "family/met: pass",
+        "corpus check: 1 fixture(s), 1 pass, 0 fail, 0 awaited, 0 unexpected pass",
+    ]
+
+
+def test_a_named_fixture_is_decided_as_the_corpus_run_decides_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    corpus = family_corpus(tmp_path)
+    monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
+    assert main(corpus) == 1
+    whole = capsys.readouterr().out.splitlines()
+    assert main(corpus, Request(names=("family/moved",))) == 1
+    alone = capsys.readouterr().out.splitlines()
+    assert alone[0] == "family/moved: fail"
+    assert "the bytes differ" in "\n".join(alone)
+    assert alone[:-1] == [
+        line for line in whole[:-1] if not line.startswith(("family/met", "beside"))
+    ]
+
+
+def test_a_request_naming_no_fixture_runs_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    corpus = family_corpus(tmp_path)
+    monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
+    assert main(corpus, Request(names=("family",))) == 1
+    printed = capsys.readouterr()
+    assert printed.out == ""
+    assert "no fixture carries the identity family" in printed.err
 
 
 def declaring(fixture: Path, frontmatter: str) -> Path:
@@ -435,5 +519,5 @@ def test_a_setting_outside_a_preset_fails_a_fixture_meeting_its_manifest(
     assert outcome(fixture).verdict is Verdict.FAILED
     assert main(tmp_path / "corpus") == 1
     printed = capsys.readouterr().out
-    assert f"{fixture}: declares a setting outside a preset" in printed
+    assert "one: declares a setting outside a preset" in printed
     assert "source/rules.md: prosiform.group" in printed
