@@ -36,7 +36,16 @@ from typing import Any
 
 import conformance
 import pytest
-from conformance import CLAIMS, RECORDED, SECTIONS, clauses, listed, render, report
+from conformance import (
+    CLAIMS,
+    RECORDED,
+    SECTIONS,
+    clauses,
+    listed,
+    partition,
+    render,
+    report,
+)
 from manifests import MANIFEST_NAME, catalogue, errors, read, severities
 
 DESIGN = """# A design
@@ -393,6 +402,16 @@ def test_a_section_stating_no_behaviour_carries_no_clause() -> None:
     named = [clause.name for clause in clauses(DESIGN)]
     assert "Design status" not in named
     assert "Design status — Builds" not in named
+
+
+def test_a_section_stating_no_behaviour_is_partitioned_from_the_contract() -> None:
+    behavioural, silent = partition(DESIGN)
+    assert list(silent) == ["Design status"]
+    assert "what the project has decided" in silent["Design status"]
+    assert "**Builds:**" in silent["Design status"]
+    assert "what the project has decided" not in behavioural
+    assert "## Design status" in behavioural
+    assert "Accept one or more local document references." in behavioural
 
 
 def test_a_section_stating_no_behaviour_is_listed_with_its_reason(

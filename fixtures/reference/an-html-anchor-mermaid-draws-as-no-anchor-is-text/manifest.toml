@@ -1,4 +1,4 @@
-description = "An HTML anchor naming a local Markdown document in a click's tooltip, a pie diagram's label and a sequence diagram's note, each of which a renderer draws as text rather than as an anchor, is emitted as authored; the click's own destination is rewritten as any click's is."
+description = "An HTML link naming a local Markdown document in a click's tooltip, a pie diagram's label and a sequence diagram's note, each of which a renderer draws as text rather than as a link, is emitted as authored; the click's own destination is rewritten as any click's is."
 
 clauses = [
   "Link classification and resource handling — Examples",

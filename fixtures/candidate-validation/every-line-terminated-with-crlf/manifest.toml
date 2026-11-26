@@ -1,4 +1,4 @@
-description = "A source whose every line is terminated with CRLF carries those terminators on each line the bundle emits from it, the paragraph holding the rewritten link included, while the source beside it keeps the newline spelling its own lines carry and the blank line between two emitted parts is written with the newline the bundle generates."
+description = "A source whose every line is terminated with CRLF carries those terminators on each line the bundle emits from it, the paragraph holding the rewritten link among them, while the source beside it keeps the newline spelling its own lines carry and the blank line between two emitted parts is written with the newline the bundle generates."
 
 clauses = [
   "Parser and source-preserving edits — Untouched content",

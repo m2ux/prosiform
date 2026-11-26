@@ -17,8 +17,8 @@ capital, an underscore or a dot: `KeyError`, `E_TARGET_NOT_FOUND`,
 none of these, so the shape alone separates the two, and no list of admitted
 words is needed to tell them apart.
 
-A shaped term is admissible where the contract states it: the design's
-prose, the names the design gives its own clauses, the terms
+A shaped term is admissible where the contract states it: the prose of the
+design's behavioural sections, the names the design gives its own clauses, the terms
 `docs/glossary.md` defines, and the interface the manifest schema and the
 documented invocation declare by name — the codes, severities, exit
 statuses and options. A shaped term the contract states is the contract's
@@ -39,6 +39,26 @@ That surface states the codes the build under test reports for itself, so
 this check reaches the build the conformance report reads — named by
 configuration, as the corpus names it — and fails without one.
 
+The design states the contract where it states behaviour. A section the
+conformance report records as stating no behaviour states what the project
+decided about its builds, what remains to be proven of them and what an
+upstream contribution would say, so its prose states a build's words
+rather than the contract's. A word only such a section carries is a build's
+however it is written: `crate` names packaging in lower case as plainly as
+`Cargo` does with a capital, so it is reported whatever its shape. A claim
+quoting the tree its fixture carries states that tree's words, so a word
+naming one of the tree's files is the tree's rather than a build's.
+
+The glossary names the terms it deliberately does not use and why each was
+refused. A fixture's description is the text a second implementor reads
+for what the contract means, which is the text that avoidance was written
+for, so a description stating an avoided term is reported with the reason
+the glossary gives, whatever the design's prose states: the design writes
+some of those words in their ordinary sense. The other claims are names
+rather than statements — a clause the design names, the bytes a build
+writes and a fixture's identity — and are held to the design's words by
+the rules above.
+
 A term is read as the contract states it rather than as a sentence inflects
 it: a plural, the past tense and the present participle resolve to the term
 they are formed from. Case is folded on both sides, so a claim writing
@@ -53,7 +73,7 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
-from conformance import clauses, render, report, reported_codes
+from conformance import clauses, partition, render, report, reported_codes
 from documents import ROOT, plain, rows
 from manifests import (
     CORPUS,
@@ -70,6 +90,8 @@ from vocabulary import SHIPPED_GLOSSARY, design_reference, git_ref, git_show
 
 INVOCATION = ROOT / "invocation.md"
 OPTION = "Option"
+AVOIDED = "Avoided"
+WHY = "Why"
 REPORT = "the conformance report"
 
 WORD = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
@@ -87,12 +109,32 @@ EXPECTED = "expected"
 STDOUT_CARRIED = "stdout_contains"
 
 
+UNNAMED = "is a term the contract does not name"
+
+
 @dataclass(frozen=True)
 class Reference:
-    """One shaped term a claim states that the contract does not."""
+    """One term a claim states, and why the contract refuses it."""
 
     where: str
     found: str
+    reason: str = UNNAMED
+
+
+@dataclass(frozen=True)
+class Vocabulary:
+    """What the contract states, and the words it refuses.
+
+    `names` holds every term the contract states, in each form a sentence
+    inflects it to. `built` holds each form of a word only a section stating
+    no behaviour carries, against that section's name. `avoided` holds each
+    term the glossary deliberately does not use, against the reason it
+    gives.
+    """
+
+    names: set[str]
+    built: dict[str, str]
+    avoided: dict[str, str]
 
 
 def forms(term: str) -> set[str]:
@@ -170,16 +212,28 @@ def declared_names(text: str) -> list[str]:
     )
 
 
-def stated(design: str, glossary: str, documentation: str) -> set[str]:
-    """Every term the contract names.
+def avoided(glossary: str) -> dict[str, str]:
+    """Each term the glossary deliberately does not use, against its reason."""
+    return {
+        plain(record.get(AVOIDED, "")).strip("* ").lower(): plain(record.get(WHY, ""))
+        for record in rows(glossary, AVOIDED)
+    }
 
-    The design's prose states the contract's own words, the design's clause
-    names state what it calls things, the glossary's terms define them, the
-    documented invocation and the schema declare its interface.
+
+def stated(design: str, glossary: str, documentation: str) -> Vocabulary:
+    """Every term the contract names, and the words it refuses.
+
+    The prose of the design's behavioural sections states the contract's
+    own words, the design's clause names state what it calls things, the
+    glossary's terms define them, the documented invocation and the schema
+    declare its interface. A word the prose of a section stating no
+    behaviour carries and none of those states is a build's, the design
+    divided as `conformance.partition` divides it.
     """
+    behavioural, silent = partition(design)
     names: set[str] = set()
-    for term in re.findall(r"[A-Za-z_][A-Za-z0-9_.]*", prose(design)):
-        names |= forms(term)
+    for term in re.findall(r"[A-Za-z_][A-Za-z0-9_.]*", prose(behavioural)):
+        names |= forms(term.strip("."))
     for clause in clauses(design):
         for term in WORD.findall(clause.name):
             names |= forms(term)
@@ -190,7 +244,15 @@ def stated(design: str, glossary: str, documentation: str) -> set[str]:
         for term in source:
             for word in WORD.findall(term):
                 names |= forms(word)
-    return names
+    built: dict[str, str] = {}
+    for section, carried in silent.items():
+        for word in WORD.findall(prose(carried)):
+            spellings = forms(word)
+            if spellings & names:
+                continue
+            for spelling in spellings:
+                built.setdefault(spelling, section)
+    return Vocabulary(names, built, avoided(glossary))
 
 
 def claims(manifest: dict[str, Any], where: str) -> list[str]:
@@ -232,8 +294,48 @@ def opening_at(body: str, position: int) -> bool:
     return not last_line.strip(" \t#-*|>0123456789.")
 
 
-def scan(text: str, where: str, names: set[str]) -> list[Reference]:
-    """Every shaped term one claim states that the contract does not.
+def refused(
+    term: str,
+    opening: bool,
+    vocabulary: Vocabulary,
+    avoiding: bool,
+    tree: Collection[str],
+) -> str | None:
+    """Why the contract refuses one word a claim states, or nothing.
+
+    An avoided term is refused whatever the design's prose states, where
+    the claim is one `avoiding` marks. A word only a section stating no
+    behaviour carries is refused whatever its shape, unless it is a word of
+    the `tree` the claim's fixture carries, which a claim quoting that tree
+    states as the tree's. A shaped word is refused where the contract does
+    not name it.
+    """
+    spellings = forms(term)
+    if avoiding:
+        for avoided_term, why in sorted(vocabulary.avoided.items()):
+            if avoided_term in spellings:
+                return f"is a term docs/glossary.md deliberately does not use: {why}"
+    if spellings & vocabulary.names:
+        return None
+    for spelling in [] if spellings & set(tree) else sorted(spellings):
+        if spelling in vocabulary.built:
+            return (
+                f"is a word only the design's {vocabulary.built[spelling]!r} "
+                "section carries, which states no behaviour"
+            )
+    if shaped(term, opening) and not PATH_NAME.search(term):
+        return UNNAMED
+    return None
+
+
+def scan(
+    text: str,
+    where: str,
+    vocabulary: Vocabulary,
+    avoiding: bool = False,
+    tree: Collection[str] = (),
+) -> list[Reference]:
+    """Every term one claim states that the contract refuses, as `refused` reads it.
 
     A term a claim repeats is one reference: the claim is a single
     statement, and naming the term once locates the claim to fix. A dotted
@@ -242,6 +344,7 @@ def scan(text: str, where: str, names: set[str]) -> list[Reference]:
     path's extension names the tree the claim is about and is read as that
     tree.
     """
+    names = vocabulary.names
     body = prose(text)
     found: dict[str, Reference] = {}
     seen: set[int] = set()
@@ -260,35 +363,54 @@ def scan(text: str, where: str, names: set[str]) -> list[Reference]:
         term = match.group().strip("_")
         if not term:
             continue
-        if not shaped(term, opening_at(body, match.start())):
-            continue
-        if PATH_NAME.search(term):
-            continue
-        if forms(term) & names:
-            continue
-        found.setdefault(term.lower(), Reference(where, term))
+        reason = refused(
+            term, opening_at(body, match.start()), vocabulary, avoiding, tree
+        )
+        if reason is not None:
+            found.setdefault(term.lower(), Reference(where, term, reason))
     return sorted(found.values(), key=lambda reference: reference.found.lower())
 
 
-def corpus_references(corpus: Path, names: set[str]) -> list[Reference]:
-    """Every shaped term the corpus's declarations state that the contract does not."""
+def tree_words(fixture: Path) -> set[str]:
+    """Every form of every word naming a file or directory one fixture carries."""
+    return {
+        spelling
+        for path in fixture.rglob("*")
+        for word in WORD.findall(path.name)
+        for spelling in forms(word)
+    }
+
+
+def corpus_references(corpus: Path, vocabulary: Vocabulary) -> list[Reference]:
+    """Every term the corpus's declarations state that the contract refuses.
+
+    A fixture's description is read for the glossary's avoided terms too,
+    and a term the description and another claim both state is one
+    reference. The words naming the files a fixture carries are its tree.
+    """
     found = []
     for fixture in fixtures(corpus):
         where = identity(fixture, corpus)
-        declared = claims(read(fixture / MANIFEST_NAME), where)
-        found += scan("\n".join(declared), where, names)
+        manifest = read(fixture / MANIFEST_NAME)
+        tree = tree_words(fixture)
+        described = scan(manifest.get(DESCRIPTION, ""), where, vocabulary, True, tree)
+        own = {reference.found.lower(): reference for reference in described}
+        declared = "\n".join(claims(manifest, where))
+        for reference in scan(declared, where, vocabulary, False, tree):
+            own.setdefault(reference.found.lower(), reference)
+        found += sorted(own.values(), key=lambda reference: reference.found.lower())
     return found
 
 
 def report_references(
-    design: str, corpus: Path, names: set[str], reported: Collection[str]
+    design: str, corpus: Path, vocabulary: Vocabulary, reported: Collection[str]
 ) -> list[Reference]:
-    """Every shaped term the report's entries state that the contract does not."""
+    """Every term the report's entries state that the contract refuses."""
     rendered = render(report(design, corpus, reported)).splitlines()
     return [
         reference
         for number, line in enumerate(rendered, start=1)
-        for reference in scan(line, f"{REPORT}, line {number}", names)
+        for reference in scan(line, f"{REPORT}, line {number}", vocabulary)
     ]
 
 
@@ -303,15 +425,20 @@ def check() -> tuple[list[str], list[Reference]]:
     """The corpus's declarations and the report, each read against the contract."""
     design, path = sources()
     documentation = INVOCATION.read_text()
-    names = stated(design, SHIPPED_GLOSSARY.read_text(), documentation)
+    vocabulary = stated(design, SHIPPED_GLOSSARY.read_text(), documentation)
 
-    corpus = corpus_references(CORPUS, names)
-    emitted = report_references(design, CORPUS, names, reported_codes())
+    corpus = corpus_references(CORPUS, vocabulary)
+    emitted = report_references(design, CORPUS, vocabulary, reported_codes())
 
     counted = [
         (
-            f"ok   vocabulary  {len(names)} term(s) from {path}, docs/glossary.md "
-            f"and {len(declared_names(documentation))} declared name(s)"
+            f"ok   vocabulary  {len(vocabulary.names)} term(s) from {path}, "
+            f"docs/glossary.md and {len(declared_names(documentation))} declared "
+            "name(s)"
+        ),
+        (
+            f"ok   refused     {len(vocabulary.built)} build word form(s) and "
+            f"{len(vocabulary.avoided)} avoided term(s)"
         ),
         f"ok   corpus      {len(fixtures(CORPUS))} fixture(s) and their identities",
         f"ok   report      {REPORT} as it renders",
@@ -329,20 +456,20 @@ def main() -> int:
         print(line)
     for reference in failures:
         print(
-            f"FAIL {reference.where}: {reference.found!r} is a term the contract "
-            "does not name",
+            f"FAIL {reference.where}: {reference.found!r} {reference.reason}",
             file=sys.stderr,
         )
     if failures:
         print(
-            f"\nindependence check: {len(failures)} shaped term(s) the contract "
-            "does not name",
+            f"\nindependence check: {len(failures)} term(s) the contract refuses",
             file=sys.stderr,
         )
         return 1
     print(
         "\nindependence check: every shaped term of every fixture declaration and "
-        "every report entry is one the contract names"
+        "every report entry is one the contract names, none is a word only a "
+        "section stating no behaviour carries, and no description states an "
+        "avoided term"
     )
     return 0
 

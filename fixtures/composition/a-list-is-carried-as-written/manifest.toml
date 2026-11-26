@@ -1,4 +1,4 @@
-description = "A contribution carries a target's list as its source wrote it, nested items, markers and a continuation paragraph included. The guide also links each target document whole, so each keeps its own file group beside its contributions."
+description = "A contribution carries a target's list as its source wrote it, nested items, markers and a continuation paragraph among them. The guide also links each target document whole, so each keeps its own file group beside its contributions."
 
 clauses = [
   "Section composition — Destination sections",

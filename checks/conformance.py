@@ -234,14 +234,14 @@ SECTIONS = (
     Declaration(
         name="Design status",
         reason=(
-            "it states what the project has decided about its builds and the "
-            "obligations each carries, and no outcome a run produces"
+            "it states what has been decided about each build and what each "
+            "must meet, and no outcome a run produces"
         ),
     ),
     Declaration(
         name="Implementation verification and residual policy detail",
         reason=(
-            "it states what remains to be proven once implementation is "
+            "it states what remains to be shown once implementation is "
             "authorized, and no outcome a run produces"
         ),
     ),
@@ -509,6 +509,35 @@ def clauses(design: str) -> list[Clause]:
         if rule:
             found.append(Clause(heading, rule))
     return found
+
+
+def partition(design: str) -> tuple[str, dict[str, str]]:
+    """The design's text as its behavioural sections state it, and each silent one.
+
+    A line belongs to the section the heading above it opens, as `clauses`
+    reads it, and a section `SECTIONS` declares is silent. A heading is the
+    design's name for its section and this report lists every section by
+    that name, so each heading, a silent section's among them, is
+    behavioural text.
+    """
+    silent = {section.name for section in SECTIONS}
+    behavioural: list[str] = []
+    stating: dict[str, list[str]] = {}
+    current = behavioural
+    fenced = False
+    for line in design.splitlines():
+        if FENCE.match(line):
+            fenced = not fenced
+        marked = None if fenced else HEADING.match(line)
+        if marked:
+            title = None if len(marked.group(1)) == 1 else text(marked.group(2))
+            behavioural.append(line)
+            current = stating.setdefault(title, []) if title in silent else behavioural
+            continue
+        current.append(line)
+    return "\n".join(behavioural), {
+        name: "\n".join(lines) for name, lines in stating.items()
+    }
 
 
 def declarations(corpus: Path) -> list[tuple[str, str]]:

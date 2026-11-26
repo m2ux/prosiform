@@ -1,4 +1,4 @@
-description = "The sibling section whose fragment naming no heading failed no run that left it unselected fails the run whose closure reaches it, because a section the closure includes is selected content like any other."
+description = "The sibling section whose fragment naming no heading failed no run that left it unselected fails the run whose closure reaches it, because a section the closure reaches is selected content like any other."
 
 clauses = [
   "Validation scope, if closure expands to include that sibling, its links become subject to validation",

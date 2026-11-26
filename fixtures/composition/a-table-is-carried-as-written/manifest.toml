@@ -1,4 +1,4 @@
-description = "A contribution carries a target's table as its source wrote it, its alignment row and the padding of each cell included. The guide also links each target document whole, so each keeps its own file group beside its contributions."
+description = "A contribution carries a target's table as its source wrote it, its alignment row and the padding of each cell among them. The guide also links each target document whole, so each keeps its own file group beside its contributions."
 
 clauses = [
   "Section composition — Destination sections",
