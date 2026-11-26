@@ -8,6 +8,13 @@ The document checks read a Markdown document present and not tracked, or name it
 
 The row belongs to the repository checks epic, whose rows state a rule a check makes imprecisely.
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [W10](w10.md) | The work item: the choice to name untracked documents as unread rather than read them, and why. |
+| [Test evidence](test-evidence.md) | The runs that show each reading check naming an untracked document. |
+
 ## Links
 
 | Resource | URL |
