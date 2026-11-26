@@ -316,7 +316,7 @@ def run_all(found: list[Path], corpus: Path = CORPUS) -> list[Outcome]:
 
 
 def main(corpus: Path = CORPUS, request: Request | None = None) -> int:
-    """Run the corpus or the fixtures named, or report what one work unblocks.
+    """Run the corpus or the fixtures named, or name the fixtures a work item unblocks.
 
     A request naming an identity no fixture carries fails before any run.
     """
