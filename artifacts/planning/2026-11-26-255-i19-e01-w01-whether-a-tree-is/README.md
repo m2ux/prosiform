@@ -13,6 +13,7 @@ Restatement reads that verdict to refuse a failed run, so this row is first on t
 | Artifact | What it holds |
 | --- | --- |
 | [W01](w01.md) | The task's work item: the files it changes, its design and its checks |
+| [Validation](validation.md) | Each Test Plan check, the revision it ran at and what it observed |
 
 ## Links
 
