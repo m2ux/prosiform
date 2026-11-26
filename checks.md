@@ -38,6 +38,7 @@ A pull request that touches none of those paths is reported as not checked: the 
 | `make lint` | The repository's Python has no lint errors. |
 | `make format-check` | That Python is formatted as the declared configuration formats it. |
 | `make typecheck` | That Python type checks in strict mode. |
+| `make reachability` | Every function and method the package defines is named by the package itself, or by a stated reason that reaches it from outside: a console script the project declares, a method Python calls by its name, or a framework hook listed in [`checks/reachability.py`](checks/reachability.py) with what calls it. A test naming a definition does not reach it. |
 | `make test` | The Python build's test suite passes. A run that collects no test fails. |
 
 ### The Corpus
@@ -186,7 +187,7 @@ make restate ARGS="--write"
 
 - **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make triage`, `make restate`, `make examples` and `make eval-diagrams`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
-- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
+- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make reachability` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 
 ### Network Access
 

@@ -12,9 +12,9 @@
 # nothing. The corpus, invocation, conformance and independence checks reach
 # the build under test through the corpus runner, and the last two read the
 # corpus through the manifest reader beside it, which reads `jsonschema` from
-# that same group, so the four run through it. The smoke, layout, table, link
-# and vocabulary checks depend on the standard library alone and run under
-# `python3` directly.
+# that same group, so the four run through it. The smoke, layout, table, link,
+# vocabulary and reachability checks depend on the standard library alone and
+# run under `python3` directly.
 #
 # `make smoke` is the one check that does not run the build from this
 # checkout: it builds the wheel, installs it into a throwaway environment and
@@ -90,9 +90,9 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence triage restate render examples eval-diagrams
+.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck reachability lock-check layout tables links vocabulary invocation conformance independence triage restate render examples eval-diagrams
 
-CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
+CHECKS := lock-check lint format-check typecheck reachability test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
 check: $(CHECKS)
 
@@ -133,6 +133,9 @@ format-check:
 
 typecheck:
 	$(UV_RUN) mypy --config-file $(TOOL_CONFIG) $(PYTHON_SOURCES)
+
+reachability:
+	python3 checks/reachability.py
 
 lock-check:
 	cd src && uv lock --check
