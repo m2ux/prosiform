@@ -13,6 +13,7 @@ The row refines a rule the check gaps epic delivered or left outside its criteri
 | Artifact | Purpose |
 | --- | --- |
 | [w02.md](w02.md) | Work item for W02. |
+| [test-evidence.md](test-evidence.md) | The validation observed for the unit's pull request. |
 
 ## Links
 
