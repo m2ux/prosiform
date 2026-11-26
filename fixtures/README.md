@@ -366,6 +366,15 @@ uv run --project src --frozen python checks/corpus.py --awaiting I00:E11:W14
 
 The fixtures declaring they await the named work are printed by identity, with a count beneath them, so a session starting that work reads which fixtures it turns green before it changes anything. The request reads the manifests and runs nothing, so it needs no build and returns zero whatever it finds. The name is compared as a manifest declares it: `I00:E11` and `I00:E11:W14` are separate requests, and a fixture is found by the identity its marker carries.
 
+## Restating a stale fixture
+
+```bash
+make triage
+make restate ARGS="--write"
+```
+
+A change that moves what the build writes leaves each fixture pinning the old output stale. [Triage](../checks/triage.py) names each one under the category its difference falls in, and [restatement](../checks/restate.py) writes the expected bundles of each one whose bundle text or names moved, editing only the names in the manifest's `bundles` entry. It refuses and names a run that failed in itself and a fixture whose exit status, diagnostics, output or number of bundles moved, since a reader decides those. Without `--write` it names each fixture it would restate and writes nothing. Both are described under [Drift Triage](../checks.md#drift-triage) and [Restatement](../checks.md#restatement).
+
 ## Running the checks
 
 ```bash
