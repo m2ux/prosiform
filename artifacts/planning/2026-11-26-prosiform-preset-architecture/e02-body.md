@@ -22,10 +22,10 @@ One document can state independent local component and test choice groups, while
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w00.md) | Two-axis contract and frozen controls | AC1 | [E01:W00](https://github.com/m2ux/prosiform/issues/NEW_E01) | | | |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w01.md) | Local group resolver and cardinality | AC2, AC3 | W00, [E01:W02](https://github.com/m2ux/prosiform/issues/NEW_E01) | | | |
+| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w00.md) | Two-axis contract and frozen controls | AC1 | [E01:W00](https://github.com/m2ux/prosiform/issues/869) | | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w01.md) | Local group resolver and cardinality | AC2, AC3 | W00, [E01:W02](https://github.com/m2ux/prosiform/issues/869) | | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w02.md) | Pick dispatch deferral and manifest | AC4 | W01 | | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w03.md) | Public two-axis example and guide | AC5 | W02, [E01:W03](https://github.com/m2ux/prosiform/issues/NEW_E01) | | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w03.md) | Public two-axis example and guide | AC5 | W02, [E01:W03](https://github.com/m2ux/prosiform/issues/869) | | | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e02/w04.md) | Bounded changed-pick mechanism evidence | AC6 | W03 | | | |
 
 ## Acceptance Criteria

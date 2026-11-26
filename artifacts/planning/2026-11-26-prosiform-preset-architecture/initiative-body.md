@@ -26,9 +26,9 @@ An author can reuse narrowly scoped preset settings and select independent local
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/NEW_E00) | Effective Manifest | AC1, AC3, AC4 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/NEW_E01) | Preset Imports | AC1, AC2, AC3, AC4 | | |
-| [E02](https://github.com/m2ux/prosiform/issues/NEW_E02) | Local Choice Groups | AC1, AC2, AC3, AC4 | | |
+| [E00](https://github.com/m2ux/prosiform/issues/868) | Effective Manifest | AC1, AC3, AC4 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/869) | Preset Imports | AC1, AC2, AC3, AC4 | | |
+| [E02](https://github.com/m2ux/prosiform/issues/870) | Local Choice Groups | AC1, AC2, AC3, AC4 | | |
 
 ## Acceptance Criteria
 

@@ -1,28 +1,28 @@
-# Preset Configuration — November2026
+# Preset Configuration — November 2026
 
-> Feature planning · Created2026-11-26
+> Feature plan · Created 2026-11-26
 
 ## Executive Summary
 
 The confirmed goal is inspectable effective configuration, explicit pure settings reuse and local independent component/test choices. The plan has three epics and thirteen bounded tasks, ordered manifest, imports, choices with priorities3/2/1 and no lanes.
 
-The fixed0.34 source/bundle baseline, generic valid/refused controls, complete-name/origin/scope constraints and bounded changed-pick checkpoint keep new syntax separate from existing behavior. Runtime profiles, structured effort descriptors and reviewer presets remain deferred. Root owns publication; this directory is an unpublished draft.
+The fixed0.34 source/bundle baseline, generic valid/refused controls, complete-name/origin/scope constraints and bounded changed-pick checkpoint keep new syntax separate from existing behavior. Runtime profiles, structured effort descriptors and reviewer presets remain deferred. The compiler features are planned; implementation has not started.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
-| [scope.md](scope.md) | Generic planning contract, source or retained compiler evidence |
-| [initiative-body.md](initiative-body.md) | Generic planning contract, source or retained compiler evidence |
-| [e00-body.md](e00-body.md) | Generic planning contract, source or retained compiler evidence |
-| [e01-body.md](e01-body.md) | Generic planning contract, source or retained compiler evidence |
-| [e02-body.md](e02-body.md) | Generic planning contract, source or retained compiler evidence |
-| [draft-metadata.json](draft-metadata.json) | Generic planning contract, source or retained compiler evidence |
-| [decisions.md](decisions.md) | Generic planning contract, source or retained compiler evidence |
-| [design.md](design.md) | Generic planning contract, source or retained compiler evidence |
-| [specimen-matrix.md](specimen-matrix.md) | Generic planning contract, source or retained compiler evidence |
-| [goal-trace.md](goal-trace.md) | Generic planning contract, source or retained compiler evidence |
-| [validation.md](validation.md) | Generic planning contract, source or retained compiler evidence |
+| [scope.md](scope.md) | Confirmed goal and excluded work |
+| [initiative-body.md](initiative-body.md) | Initiative criteria and epic links |
+| [e00-body.md](e00-body.md) | Effective-manifest scope and four tasks |
+| [e01-body.md](e01-body.md) | Pure-import scope and four tasks |
+| [e02-body.md](e02-body.md) | Local-choice scope and five tasks |
+| [draft-metadata.json](draft-metadata.json) | Confirmed identities, priorities and task counts |
+| [decisions.md](decisions.md) | Accepted boundaries and review decisions |
+| [design.md](design.md) | Proposed syntax, origins and selection semantics |
+| [specimen-matrix.md](specimen-matrix.md) | Valid, refused and equivalent configurations |
+| [goal-trace.md](goal-trace.md) | Goal coverage and resolved review findings |
+| [validation.md](validation.md) | Draft and saved-state observing checks |
 | [e00/w00.md](e00/w00.md) | Task work item and exact component scope |
 | [e00/w01.md](e00/w01.md) | Task work item and exact component scope |
 | [e00/w02.md](e00/w02.md) | Task work item and exact component scope |
@@ -103,3 +103,16 @@ The fixed0.34 source/bundle baseline, generic valid/refused controls, complete-n
 | Existing pattern owner | https://github.com/m2ux/prosiform/issues/526 |
 | Branch declaration | https://github.com/m2ux/prosiform/issues/865 |
 | Fixed current documentation | https://github.com/m2ux/prosiform/tree/794922d41465b91deb4edb3a7484506cb8f519cd/docs |
+
+## Tracker
+
+- [I20 Preset Configuration](https://github.com/m2ux/prosiform/issues/867)
+
+| Epic | Priority | Tasks |
+| --- | ---: | ---: |
+| [E00 Effective Manifest](https://github.com/m2ux/prosiform/issues/868) | 3 | 4 |
+| [E01 Preset Imports](https://github.com/m2ux/prosiform/issues/869) | 2 | 4 |
+| [E02 Local Choice Groups](https://github.com/m2ux/prosiform/issues/870) | 1 | 5 |
+
+- [Publication identities and hashes](publication.json)
+- [Saved-state validation](validation-results.json)

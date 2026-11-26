@@ -1,0 +1,135 @@
+{
+  "repository": "m2ux/prosiform",
+  "evaluated_main_revision": "794922d41465b91deb4edb3a7484506cb8f519cd",
+  "initiative": "I20",
+  "issues": {
+    "I": {
+      "number": 867,
+      "url": "https://github.com/m2ux/prosiform/issues/867",
+      "body_sha256": "770600cee9a64694098a64ed8a12ea86593fde3d5dedc34cadea06ba542dd35b",
+      "saved_fields_match": true,
+      "labels": [
+        "bot:ai-assisted",
+        "theme:python",
+        "type:initiative"
+      ]
+    },
+    "E00": {
+      "number": 868,
+      "url": "https://github.com/m2ux/prosiform/issues/868",
+      "body_sha256": "d3ea257a71c04941f80f33bfa11aef56a731ae3378a484cf4c4a59e79cddeb93",
+      "saved_fields_match": true,
+      "labels": [
+        "bot:ai-assisted",
+        "priority: 3",
+        "theme:python",
+        "type:epic"
+      ]
+    },
+    "E01": {
+      "number": 869,
+      "url": "https://github.com/m2ux/prosiform/issues/869",
+      "body_sha256": "3e9b9d480391da73d8f9cbecfd4fdd935bb42a00aa5887d26f63d4214415b861",
+      "saved_fields_match": true,
+      "labels": [
+        "bot:ai-assisted",
+        "priority: 2",
+        "theme:python",
+        "type:epic"
+      ]
+    },
+    "E02": {
+      "number": 870,
+      "url": "https://github.com/m2ux/prosiform/issues/870",
+      "body_sha256": "2ab3a9462f34c3214ba28652e5cef5e65a2b521398c8382b52b85ae4bc699bcd",
+      "saved_fields_match": true,
+      "labels": [
+        "bot:ai-assisted",
+        "priority: 1",
+        "theme:python",
+        "type:epic"
+      ]
+    }
+  },
+  "board": 18,
+  "board_items": {
+    "I": {
+      "item_id": 319283407,
+      "status": "Backlog",
+      "status_field_id": 428166189,
+      "status_option_id": "f75ad846"
+    },
+    "E00": {
+      "item_id": 319283558,
+      "status": "Backlog",
+      "status_field_id": 428166189,
+      "status_option_id": "f75ad846"
+    },
+    "E01": {
+      "item_id": 319283690,
+      "status": "Backlog",
+      "status_field_id": 428166189,
+      "status_option_id": "f75ad846"
+    },
+    "E02": {
+      "item_id": 319283808,
+      "status": "Backlog",
+      "status_field_id": 428166189,
+      "status_option_id": "f75ad846"
+    }
+  },
+  "epic_priorities": {
+    "E00": 3,
+    "E01": 2,
+    "E02": 1
+  },
+  "lanes": false,
+  "task_counts": {
+    "E00": 4,
+    "E01": 4,
+    "E02": 5
+  },
+  "checks": [
+    {
+      "name": "format-E00",
+      "exit_code": 0,
+      "summary": "#868 epic (open): 0 fixed, 0 to apply, 0 to decide",
+      "stdout_sha256": "2e7b3598baeca3ba66a5b276342388e19881a99aa2d46d69a9f877a7d89fed14",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "format-E01",
+      "exit_code": 0,
+      "summary": "#869 epic (open): 0 fixed, 0 to apply, 0 to decide",
+      "stdout_sha256": "054b75ad61421eca936fbd01ce73bd4609309e40b43b41dc1c758a66f3940e33",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "format-E02",
+      "exit_code": 0,
+      "summary": "#870 epic (open): 0 fixed, 0 to apply, 0 to decide",
+      "stdout_sha256": "6431194bfb65ec8af1a765b295ea77d4e3467c5d7e55a653ebbb1811d19ba287",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "format-I",
+      "exit_code": 0,
+      "summary": "#867 initiative (open): 0 fixed, 0 to apply, 0 to decide",
+      "stdout_sha256": "0add080b9bce7edd6e1cdce70c81203e71f15c67edf6ed0a90c4d6282109e09a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "dependencies",
+      "exit_code": 0,
+      "summary": "--- problems",
+      "stdout_sha256": "cb054aa4319866f823cb0daaf5b3abb42ab19a5d3da7f358468266659b25ee69",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "goal_review": "All confirmed clauses covered; bounded independent review findings resolved.",
+  "dependency_problems": [],
+  "unanswered_joins": [],
+  "native_feature_trials_run": 0,
+  "implementation_started": false,
+  "raw_host_logs_published": false
+}

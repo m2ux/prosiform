@@ -20,9 +20,9 @@ An entry or local preset can explicitly reuse pure settings from a named preset 
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w00.md) | Pure import contract and controls | AC1 | [E00:W00](https://github.com/m2ux/prosiform/issues/NEW_E00) | | | |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w01.md) | Pure capture and direct levels | AC2 | W00, [E00:W01](https://github.com/m2ux/prosiform/issues/NEW_E00) | | | |
-| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w02.md) | Nested origins refusals and manifest | AC3, AC4 | W01, [E00:W02](https://github.com/m2ux/prosiform/issues/NEW_E00) | | | |
+| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w00.md) | Pure import contract and controls | AC1 | [E00:W00](https://github.com/m2ux/prosiform/issues/868) | | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w01.md) | Pure capture and direct levels | AC2 | W00, [E00:W01](https://github.com/m2ux/prosiform/issues/868) | | | |
+| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w02.md) | Nested origins refusals and manifest | AC3, AC4 | W01, [E00:W02](https://github.com/m2ux/prosiform/issues/868) | | | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w03.md) | Public reuse example and equivalence | AC5 | W02 | | | |
 
 ## Acceptance Criteria

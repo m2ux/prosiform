@@ -19,4 +19,4 @@ Every epic criterion has one delivering task row; every task has at most three c
 - Shared compiler/document/design paths are serialized by confirmed priorities3/2/1 and explicit consumed-output edges. No lanes are assigned and no whole-epic prerequisite is asserted for a partial producer.
 - Public planning material contains generic source/design/specimens only. Existing patterns, real-use evaluation and frozen Rust work retain their separate owners.
 
-No substantive source-scope question remains open in these drafts. Unpublished issue URL placeholders are publication identities only and must be resolved during root publication. Existing unrelated tracker states are preserved.
+No substantive source-scope question remains open in these drafts. Published issue identities and saved-state validation are recorded in publication.json and validation-results.json. Existing unrelated tracker states are preserved.

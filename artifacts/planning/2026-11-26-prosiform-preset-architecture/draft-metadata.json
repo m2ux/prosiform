@@ -1,6 +1,6 @@
 {
   "initiative_prefix": "I20",
-  "prefix_requires_fresh_publication_readback": true,
+  "prefix_requires_fresh_publication_readback": false,
   "board": 18,
   "theme": "theme:python",
   "map_confirmed": true,
@@ -26,9 +26,11 @@
     "E01": 4,
     "E02": 5
   },
-  "unpublished_issue_placeholders": [
-    "NEW_E00",
-    "NEW_E01",
-    "NEW_E02"
-  ]
+  "unpublished_issue_placeholders": [],
+  "published_issues": {
+    "I": 867,
+    "E00": 868,
+    "E01": 869,
+    "E02": 870
+  }
 }
