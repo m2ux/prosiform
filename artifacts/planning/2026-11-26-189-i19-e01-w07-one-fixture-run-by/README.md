@@ -8,6 +8,13 @@ The corpus runner takes a fixture's identity and reports that fixture's verdict 
 
 Reading one fixture after a change costs a run of every fixture today.
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [w07](w07.md) | The task's work item: identity selection in the corpus runner. |
+| [Test Results](test-results.md) | The validation observed for the task's pull request. |
+
 ## Links
 
 | Resource | URL |
