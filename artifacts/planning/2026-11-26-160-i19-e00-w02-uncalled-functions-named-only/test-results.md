@@ -16,6 +16,10 @@ Validation observed at `i19/e00/w02-uncalled-functions` head 5a9e5ae5c, based on
   - `test_a_method_the_language_calls_is_reached`, `test_a_declared_entry_point_is_reached` and `test_a_listed_framework_hook_is_reached` reach a dunder method, a `[project.scripts]` entry and a listed hook.
   - `test_a_listed_definition_the_package_names_fails` and `test_a_listed_definition_the_package_lacks_fails` fail a list entry the package does not need.
 
+## Limitations
+
+- **A name reaches every definition carrying it.** Names are compared rather than calls resolved, as the issue's Proposal sets out. `cli.Parser.error`, the hook `argparse` calls on a usage failure, reads as reached because `cli` binds a local `error` in `except OSError as error`; listing it would fail the check as an entry the package already names. A definition sharing its name with any variable the package uses passes the same way.
+
 ## Suites
 
 - **T2.** `make check`, with `PROSIFORM_BUILD` set to `uv run --project <worktree>/src --frozen pf`, exits 0: lint, format (520 files), types (110 source files), reachability (570 definitions), 2,125 build tests, 1,206 harness tests, 708 corpus fixtures (708 pass), smoke, layout, tables (24 commands), links (445 documents), vocabulary, invocation, conformance and independence.
