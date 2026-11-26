@@ -164,7 +164,7 @@ Design rules: *The source of composed content*, *Every occurrence composes*, *In
 - [a-contribution-resolves-links-from-its-source-directory](../fixtures/composition/a-contribution-resolves-links-from-its-source-directory)
 - [colliding-definitions-resolve-against-their-own-source](../fixtures/composition/colliding-definitions-resolve-against-their-own-source)
 - [a-diagnostic-inside-a-contribution-names-its-source](../fixtures/composition/a-diagnostic-inside-a-contribution-names-its-source)
-- [a-link-inside-a-contribution-includes-its-target](../fixtures/composition/a-link-inside-a-contribution-includes-its-target)
+- [a-link-inside-a-contribution-bundles-its-target](../fixtures/composition/a-link-inside-a-contribution-bundles-its-target)
 - [a-repeated-directive-contributes-each-time](../fixtures/composition/a-repeated-directive-contributes-each-time)
 - [ordinary-and-composing-links-to-one-section-each-keep-their-meaning](../fixtures/composition/ordinary-and-composing-links-to-one-section-each-keep-their-meaning)
 - [a-target-only-directives-reach-takes-no-group](../fixtures/composition/a-target-only-directives-reach-takes-no-group)
