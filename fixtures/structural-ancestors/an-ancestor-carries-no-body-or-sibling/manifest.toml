@@ -1,4 +1,4 @@
-description = "A structural ancestor supplies its heading and nothing else: its own body, the sibling beside the selection and the branch beside it reach the bundle nowhere, while the selection keeps the descendants its section holds."
+description = "A structural ancestor supplies its heading and nothing else: its own body, the sibling beside the selection and the subtree beside it reach the bundle nowhere, while the selection keeps the descendants its section holds."
 
 clauses = [
   "Heading-only structural ancestors",
