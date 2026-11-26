@@ -18,9 +18,9 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 
 The production build uses `pulldown-cmark` as the first semantic-parser candidate, behind the version-pinned source-range adapter [Parser and source-preserving edits](#parser-and-source-preserving-edits) states. Its `into_offset_iter()` exposes Markdown events paired with source ranges, and `reference_definitions()` exposes the reference-definition map ([pulldown-cmark parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)). These APIs are a starting point, not a guarantee that every destination, definition, or nested edit already has the exact span required by this specification. `pulldown-cmark` supports the option-controlled event parsing the `prosiform-markdown` profile configures ([parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)).
 
-Pin exact Rust dependency versions after the fixtures pass. Select or implement the Rust slugging component behind the source-heading adapter against the compatibility fixtures; the choice of slugger crate remains open.
+Pin exact Rust dependency versions after the fixtures pass. Select or implement the Rust slugging component behind the source-heading adapter against the compatibility fixtures; the choice of `slugger crate` remains open.
 
-The package and product are named Prosiform. The Python prototype is packaged as a wheel, which the installed-command smoke installs.
+The package and product are named Prosiform. The Python prototype is packaged as a `wheel`, which the installed-command smoke installs.
 
 ## Input and output contract
 
@@ -893,7 +893,7 @@ The implementation should remain a deterministic local Markdown bundler. Workflo
 
 ### Upstream follow-up reference
 
-If parser verification demonstrates a need, consider two narrowly scoped pulldown-cmark contributions: observable reference-resolution suppression and opt-in access to every reference-definition occurrence. Preserve default rendering, first-definition resolution, and existing resource protections.
+If parser verification demonstrates a need, consider two narrowly scoped `pulldown-cmark` contributions: observable reference-resolution suppression and opt-in access to every reference-definition occurrence. Preserve default rendering, first-definition resolution, and existing resource protections.
 
 - **Definition access:** Review the earlier source-tooling discussion and definition-tracker work in [issue #423](https://github.com/pulldown-cmark/pulldown-cmark/issues/423), which was closed through PR #512.
 - **Expansion protection:** Preserve the quadratic-growth mitigation introduced in [PR #845](https://github.com/pulldown-cmark/pulldown-cmark/pull/845); propose observability rather than disabling the limit.
