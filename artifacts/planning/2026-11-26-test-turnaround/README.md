@@ -63,11 +63,13 @@ Not planned here, recorded so they are not lost.
 
 - [x] Raise the epic and move the turnaround rows into it.
 - [x] Place the epic on the board at Backlog.
-- [ ] W01: `make check-all` and the three-state verdict.
-- [ ] W02: drift triage.
-- [ ] W03 and W04, one pull request: restatement and its refusals.
-- [ ] W05: the overlap table, then the user's review of it.
-- [ ] W06: the approved removals and the layer rule.
+- [x] W01: `make check-all` and the three-state verdict, #860.
+- [x] W02: drift triage, #861.
+- [x] W03 and W04, one pull request: restatement and its refusals, #863.
+- [x] W05: the overlap table, then the user's review of it: 205 approved, 33 refused.
+- [x] W06: the approved removals and the layer rule, #862.
+- [x] W07: one fixture run by its identity, #859.
+- [ ] Review pull request #864 into `main`, merged by the user.
 
 ## Decisions
 
@@ -80,6 +82,8 @@ Not planned here, recorded so they are not lost.
 | Restatement and its refusals | One pull request. The two rows change the same three files, and a restatement without its refusals is not safe to merge. |
 | Lanes | None, as the initiative's existing epic uses none. |
 | Epic priority | Decided by the user: 1, ahead of E00 at 2. |
+| Overlap verdicts | Decided by the user: every fully held test approved for removal except the five borderline rows and the diagram, click and node-text rows, which are kept. |
+| Merges into the epic base | Decided by the user: a green task pull request merges into the epic base without asking. A merge into `main` is the user's. |
 
 ## Row Moves
 
