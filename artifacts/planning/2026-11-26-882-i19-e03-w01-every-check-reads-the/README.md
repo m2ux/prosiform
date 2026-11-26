@@ -14,6 +14,7 @@ The row refines a rule the check gaps epic delivered or left outside its criteri
 | --- | --- |
 | [w01.md](w01.md) | Work item for W01. |
 | [w03.md](w03.md) | Work item for W03. |
+| [test-evidence.md](test-evidence.md) | Test procedures, the tested revision and results for both rows. |
 
 ## Links
 
