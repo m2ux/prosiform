@@ -18,6 +18,7 @@ The user placed them in the initiative rather than as standalone issues, so the 
 | The boundary | Decided by the user: removed from the documentation. If the design on the engineering branch states it as behaviour, the session asks the user before changing the contract. |
 | Build words | Decided by the user: a build word is a term a silent section writes in a code span, not in bold, and the design marks its packaging and parser terms that way in the same design edit as the boundary removal, so `crate` and `wheel` stay reported. W02 merges after W04. |
 | The design pin | Decided by the user: the README pins design 6abf65a2d, which also carries F42's heading-collision clause (9bed554bc) ahead of the build. |
+| E02 and E03 landing | `main` gained F42's design pin, which marks build words in code spans that only E03's rule reads, so E02 landed through E03's review: #888 merged both at a3f186e2f, and the initiative closed. |
 | W02 and W04 order | W02 merges W04's branch and lands both: W04's pinned-design test passes only with W02's code-span rule. |
 | The boundary in the contract | Decided by the user: the design states it in seven clauses, among them the `E_SOURCE_CHANGED` trigger, and the build computes none, so the design drops those clauses first and the documentation follows. |
 
