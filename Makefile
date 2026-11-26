@@ -15,9 +15,8 @@
 # it, which reads `jsonschema` from that same group, so the five run through
 # it. The table and link checks read documents through the shared reading,
 # which finds code blocks with the build's own Markdown parser, so they run
-# through it too. The smoke, layout
-# and vocabulary checks depend on the standard library alone and run under
-# `python3` directly.
+# through it too. The smoke, layout, vocabulary and reachability checks depend
+# on the standard library alone and run under `python3` directly.
 #
 # `make smoke` is the one check that does not run the build from this
 # checkout: it builds the wheel, installs it into a throwaway environment and
@@ -98,9 +97,9 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence releases triage restate render examples eval-diagrams
+.PHONY: check check-all test harness eval-harness corpus smoke lint format-check typecheck reachability lock-check layout tables links vocabulary invocation conformance independence releases triage restate render examples eval-diagrams
 
-CHECKS := lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence releases
+CHECKS := lock-check lint format-check typecheck reachability test harness corpus smoke layout tables links vocabulary invocation conformance independence releases
 
 check: $(CHECKS)
 
@@ -141,6 +140,9 @@ format-check:
 
 typecheck:
 	$(UV_RUN) mypy --config-file $(TOOL_CONFIG) $(PYTHON_SOURCES)
+
+reachability:
+	python3 checks/reachability.py
 
 lock-check:
 	cd src && uv lock --check
