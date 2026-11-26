@@ -12,7 +12,15 @@ A term italicised on first use is a contract term. It means one thing and nothin
 
 ## Design status
 
-This document specifies the approved behaviour and initial defaults. Two builds implement it: a Python prototype that establishes the contract and the fixture corpus and stays in use as a differential oracle, and a production build in Rust with `pulldown-cmark` as the first parser candidate, subject to the verification gates below. The Rust sections state the production build's obligations; the behavioural contract binds both.
+This document specifies the approved behaviour and initial defaults. Two builds implement it: a Python prototype that establishes the contract and the fixture corpus and stays in use as a differential oracle, and a production build in Rust with `pulldown-cmark` as the first parser candidate, subject to the verification gates below. [Production build obligations](#production-build-obligations) states what each build is made with; the behavioural contract binds both.
+
+### Production build obligations
+
+The production build uses `pulldown-cmark` as the first semantic-parser candidate, behind the version-pinned source-range adapter [Parser and source-preserving edits](#parser-and-source-preserving-edits) states. Its `into_offset_iter()` exposes Markdown events paired with source ranges, and `reference_definitions()` exposes the reference-definition map ([pulldown-cmark parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)). These APIs are a starting point, not a guarantee that every destination, definition, or nested edit already has the exact span required by this specification. `pulldown-cmark` supports the option-controlled event parsing the `prosiform-markdown` profile configures ([parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)).
+
+Pin exact Rust dependency versions after the fixtures pass. Select or implement the Rust slugging component behind the source-heading adapter against the compatibility fixtures; the choice of slugger crate remains open.
+
+The package and product are named Prosiform. The Python prototype is packaged as a wheel, which the installed-command smoke installs.
 
 ## Input and output contract
 
@@ -28,9 +36,7 @@ This document specifies the approved behaviour and initial defaults. Two builds 
 
 ## Parser and source-preserving edits
 
-Use `pulldown-cmark` as the first semantic-parser candidate, behind a version-pinned source-range adapter. Retain original source bytes and apply edits to identified spans instead of regenerating the whole document.
-
-Its `into_offset_iter()` exposes Markdown events paired with source ranges, and `reference_definitions()` exposes the reference-definition map ([pulldown-cmark parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)). These APIs are a starting point, not a guarantee that every destination, definition, or nested edit already has the exact span required by this specification.
+Read sources with a semantic parser behind a version-pinned source-range adapter. Retain original source bytes and apply edits to identified spans instead of regenerating the whole document.
 
 - **Parsing authority:** Let the parser identify headings, links, images, definitions, code examples, and HTML nodes, the last so they can be refused.
 - **Source positions:** Build the source-range adapter around offset events and reference-definition data. Verify and retain the original spans needed for headings, link/image uses, and definitions; do not equate an enclosing event range with a precise destination span without *validation*.
@@ -57,11 +63,11 @@ Do not disable the parser's resource protections to satisfy these gates. A gener
 
 Do not fall back to regex-only *rewriting* when an edit span is unavailable. Fail the unsupported case or explicitly revisit the parser/editing approach; do not silently switch to whole-document formatting or another authoritative parser.
 
-Pin exact Rust dependency versions after the fixtures pass. Do not regenerate the whole document through an HTML or Markdown formatter; if the first parser candidate cannot satisfy the fixture gate, revisit the parser choice without weakening the behavioural contract.
+Do not regenerate the whole document through an HTML or Markdown formatter; if the first parser candidate cannot satisfy the fixture gate, revisit the parser choice without weakening the behavioural contract.
 
 ## Markdown and source-heading profile
 
-Use the `prosiform-markdown` profile based on CommonMark, with pipe tables and double-tilde strikethrough enabled and source task-list markers preserved. Configure parser options explicitly rather than enabling every available extension; `pulldown-cmark` supports option-controlled event parsing ([parser API](https://docs.rs/pulldown-cmark/latest/pulldown_cmark/struct.Parser.html)).
+Use the `prosiform-markdown` profile based on CommonMark, with pipe tables and double-tilde strikethrough enabled and source task-list markers preserved. Configure parser options explicitly rather than enabling every available extension.
 
 - **Core syntax:** Support ATX/Setext headings, paragraphs, lists, blockquotes, code spans and blocks, inline/reference links and images, thematic breaks, and ordinary CommonMark autolinks.
 - **Task lists:** Preserve `[ ]`, `[x]`, and `[X]` markers without generating checkbox HTML. Recognize marker positions so reference definitions cannot turn them into links.
@@ -76,7 +82,7 @@ Pin the parser configuration and definition-handling rules as part of the profil
 
 ### Source-heading resolution
 
-Use a fixture-validated Rust adapter for GitHub-compatible source-heading slugs and duplicate tracking, with fresh state per complete source document. Select or implement the Rust slugging component against the compatibility fixtures; no specific slugger crate is selected yet.
+Use a fixture-validated adapter for GitHub-compatible source-heading slugs and duplicate tracking, with fresh state per complete source document.
 
 Derive visible heading text from parser events: text/code content, link labels and decoded entities, excluding formatting delimiters, image alternative text and line breaks. An image contributes nothing but the space on either side of it, and a line break inside a Setext heading joins its lines with no separator. Enumerate headings in original source order, container-nested headings included. A heading's fragment is the slug its own visible text produces, and nothing numbers two headings of one source apart, so a fragment names a heading by what its author wrote rather than by how many similar headings precede it.
 
@@ -86,7 +92,7 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
-Expose `pf` as the sole executable, with case-sensitive operational flags and diagnostics on stderr. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: the guide and the help, version and code-listing responses use it. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+Expose `pf` as the sole executable, with case-sensitive operational flags and diagnostics on stderr. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: the guide and the help, version and code-listing responses use it. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
 pf [OPTIONS] REF [--pick ALTERNATIVE]
@@ -855,7 +861,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 | Body separation | Apparent Markdown headings, links and definitions in metadata produce no dependencies or rendered bytes; body YAML fences remain literal; physical diagnostic coordinates include metadata and BOM. |
 | Preserved assembly | Overview and variant arrangements, shortest distinguishing member names, heading overflow, ambiguous source slugs, anchor collisions and document/section rewrites retain their defined outcomes. |
 | Atomic failure | Invalid metadata and conflicting groups under file output and check mode, with an existing output file preserved; text and JSON carry both conflict locations. |
-| Public interface | Help and invocation table agree on operational options; structural option rejection; representative metadata corpus and installed-wheel smoke against the identified candidate. |
+| Public interface | Help and invocation table agree on operational options; structural option rejection; representative metadata corpus and installed-command smoke against the identified candidate. |
 
 ### File-owned invocation conformance cases
 
@@ -873,7 +879,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 | Publication | A run folder carrying the `.bundles` suffix in the invocation working directory and in the `-o` folder; an author folder named like the entry left untouched; `-o -` refused; an absent `-o` folder made, under `-c` as without it, and one the run cannot make refused; an existing run folder preserved on failure and replaced whole on success; a run folder holding any captured source, including deferred-only targets, refused; filename/length failure; check mode and clean stdout/stderr; a set of bundles validated whole before any is written, and a swap refused part-way restoring the earlier folder. |
 | Deferred handoff | URI-escaped cwd-relative destination, including parent segments and literal delimiters, the published link supplied as written as the positional entry with its title tags preserved; a fragment-only deferral published with its document's path; the link quoted as one shell argument; immediate/deferred selection parity independent of heading wording; a document that declares nothing and an unopened resource retain authored bytes. |
 
-Runtime delivery updates each consumer in the layer that changes its behavior: settings schema consumers with the decoder, entry fixtures and CLI consumers with the resolver, and stdout-dependent consumers with automatic output publication. This includes installed-wheel smoke commands and diagram renderer invocations. Compare bundled content independently of invocation and output location against baseline `93fe6b354a85e244f64e33af700a55aab4f26044`; entry-root annotations preserve body bytes and deliberately update physical-location expectations. Authoring guidance teaches the declaration, full setting names and hyphen-preferred paths. These are required conformance checks, not claims that the current runtime has passed them.
+Runtime delivery updates each consumer in the layer that changes its behavior: settings schema consumers with the decoder, entry fixtures and CLI consumers with the resolver, and stdout-dependent consumers with automatic output publication. This includes installed-command smoke runs and diagram renderer invocations. Compare bundled content independently of invocation and output location against baseline `93fe6b354a85e244f64e33af700a55aab4f26044`; entry-root annotations preserve body bytes and deliberately update physical-location expectations. Authoring guidance teaches the declaration, full setting names and hyphen-preferred paths. These are required conformance checks, not claims that the current runtime has passed them.
 
 ## Implementation verification and residual policy detail
 
