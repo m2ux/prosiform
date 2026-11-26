@@ -20,3 +20,4 @@ The row closes a case the repository checks epic left outside its criteria.
 | Resource | URL |
 | --- | --- |
 | Epic I19 E02 | https://github.com/m2ux/prosiform/issues/877 |
+| Pull request | https://github.com/m2ux/prosiform/pull/878 |
