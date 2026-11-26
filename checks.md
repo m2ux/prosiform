@@ -55,7 +55,7 @@ A pull request that touches none of those paths is reported as not checked: the 
 
 - **Fixtures.** Every fixture matches the [manifest schema](fixtures/README.md).
 - **Diagnostic codes.** Each catalogue of diagnostic codes is exactly the set the design declares.
-- **Runner.** The runner decides a fixture's result from its manifest and files alone.
+- **Runner.** The runner decides a fixture's result from its manifest and files alone, and tells a run that failed in itself from one whose output moved.
 - **Check targets.** `make check-all` runs every check of the set and names each that failed, and `make check` stops at the first.
 - **Check readings.** Each check parses its own input correctly on cases written to be misread, and the heading-slug rule generates the anchors GitHub generated for a captured document.
 - **Authoring guidance.** Each worked bundle command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the bundler's grammar; the architecture lists every package module. The invocation guide recommends hyphens rather than underscores in names.

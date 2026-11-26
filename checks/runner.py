@@ -56,6 +56,11 @@ one error code names several distinct faults. Each entry is a substring the
 output must contain, so what identifies the outcome is compared and the
 wording around it is left to the build. A declaration absent compares
 nothing.
+
+A result's `state` is one of three: the run met its manifest, its output
+moved, or the run failed in itself, as `Result.state` decides. Only a
+moved output is drift, so a caller that restates a fixture from its run
+reads the state rather than whether the fixture passed.
 """
 
 import json
@@ -67,6 +72,7 @@ import tempfile
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
@@ -92,6 +98,8 @@ BUNDLE_SUFFIX = ".bundle.md"
 RUN_FOLDER_SUFFIX = ".bundles"
 STDOUT_TEXT = "expected.stdout_contains"
 DIAGNOSTICS = "expected.diagnostics"
+IN_ITSELF = frozenset({MANIFEST, INVOCATION})
+INTERNAL_ERROR_STATUS = 4
 
 DECLARED_FIELDS = ("reference", "resolved", "source", "chain", "location")
 MESSAGE_TEXT = "message_contains"
@@ -113,6 +121,18 @@ class Difference:
     detail: tuple[str, ...] = ()
 
 
+class State(Enum):
+    """The three states a fixture's verdict reaches, each holding its report label.
+
+    `MET` holds a run meeting every expectation, `MOVED` one whose output
+    differs from them, and `FAILED_IN_ITSELF` one whose run failed in itself.
+    """
+
+    MET = "pass"
+    MOVED = "output moved"
+    FAILED_IN_ITSELF = "run failed in itself"
+
+
 @dataclass(frozen=True)
 class Result:
     """One fixture's verdict and the run it was decided from."""
@@ -128,11 +148,24 @@ class Result:
         """Whether the run met every expectation the manifest declares."""
         return not self.differences
 
+    @property
+    def state(self) -> State:
+        """Which of the three states the verdict reaches.
+
+        A difference naming the manifest or the invocation is a run that
+        failed in itself: the fixture could not be run, or the run did not
+        complete as a run of the build, as `run_fixture` and
+        `failed_in_itself` find. What such a run wrote is no output a
+        manifest may take as its expectation, so the state is that failure
+        whatever else differs. Any other difference is output that moved.
+        """
+        if any(one.expectation in IN_ITSELF for one in self.differences):
+            return State.FAILED_IN_ITSELF
+        return State.MOVED if self.differences else State.MET
+
     def report(self) -> str:
-        """The verdict as text: the fixture, then each difference and its region."""
-        if self.passed:
-            return f"{self.fixture}: pass"
-        lines = [f"{self.fixture}: fail"]
+        """The verdict as text: the fixture and its state, then each difference."""
+        lines = [f"{self.fixture}: {self.state.value}"]
         for difference in self.differences:
             lines.append(f"  {difference.expectation}: {difference.summary}")
             lines.extend(f"    {line}" for line in difference.detail)
@@ -187,6 +220,26 @@ def compare_exit_status(expected: int, produced: int) -> list[Difference]:
         return []
     summary = f"expected {expected}, the run exited {produced}"
     return [Difference(EXIT_STATUS, summary)]
+
+
+def failed_in_itself(declared: int, produced: int) -> list[Difference]:
+    """The run's own failure, read from its exit status against the declared one.
+
+    A run ended by a signal failed in itself, as did one exiting with the
+    contract's unexpected-internal-error status, `4` in the invocation
+    guide's exit-status table, where its manifest declares another status.
+    A manifest declaring that status declares the failure, so a run
+    reaching it meets the manifest.
+    """
+    if produced < 0:
+        return [Difference(INVOCATION, f"the run ended on signal {-produced}")]
+    if produced == INTERNAL_ERROR_STATUS != declared:
+        summary = (
+            f"the run exited {produced}, the contract's unexpected internal error, "
+            f"where the manifest declares {declared}"
+        )
+        return [Difference(INVOCATION, summary)]
+    return []
 
 
 def compare_bundle(name: str, expected: bytes, produced: bytes) -> list[Difference]:
@@ -581,6 +634,7 @@ def run_fixture(fixture: Path) -> Result:
             written = collected(entries(*held) - before)
 
         differences = [
+            *failed_in_itself(expected["exit_status"], completed.returncode),
             *compare_exit_status(expected["exit_status"], completed.returncode),
             *compare_bundles(fixture, expected.get("bundles", []), written),
             *compare_stdout(expected.get("stdout_contains", []), completed.stdout),
