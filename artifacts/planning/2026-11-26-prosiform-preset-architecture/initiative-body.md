@@ -24,7 +24,7 @@ Effective configuration is spread across sources, and nothing published relates,
 - **A build ledger.**
   An explicit option publishes one YAML ledger beside the bundle set, naming effective selections, source origins, dispatch configuration and the invocation, with authored Markdown unchanged.
 - **A checkable result.**
-  A second option holds a published set to its ledger, so a changed source or bundle is reported.
+  A second option holds a published set to its ledger, and the ledger to a digest written with it, so a changed source, bundle or ledger is reported.
 - **Pure explicit imports.**
   A preset imports a named source's levels and substitutions, retaining their lexical origins and the receiving preset's scope, with explicit conflict and cycle refusals.
 - **Named local choices.**
@@ -50,7 +50,7 @@ Effective configuration is spread across sources, and nothing published relates,
 - [ ] **AC3.** Invalid configuration publishes no partial result and identifies the conflicting or incomplete declaration, as the refusal and publication fixtures show.
 - [ ] **AC4.** Public usage examples agree with the delivered configuration contract and preserve their authored outcomes, as `make check` and the bounded changed-behavior record show.
 - [ ] **AC5.** The delivered configuration contract states only forms accepted from specimen files, as the planning record's rulings and the contract's clauses show.
-- [ ] **AC6.** A published bundle set whose sources or bundles differ from its ledger is reported by one command, as the verification fixtures show.
+- [ ] **AC6.** A published bundle set whose sources or bundles differ from its ledger, or whose ledger differs from its digest, is reported by one command, as the verification fixtures show.
 - [ ] **AC7.** A document's presets, grouped alternatives and imports can be read without bundling it, as the listing fixtures show.
 
 ## Non-Goals

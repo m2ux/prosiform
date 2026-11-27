@@ -6,7 +6,8 @@ What the proposed `--ledger` option writes, shown for two builds pf 0.36.0 produ
 
 - **`--ledger`.**  One `ledger.yaml` written into the run's folder beside its bundles, in the same swap.
 - **Check mode.**  `-c --ledger` writes the same ledger to standard output and publishes nothing.
-- **`--verify FOLDER`.**  Re-hashes each source and bundle a published ledger names, and reports each that differs.
+- **A digest of the ledger.**  `ledger.yaml.sha256`, written with the ledger: one line in the format `sha256sum` writes, holding the ledger's hash and no other. It reports a ledger changed by accident; a caller guarding against deliberate change keeps the line somewhere else.
+- **`--verify FOLDER`.**  Holds the ledger to its digest, then re-hashes each source and bundle the ledger names, and reports each that differs.
 - **A schema.**  One JSON Schema the corpus holds every ledger to.
 - **No new dependency.**  The ledger is written by `ruamel-yaml`, the library pf already reads frontmatter with.
 
@@ -32,6 +33,7 @@ The ledger is YAML, the notation an author already writes presets in.
 | --- | --- | --- |
 | [fixed.ledger.yaml](fixed.ledger.yaml) | Hand-written | The ledger for the fixed-dispatch control |
 | [run/bundles/entry-recorded.bundles/ledger.yaml](run/bundles/entry-recorded.bundles/ledger.yaml) | Hand-written | The ledger for the run, where the option would write it |
+| [run/bundles/entry-recorded.bundles/ledger.yaml.sha256](run/bundles/entry-recorded.bundles/ledger.yaml.sha256) | Real | The digest `sha256sum` wrote for the specimen ledger beside it |
 | [ledger.schema.json](ledger.schema.json) | Hand-written | The schema both ledgers validate against |
 | [check-mode.txt](check-mode.txt) | Hand-written | What `-c --ledger` writes and where |
 | [verify.txt](verify.txt) | Hand-written | Each outcome of `--verify` |
@@ -69,7 +71,7 @@ A field under `bundles` is written here from one bundle's entry. A `line` is the
 - **Runtime facts.**  Effort, the provider and model a session really ran on, delivery, obedience and whether the work was done well.
 - **The working directory.**  Paths are written from it; the directory itself is the caller's.
 - **The output folder.**  `-o` names where the run's folder went, which the folder's own location already says.
-- **Its own bytes.**  The ledger records no hash of itself.
+- **Its own bytes.**  The ledger records no hash of itself. `ledger.yaml.sha256` beside it holds that one hash, and the ledger holds every other.
 - **Warnings.**  They stay on standard error. What a warning points at is a field already: a stand-in is a substitution whose `kind` is `stand-in`.
 - **Secrets and permissions.**  A preset holds none, so a ledger holds none.
 
@@ -81,4 +83,5 @@ Each authored dispatch and deferral link has a row naming the source and line th
 
 - Each ledger parses as YAML, reads back as the data it was written from, and validates against the schema.
 - Each `sha256` equals the hash of the real file it names.
+- `ledger.yaml.sha256` was written by `sha256sum` over the specimen ledger, and `sha256sum -c` passes it.
 - The `use` of each source matches the files pf 0.36.0 opened, read from a system-call trace of both builds.

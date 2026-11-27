@@ -68,7 +68,7 @@ The run's ledger was rendered by each candidate's library and the three renderin
 
 ## What The Ledger Records, 2026-11-27
 
-The user questioned three things the run's ledger holds: the line range a bundle carries from a source, the line a setting or link was written on, and each bundle's file name and hash. Each was first ruled out, the hashes and names to a checksum file the standard tool reads. The ledger is an output of the build and nothing an author writes, and on that ground the user restored all three. Each ledger holds them as the sets first showed, and `--verify` holds a published set to its ledger.
+The user questioned three things the run's ledger holds: the line range a bundle carries from a source, the line a setting or link was written on, and each bundle's file name and hash. Each was first ruled out, the hashes and names to a checksum file the standard tool reads. The ledger is an output of the build and nothing an author writes, and on that ground the user restored all three. Each ledger holds them as the sets first showed, and `--verify` holds a published set to its ledger. The user then added a digest of the ledger, written beside it, so a change to the ledger itself is reported.
 
 ## Cross-Family Review Of The Accepted Forms, 2026-11-27
 

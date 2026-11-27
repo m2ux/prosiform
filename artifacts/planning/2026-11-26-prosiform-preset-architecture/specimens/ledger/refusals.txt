@@ -9,7 +9,7 @@ E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:
   source: worker.md
   remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them
 
-Exit status 2. No folder is made: neither a bundle nor a ledger is written. The
+Exit status 2. No folder is made: no bundle, no ledger and no digest is written. The
 diagnostic is the one pf 0.36.0 writes for that source today.
 
 2. A ledger that cannot be written fails the whole publication
@@ -17,7 +17,7 @@ diagnostic is the one pf 0.36.0 writes for that source today.
 $ pf --ledger -o bundles '[Run](entry.md "recorded")'        (the run's folder cannot be written)
 E_PUBLICATION_FAILED: <the message pf 0.36.0 writes when a run's folder cannot be published; not transcribed here>
 
-Exit status 3. The bundles and the ledger are swapped in together or not at all,
+Exit status 3. The bundles, the ledger and its digest are swapped in together or not at all,
 so no folder holds bundles without the ledger the caller asked for.
 
 3. Verification takes a folder and nothing else

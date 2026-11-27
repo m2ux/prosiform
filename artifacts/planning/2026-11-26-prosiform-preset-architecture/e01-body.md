@@ -23,8 +23,10 @@ An operator can request a machine-readable ledger alongside the validated bundle
   The ledger uses the existing capture, provenance and publication paths; a failure publishes neither a partial ledger nor a mixed bundle set.
 - **Inspection without publication.**
   A check-mode run with the option writes the same ledger to standard output and publishes nothing.
+- **A digest of the ledger.**
+  The option writes the ledger's SHA-256 beside it in the standard checksum format, so a change to the ledger itself is reported.
 - **Verification.**
-  The proposed `--verify` option re-hashes the sources and bundles a published ledger names and reports each that differs, under codes of its own.
+  The proposed `--verify` option holds a published ledger to its digest, re-hashes the sources and bundles the ledger names and reports each that differs, under codes of its own.
 - **A published schema.**
   A JSON Schema for the ledger sits with the corpus, which holds each fixture's ledger to it.
 
@@ -46,7 +48,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 - [ ] **AC4.** Ledger and bundle-set publication share the existing complete-or-refused result boundary, as publication and failure tests and `make check` show.
 - [ ] **AC5.** A check-mode run with the ledger option writes the ledger to standard output and publishes nothing, as the check-mode fixtures show.
 - [ ] **AC6.** The public invocation contract and executable example describe and exercise the delivered ledger, as documentation and corpus checks show.
-- [ ] **AC7.** A published set whose source or bundle bytes differ from its `ledger.yaml` is reported with the differing path, as the verification fixtures show.
+- [ ] **AC7.** A published set whose source or bundle bytes differ from its `ledger.yaml`, or whose ledger differs from its digest, is reported with the differing path, as the verification fixtures show.
 
 ## References
 

@@ -36,6 +36,7 @@ The user ruled on each design point the specimen sets showed, one at a time, and
 | The preset listing's format | Text | The ledger's notation and vocabulary |
 | The ledger's notation | YAML, each string quoted, written by the `ruamel-yaml` library pf already ships; the file is `ledger.yaml` | TOML through `tomli-w`, a new dependency whose layout carries no indentation and one list item to a line |
 | Where hashes and file names live | In the ledger, an output of the build: each source's and each bundle's hash and each bundle's file name, which `--verify` holds a published set to | A `SHA256SUMS` file apart, written by a `--sums` option and checked by `sha256sum -c`, which the user ruled for and then withdrew |
+| A hash of the ledger itself | `ledger.yaml.sha256`, written with the ledger and holding its hash alone; `--verify` reads it first | A hash file listing each bundle as well, which states a bundle's hash twice; no hash file |
 | The part of a source a bundle carries | `lines`, the first and last source line carried | Leaving it out, which the user ruled for and then withdrew |
 | The line a setting or link was written on | `line`, on each origin and on each dispatch and deferral row | Leaving it out, which the user ruled for and then withdrew |
 | Where an alternative's group is written | In `choice`, a mapping of `group` and `states`; an alternative with no group keeps the plain string | A `choice-group` field beside `choice`; a mapping for every alternative |

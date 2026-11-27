@@ -14,7 +14,7 @@ Plan an incremental extension of the Python Prosiform bundler in four stages: sp
 
 The bundler's released 0.36.0 semantics, at `8cedda4cc06b0486168addc05f057161192a22a6`, are the comparison baseline. New syntax and output are proposals until their implementation and release are delivered. Authored Contracts, operations and governing Rule links remain readable Markdown. Metadata imports carry only levels and substitutions; they carry no body, Rule injection, brief, capability declaration, layout, alternative or stub role. The receiving preset retains its declared scope, the existing explicit entry-stub scope included.
 
-The ledger is one YAML file named for the single word `ledger`. It records build facts and the invocation, and asserts nothing about runtime effort, provider observation, delivery or meaning.
+The ledger is one YAML file named for the single word `ledger`. It records build facts and the invocation, and asserts nothing about runtime effort, provider observation, delivery or meaning. A digest file beside it holds the ledger's own hash.
 
 Runtime profiles remain a harness boundary. Structured model and effort values and focused reviewer presets are exploratory follow-up concerns, excluded from implementation here. Permissions, secrets, sessions and capacity do not belong in presets. This work introduces no generic inheritance, automatic global context or inline-brief behavior.
 

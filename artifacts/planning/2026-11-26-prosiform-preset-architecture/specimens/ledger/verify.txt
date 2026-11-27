@@ -5,7 +5,10 @@ runs in `run/`, where the build ran.
 
 What verification reads
 
-  - The ledger is read first, under the rules a source's frontmatter is read
+  - The ledger's digest is read first. `ledger.yaml.sha256` holds one line in
+    the format `sha256sum` writes, and the ledger's bytes are held to it before
+    the ledger is read. A folder holding a ledger and no digest is a mismatch.
+  - The ledger is read next, under the rules a source's frontmatter is read
     by, and held to its schema by the build's own reader. One that does not
     parse, states a schema this build does not read, or names a bundle or a
     source twice, is refused before any other file is opened.
@@ -16,7 +19,9 @@ What verification reads
     build, and is opened as a build opens a source: a path leaving the working
     directory or carrying a symbolic link is refused with the build's own code.
   - Verification reads a set the caller trusts to be the one published. It
-    states nothing about who wrote the ledger.
+    states nothing about who wrote the ledger. The digest sits beside the
+    ledger, so a caller guarding against deliberate change keeps that one line
+    somewhere else.
 
 Not stated by this specimen: what a folder replaced while it is being verified
 reports.
@@ -94,6 +99,25 @@ E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.yaml' names
 
 Exit status 1. No source and no bundle is opened.
 
-A mismatch reports E_LEDGER_MISMATCH, for a source and a bundle alike, and a
+9. The ledger changed after publication (the first `model` changed to `gpt-6.1` in ledger.yaml)
+
+$ pf --verify bundles/entry-recorded.bundles
+E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.yaml' differs from the digest written with it
+  recorded: 8833fa56166dc627f019ae76faed3002f9f35e46796e26260394fa50f74a159a
+  found: 546aac54dd0ab96abb2b392ff3270d20237bfa9061aede4dcb9594b9891dfbba
+  remedy: rebuild the bundle set
+
+Exit status 1. No source and no bundle is opened: a ledger that differs from
+its digest is not read.
+
+10. A ledger with no digest beside it (ledger.yaml.sha256 removed)
+
+$ pf --verify bundles/entry-recorded.bundles
+E_LEDGER_MISMATCH: the folder 'bundles/entry-recorded.bundles' holds a ledger and no ledger.yaml.sha256, so nothing holds the ledger to the bytes that were written
+  remedy: rebuild the bundle set with --ledger
+
+Exit status 1.
+
+A mismatch reports E_LEDGER_MISMATCH, for a source, a bundle and the ledger alike, and a
 folder holding no ledger reports E_LEDGER_NOT_FOUND. E_SOURCE_CHANGED keeps its
 one meaning: a source that changed during a build.

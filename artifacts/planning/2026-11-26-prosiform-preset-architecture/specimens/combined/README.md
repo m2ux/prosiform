@@ -43,6 +43,7 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 | Is the preset listing text or the ledger's notation? | Text. | [presets.txt](../choice-groups/expected/presets.txt) |
 | Which notation is the ledger written in? | YAML, each string quoted, written by the library pf already ships. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 | Where do hashes and file names live? | In the ledger, which `--verify` holds a published set to. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml), [verify.txt](../ledger/verify.txt) |
+| Is the ledger itself held to a hash? | Yes: `ledger.yaml.sha256` holds the ledger's hash alone, and the ledger holds every other. | [ledger.yaml.sha256](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml.sha256) |
 | Does the ledger record which part of a source a bundle carries? | Yes: `lines`, the first and last source line carried. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 | Does the ledger record the line a setting or link was written on? | Yes: `line`, on each origin and each link row. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 | Where is an alternative's group written? | In `choice`, as `group` beside `states`. An alternative with no group keeps the plain string. | [worker.md](worker.md) |

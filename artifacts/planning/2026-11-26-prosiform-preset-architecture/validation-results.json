@@ -8,7 +8,7 @@
       "number": 867,
       "url": "https://github.com/m2ux/prosiform/issues/867",
       "title": "[I20] Preset Configuration: Effective Builds, Pure Reuse and Independent Local Choices",
-      "body_sha256": "c99cf1ade93cd4f28278457cddfbdc4c424d05ddf9ad53713f22a458e496fcc5",
+      "body_sha256": "3ddc709766b3586c3654510967607e0c9aa7d51f189fd6ef91e2857c757559f0",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -33,7 +33,7 @@
       "number": 868,
       "url": "https://github.com/m2ux/prosiform/issues/868",
       "title": "[I20:E01] Build Ledger: Each Bundle Identifies Its Effective Sources and Selections",
-      "body_sha256": "5d89079c78b99fdaefb913c2ca903988daf9af8fdd14dcb8e3ae047b84c9ee4e",
+      "body_sha256": "45e2b85d3914e0194e71532d5d8ef9a811c7148d7f0de8ec113afaf1b5d75515",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",

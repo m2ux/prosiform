@@ -12,7 +12,7 @@ bundles the run validated and did not write.
 Standard error: the two warnings the build raises today, as `run/diagnostics.txt`
 holds them.
 
-Exit status 0. No bundle and no ledger is written. The folder `-o` names is
+Exit status 0. No bundle, no ledger and no digest is written. The folder `-o` names is
 made where it is absent and left empty, as a check run makes it today.
 
 $ pf -c --ledger '[Run](entry.md "recorded")'
