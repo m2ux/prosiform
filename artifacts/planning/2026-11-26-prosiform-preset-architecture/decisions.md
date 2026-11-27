@@ -15,14 +15,14 @@ The user reviewed the published plan against pf 0.36.0 and ruled on each point.
 - **Reference release.** pf 0.36.0 at `8cedda4cc06b0486168addc05f057161192a22a6` is the baseline. The five retained controls reproduce under it byte for byte: exit status, diagnostics and bundle hashes.
 - **Specimen stage.** A new first epic, Design Specimens, holds one specimen set for each feature, a combined set and the scrutiny ruling. The existing epics follow it as E01 to E03, and each contract row waits on the ruling.
 - **Record name.** The file is named for one word, `ledger`, and written by `--ledger`. "Manifest" names the corpus fixture declaration and "provenance" is a glossary term, so neither is used. Its notation was first TOML and is YAML, as [Scrutiny Rulings](#scrutiny-rulings-2026-11-27) records.
-- **Order of code work.** The three features are built in turn, each end to end. The parallel work is the three specimen rows.
+- **Order of code work.** The three features are built in turn, each end to end, and the epic priorities carry that order: an epic of a lower number waits while a higher one runs. Local Choice Groups is last, since it alone changes behaviour pf 0.36.0 has. The parallel work is the three specimen rows.
 - **Lanes.** Two capability lanes with cross-family review, as [Lanes](#lanes) states.
 - **Additions admitted.** A repeatable `--pick` at the entry; the ledger written to standard output in check mode; `--verify` holding a published set to its ledger; `--presets` listing a document's choices without bundling.
 - **Gap fixes.** The ledger records the invocation; its schema ships on main beside the fixture schema.
 
 ## Scrutiny Rulings, 2026-11-27
 
-The user ruled on each design point the specimen sets showed, one at a time, and on the ledger's notation once the same ledger was rendered by each candidate's library. The ruling on each of the four sets is pending.
+The user ruled on each design point the specimen sets showed, one at a time, and on the ledger's notation once the same ledger was rendered by each candidate's library. The user then accepted the ledger, import, choice-group and combined sets as they stand.
 
 | Point | Ruling | Declined |
 | --- | --- | --- |
