@@ -8,7 +8,7 @@ What the proposed `--ledger` option writes, shown for two builds pf 0.36.0 produ
 - **Check mode.**  `-c --ledger` writes the same ledger to standard output and publishes nothing.
 - **A digest of the ledger.**  `ledger.yaml.sha256`, written with the ledger: one line in the format `sha256sum` writes, holding the ledger's hash and no other. It reports a ledger changed by accident; a caller guarding against deliberate change keeps the line somewhere else.
 - **`--verify FOLDER`.**  Holds the ledger to its digest, then re-hashes each source and bundle the ledger names, and reports each that differs.
-- **A schema.**  One JSON Schema the corpus holds every ledger to.
+- **A schema.**  One JSON Schema the corpus holds every ledger to. It is whole from the first release: the import and group fields are in it before those features write them.
 - **No new dependency.**  The ledger is written by `ruamel-yaml`, the library pf already reads frontmatter with.
 
 ## The Format

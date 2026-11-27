@@ -80,4 +80,5 @@ A Codex session reviewed the decisions, the design, the plan and the four sets r
 - **Invalid picks read as unresolved selections.** The choice-group set names `E_INVALID_USAGE` for two picks in one group and for a pick naming a fixed group, and the wiring row declares a fixture for each.
 - **A stub's origin named its preset's line.** A `line` is the line the setting's key is written on, and a chosen alternative carries the line of its `choice`.
 - **Two specimens named a wrong place.** The ledgerless case states its own working directory, and the unused-pair warning names the key as its author wrote it.
+- **The schema had no rule across the three deliveries.** The user ruled for one schema, numbered 1 and whole from the ledger epic. The later epics write fields it already admits, and the schema file is the ledger epic's alone.
 
