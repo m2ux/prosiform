@@ -34,7 +34,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w00.md) | Ledger contract and frozen controls | AC1 | [E00:W04](https://github.com/m2ux/prosiform/issues/890) | | 1 | |
+| [W00](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-27-868-i20-e01-w00-ledger-contract-and-frozen/) | Ledger contract and frozen controls | AC1 | [E00:W04](https://github.com/m2ux/prosiform/issues/890) | | 1 | |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w01.md) | Ledger projection and serialization | AC2 | W00 | | 2 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w02.md) | CLI publication and check mode | AC3, AC4, AC5 | W01 | | 1 | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w03.md) | Public ledger contract and example | AC6 | W02 | | 2 | |

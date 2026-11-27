@@ -33,7 +33,7 @@
       "number": 868,
       "url": "https://github.com/m2ux/prosiform/issues/868",
       "title": "[I20:E01] Build Ledger: Each Bundle Identifies Its Effective Sources and Selections",
-      "body_sha256": "45e2b85d3914e0194e71532d5d8ef9a811c7148d7f0de8ec113afaf1b5d75515",
+      "body_sha256": "ebf1f0b4a7ecbdddbe1c518539da989cee2265345566abf50e2e865dacca048f",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
