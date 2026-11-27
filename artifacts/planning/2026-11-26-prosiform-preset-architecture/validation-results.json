@@ -1,12 +1,14 @@
 {
   "repository": "m2ux/prosiform",
-  "evaluated_main_revision": "794922d41465b91deb4edb3a7484506cb8f519cd",
+  "evaluated_main_revision": "8cedda4cc06b0486168addc05f057161192a22a6",
+  "reference_release": "pf 0.36.0",
   "initiative": "I20",
   "issues": {
     "I": {
       "number": 867,
       "url": "https://github.com/m2ux/prosiform/issues/867",
-      "body_sha256": "770600cee9a64694098a64ed8a12ea86593fde3d5dedc34cadea06ba542dd35b",
+      "title": "[I20] Preset Configuration: Effective Builds, Pure Reuse and Independent Local Choices",
+      "body_sha256": "8fd71cb38bc5d0ba4f5fdbc2b4f41745ee1fbe10cbd3320e6d73387113bf32ea",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -15,9 +17,23 @@
       ]
     },
     "E00": {
+      "number": 890,
+      "url": "https://github.com/m2ux/prosiform/issues/890",
+      "title": "[I20:E00] Design Specimens: Each Proposed Form Scrutinised as Files Before Its Contract",
+      "body_sha256": "6ed648b3fd386ebf56ec24654b6bb97df2676d71e705969b3cb75b3d13a33d57",
+      "saved_fields_match": true,
+      "labels": [
+        "bot:ai-assisted",
+        "priority: 4",
+        "theme:python",
+        "type:epic"
+      ]
+    },
+    "E01": {
       "number": 868,
       "url": "https://github.com/m2ux/prosiform/issues/868",
-      "body_sha256": "d3ea257a71c04941f80f33bfa11aef56a731ae3378a484cf4c4a59e79cddeb93",
+      "title": "[I20:E01] Build Ledger: Each Bundle Identifies Its Effective Sources and Selections",
+      "body_sha256": "f34344842f9fa00da17b5c53a01adcebc5963ac719b0d7e6a2beb4a7cd679a0a",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -26,10 +42,11 @@
         "type:epic"
       ]
     },
-    "E01": {
+    "E02": {
       "number": 869,
       "url": "https://github.com/m2ux/prosiform/issues/869",
-      "body_sha256": "3e9b9d480391da73d8f9cbecfd4fdd935bb42a00aa5887d26f63d4214415b861",
+      "title": "[I20:E02] Preset Imports: Pure Settings Retain Their Scope and Origins",
+      "body_sha256": "f544caec6a5ba391395476396b7ec6b22d7db0b44d89c8f363cfd0a951f20613",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -38,10 +55,11 @@
         "type:epic"
       ]
     },
-    "E02": {
+    "E03": {
       "number": 870,
       "url": "https://github.com/m2ux/prosiform/issues/870",
-      "body_sha256": "2ab3a9462f34c3214ba28652e5cef5e65a2b521398c8382b52b85ae4bc699bcd",
+      "title": "[I20:E03] Local Choice Groups: Independent Component and Test Alternatives",
+      "body_sha256": "0ed9a2cb5975fc95ff0135569b11338021a762e0ac4de5a455023073f0b6e6e4",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -51,85 +69,20 @@
       ]
     }
   },
-  "board": 18,
-  "board_items": {
-    "I": {
-      "item_id": 319283407,
-      "status": "Backlog",
-      "status_field_id": 428166189,
-      "status_option_id": "f75ad846"
-    },
-    "E00": {
-      "item_id": 319283558,
-      "status": "Backlog",
-      "status_field_id": 428166189,
-      "status_option_id": "f75ad846"
-    },
-    "E01": {
-      "item_id": 319283690,
-      "status": "Backlog",
-      "status_field_id": 428166189,
-      "status_option_id": "f75ad846"
-    },
-    "E02": {
-      "item_id": 319283808,
-      "status": "Backlog",
-      "status_field_id": 428166189,
-      "status_option_id": "f75ad846"
-    }
-  },
+  "format_findings": 0,
+  "dependency_problems": 0,
   "epic_priorities": {
-    "E00": 3,
-    "E01": 2,
-    "E02": 1
-  },
-  "lanes": false,
-  "task_counts": {
     "E00": 4,
-    "E01": 4,
-    "E02": 5
+    "E01": 3,
+    "E02": 2,
+    "E03": 1
   },
-  "checks": [
-    {
-      "name": "format-E00",
-      "exit_code": 0,
-      "summary": "#868 epic (open): 0 fixed, 0 to apply, 0 to decide",
-      "stdout_sha256": "2e7b3598baeca3ba66a5b276342388e19881a99aa2d46d69a9f877a7d89fed14",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "name": "format-E01",
-      "exit_code": 0,
-      "summary": "#869 epic (open): 0 fixed, 0 to apply, 0 to decide",
-      "stdout_sha256": "054b75ad61421eca936fbd01ce73bd4609309e40b43b41dc1c758a66f3940e33",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "name": "format-E02",
-      "exit_code": 0,
-      "summary": "#870 epic (open): 0 fixed, 0 to apply, 0 to decide",
-      "stdout_sha256": "6431194bfb65ec8af1a765b295ea77d4e3467c5d7e55a653ebbb1811d19ba287",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "name": "format-I",
-      "exit_code": 0,
-      "summary": "#867 initiative (open): 0 fixed, 0 to apply, 0 to decide",
-      "stdout_sha256": "0add080b9bce7edd6e1cdce70c81203e71f15c67edf6ed0a90c4d6282109e09a",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
-      "name": "dependencies",
-      "exit_code": 0,
-      "summary": "--- problems",
-      "stdout_sha256": "cb054aa4319866f823cb0daaf5b3abb42ab19a5d3da7f358468266659b25ee69",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    }
-  ],
-  "goal_review": "All confirmed clauses covered; bounded independent review findings resolved.",
-  "dependency_problems": [],
-  "unanswered_joins": [],
-  "native_feature_trials_run": 0,
-  "implementation_started": false,
-  "raw_host_logs_published": false
+  "board": 18,
+  "board_status": "Backlog",
+  "sub_issue_order": [
+    890,
+    868,
+    869,
+    870
+  ]
 }

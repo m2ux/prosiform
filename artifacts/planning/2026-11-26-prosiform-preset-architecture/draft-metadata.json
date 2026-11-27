@@ -1,36 +1,43 @@
 {
   "initiative_prefix": "I20",
-  "prefix_requires_fresh_publication_readback": false,
   "board": 18,
   "theme": "theme:python",
+  "reference_release": "pf 0.36.0",
+  "reference_revision": "8cedda4cc06b0486168addc05f057161192a22a6",
   "map_confirmed": true,
+  "lanes": {
+    "1": "Frontier: Opus 5.5 or Fable 5.2",
+    "2": "Mid: Sonnet 5.5"
+  },
   "epics": {
     "E00": {
-      "title": "[I20:E00] Effective Manifest: Each Bundle Identifies Its Effective Sources and Selections",
-      "priority": 3,
-      "lanes": false
+      "title": "[I20:E00] Design Specimens: Each Proposed Form Scrutinised as Files Before Its Contract",
+      "priority": 4
     },
     "E01": {
-      "title": "[I20:E01] Preset Imports: Pure Settings Retain Their Scope and Origins",
-      "priority": 2,
-      "lanes": false
+      "title": "[I20:E01] Build Ledger: Each Bundle Identifies Its Effective Sources and Selections",
+      "priority": 3
     },
     "E02": {
-      "title": "[I20:E02] Local Choice Groups: Independent Component and Test Alternatives",
-      "priority": 1,
-      "lanes": false
+      "title": "[I20:E02] Preset Imports: Pure Settings Retain Their Scope and Origins",
+      "priority": 2
+    },
+    "E03": {
+      "title": "[I20:E03] Local Choice Groups: Independent Component and Test Alternatives",
+      "priority": 1
     }
   },
   "task_counts": {
-    "E00": 4,
-    "E01": 4,
-    "E02": 5
+    "E00": 5,
+    "E01": 5,
+    "E02": 4,
+    "E03": 6
   },
-  "unpublished_issue_placeholders": [],
   "published_issues": {
     "I": 867,
-    "E00": 868,
-    "E01": 869,
-    "E02": 870
+    "E00": 890,
+    "E01": 868,
+    "E02": 869,
+    "E03": 870
   }
 }

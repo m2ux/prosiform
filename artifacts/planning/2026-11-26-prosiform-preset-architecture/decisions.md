@@ -1,19 +1,51 @@
 # Decisions And Review
 
-- User confirmed I20 feature planning on board18/theme:python, manifest then imports then choice groups, numeric priorities3/2/1 and no lanes. No further map question remains.
-- Thirteen rows refine the original ten-row estimate without changing goal, epics or priority:4manifest,4imports,5groups. Projection/capture/local-resolution services are independently tested owner seams before public wiring; CLI admission occurs with the complete respective mechanism.
-- Existing doc-only patterns remain with I12; the frozen Rust contract target stays independent. No existing issue is amended by this draft.
-- F41#865 gates the first main-code row E00W01 and is inherited by dependent implementation. It gates no engineering contract row or planning publication.
-- Opt-in --manifest writes build-manifest.json atomically with the bundle set. It records compiler facts, not runtime effort or semantic acceptance.
-- imports references path and one exact normalized preset name. Only that metadata declaration is selected; no implicit default/body. Only levels/subst/pure imports are admitted; imported/local conflicts fail within a flattened preset. Current selected-over-default layering remains distinct.
-- choice-group names a local axis; its absence means the document's single unnamed group in the same resolution model. One unresolved group can be picked with others explicit; multiple unresolved groups refuse, avoiding a Cartesian picker.
-- The native checkpoint is representative mechanism evidence, at most4fresh contexts, not a full combination sweep or general performance/quality proof. It uses declared thin adapters over existing public harness owners and needs a separate future release.
+## Standing Decisions
+
+- I20 is feature planning on board 18 under `theme:python`. No proposal is required.
+- Existing doc-only patterns remain with I12; the frozen Rust contract target stays independent. No other issue is amended by this plan.
+- Imports reference a path and one exact normalized preset name. Only that metadata declaration is selected; no implicit default and no body. Only levels, subst and pure imports are admitted; imported and local conflicts fail within a flattened preset. Selected-over-default layering stays distinct.
+- `choice-group` names a local axis; where it is absent the alternative belongs to the document's single unnamed group in the same resolution model.
+- The agent checkpoint is representative mechanism evidence, at most four fresh contexts, never a full combination sweep or a general performance or quality proof. It uses declared thin adapters over existing public harness owners and needs a separate release.
+
+## Review Rulings, 2026-11-27
+
+The user reviewed the published plan against pf 0.36.0 and ruled on each point.
+
+- **Reference release.** pf 0.36.0 at `8cedda4cc06b0486168addc05f057161192a22a6` is the baseline. The five retained controls reproduce under it byte for byte: exit status, diagnostics and bundle hashes.
+- **Specimen stage.** A new first epic, Design Specimens, holds one specimen set for each feature, a combined set and the scrutiny ruling. The existing epics follow it as E01 to E03, and each contract row waits on the ruling.
+- **Record name and format.** The file is `ledger.toml`, written by `--ledger`: one word, TOML, validated by a JSON Schema as fixture manifests are. `tomli-w` is the one added dependency, since neither existing dependency writes TOML. "Manifest" names the corpus fixture declaration and "provenance" is a glossary term, so neither is used.
+- **Order of code work.** The three features are built in turn, each end to end. The parallel work is the three specimen rows.
+- **Lanes.** Two capability lanes with cross-family review, as [Lanes](#lanes) states.
+- **Additions admitted.** A repeatable `--pick` at the entry; the ledger written to standard output in check mode; `--verify` holding a published set to its ledger; `--presets` listing a document's choices without bundling.
+- **Gap fixes.** The ledger records the invocation; its schema ships on main beside the fixture schema.
+
+## Lanes
+
+A lane marks the model class a row's delivery session needs. The index is board-wide.
+
+| Lane | Model class | Rows |
+| --- | --- | --- |
+| `1` | Frontier: Opus 5.5 or Fable 5.2 | Every specimen and ruling row; each contract row; the wiring rows crossing selection, dispatch and deferral; the bounded observation |
+| `2` | Mid: Sonnet 5.5 | The three isolated services; documentation and examples; verification; the preset listing |
+
+The Review part of each lane `1` row runs on a model of another family than the delivering session, through the Codex agent the eval harness drives.
 
 ## Joins
 
-- E01:W01, E01:W02 remain split: capture/lookup is a separately reviewable source-boundary service consumed by the complete nested settings resolver; joining would enlarge the code-review seam.
-- E02:W00, E02:W04 remain split if considered through shared planning artifacts: contract and final observation have separate observed outputs and intervening implementation dependencies.
+- E02:W01, E02:W02 remain split: capture and lookup is a separately reviewable source-boundary service the complete resolver consumes, and the two rows sit in different lanes.
+
+## Conventions
+
+- **A fixture is declared by its manifest.** A work item names a corpus fixture by its `manifest.toml`; the fixture's source and expected files sit beside it and belong to the same row.
+- **The design link moves with the admitting change.** The change that admits a form moves the README's design link to the contract revision stating it, with the fixtures and code entries that revision needs, so the conformance check never reads a contract ahead of the build.
+- **Each documentation row moves the link on the pages it rewrites.**
+
+## Considered And Left Out
+
+- **A services epic.** One epic holding the three isolated services would run them at the same time. It is left out: the layer ships nothing a user can run.
+- **Fixture-first rows on a small-model lane.** Corpus fixtures landed ahead of their wiring under the `awaiting` marker would add a third lane and parallel work inside each epic. It is left out: whether a fixture may name a contract clause before the design link moves is unverified.
 
 ## Public Boundary
 
-Publish only the curated generic scope, draft bodies, work items, design/matrix, public synthetic controls, review and validation records. Raw live tracker captures, local helper scripts, synthetic issue-number snapshots and host-specific command logs are coordinator evidence, not public source requirements. No private application source, names, findings or journals enter the upstream record.
+Publish only the curated generic scope, draft bodies, work items, design, matrix, public synthetic controls and specimens, review and validation records. Raw live tracker captures, local helper scripts and host-specific command logs are coordinator evidence, never public source requirements. No private application source, names, findings or journals enter the upstream record.

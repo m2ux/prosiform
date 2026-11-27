@@ -1,7 +1,7 @@
 {
-  "compiler": "pf0.34.0",
-  "revision": "191c0cf8d2a8fa39b17f674b579daee413c0e655",
-  "scope": "Existing grammar observations only; future feature behavior is not executed.",
+  "release": "pf 0.36.0",
+  "revision": "8cedda4cc06b0486168addc05f057161192a22a6",
+  "scope": "Existing grammar observations only; proposed forms are not executed.",
   "cases": [
     {
       "case": "valid-two-bindings",
