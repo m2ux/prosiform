@@ -68,6 +68,16 @@ A hand-written file says so in its first line; the schema says so in its `$comme
 - Each `sha256` equals the hash of the real file it names.
 - The `use` of each source matches the files pf 0.36.0 opened, read from a system-call trace of both builds.
 
+## The Same Ledger In Each Format
+
+The run's ledger is written three ways, each reading back to the same data.
+
+| File | Laid out by | Shows |
+| --- | --- | --- |
+| [run/bundles/entry-recorded.bundles/ledger.toml](run/bundles/entry-recorded.bundles/ledger.toml) | Hand | TOML with nested tables indented and short lists on one line |
+| [format/ledger.tomli-w.toml](format/ledger.tomli-w.toml) | The `tomli-w` library | TOML as the library the plan names writes it: no indentation, one list item to a line |
+| [format/ledger.yaml](format/ledger.yaml) | The `ruamel-yaml` library | YAML as the dependency pf already ships writes it, each string quoted |
+
 ## A Row For Each Link
 
 Each authored dispatch and deferral link has a row naming the source and line that wrote it, so two links reaching one bundle are two rows. The ledger's projection therefore needs each link's coordinates, where the bundler's own record of a dispatched bundle keeps one.

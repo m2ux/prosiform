@@ -123,6 +123,8 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/ledger/README.md](specimens/ledger/README.md) | Ledger set: what the form needs, its files and what scrutiny settled |
 | [specimens/ledger/check-mode.txt](specimens/ledger/check-mode.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/fixed.ledger.toml](specimens/ledger/fixed.ledger.toml) | Ledger set: hand-written expected output |
+| [specimens/ledger/format/ledger.tomli-w.toml](specimens/ledger/format/ledger.tomli-w.toml) | Ledger set: hand-written expected output |
+| [specimens/ledger/format/ledger.yaml](specimens/ledger/format/ledger.yaml) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/ledger.schema.json](specimens/ledger/ledger.schema.json) | Ledger set: hand-written expected output |
 | [specimens/ledger/refusals.txt](specimens/ledger/refusals.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/run/alpha.md](specimens/ledger/run/alpha.md) | Ledger set: source pf 0.36.0 accepts |
