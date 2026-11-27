@@ -64,6 +64,8 @@ The Review part of each lane `1` row runs on a model of another family than the 
 ## Considered And Left Out
 
 - **A services epic.** One epic holding the three isolated services would run them at the same time. It is left out: the layer ships nothing a user can run.
+- **A YAML file as the import target.** Shared settings would sit in a plain YAML file a document imports, where an import names a Markdown source's frontmatter. It is left out for now, on the user's ruling of 2026-11-27.
+- **Presets held outside frontmatter.** A document's own presets would move to a settings file, through an import list under `prosiform:` or split by who reads each setting. It is left out: the user stopped it at scrutiny on 2026-11-27, and every setting is authored in frontmatter.
 - **Fixture-first rows on a small-model lane.** Corpus fixtures landed ahead of their wiring under the `awaiting` marker would add a third lane and parallel work inside each epic. It is left out: whether a fixture may name a contract clause before the design link moves is unverified.
 
 ## Public Boundary
