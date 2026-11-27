@@ -34,7 +34,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-27-868-i20-e01-w00-ledger-contract-and-frozen/) | Ledger contract and frozen controls | AC1 | [E00:W04](https://github.com/m2ux/prosiform/issues/890) | | 1 | |
+| [W00](https://github.com/m2ux/prosiform/commit/fbe054d280ca3eed4b535442a20937707439c5ce) | Ledger contract and frozen controls | AC1 | [E00:W04](https://github.com/m2ux/prosiform/issues/890) | | 1 | ✓ |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w01.md) | Ledger projection and serialization | AC2 | W00 | | 2 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w02.md) | CLI publication and check mode | AC3, AC4, AC5 | W01 | | 1 | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w03.md) | Public ledger contract and example | AC6 | W02 | | 2 | |
@@ -42,7 +42,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The ledger schema and frozen source and bundle controls state which values are build facts and which are outside the ledger, as the contract and specimen review shows.
+- [x] **AC1.** The ledger schema and frozen source and bundle controls state which values are build facts and which are outside the ledger, as the contract and specimen review shows.
 - [ ] **AC2.** The requested ledger identifies each output's effective source, selection, dispatch and invocation facts deterministically, as ledger unit and corpus tests show.
 - [ ] **AC3.** Enabling ledger output preserves the baseline Markdown bundle bytes, as paired output-hash fixtures show.
 - [ ] **AC4.** Ledger and bundle-set publication share the existing complete-or-refused result boundary, as publication and failure tests and `make check` show.
