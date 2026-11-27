@@ -5,8 +5,8 @@ and publishes nothing. Run in `run/`:
 
 $ pf -c --ledger -o bundles '[Run](entry.md "recorded")'
 
-Standard output: the bytes of `run/bundles/entry-recorded.bundles/ledger.toml`,
-from its `schema = 1` line to its last line. The bundle hashes are those of the
+Standard output: the bytes of `run/bundles/entry-recorded.bundles/ledger.yaml`,
+from its `schema: 1` line to its last line. The bundle hashes are those of the
 bundles the run validated and did not write.
 
 Standard error: the two warnings the build raises today, as `run/diagnostics.txt`

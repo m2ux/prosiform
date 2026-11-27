@@ -8,7 +8,7 @@ Each feature has a specimen set under `specimens/`: sources written in the propo
 
 ## Ledger
 
-The explicit `--ledger` option adds one `ledger.toml` to the atomically published bundle-set folder. Its versioned schema records:
+The explicit `--ledger` option adds one `ledger.yaml` to the atomically published bundle-set folder. Its versioned schema records:
 
 - the build and profile identity, and the invocation: the entry reference, each pick and each budget in force;
 - one row for each authored dispatch and deferral link, naming the source and line that wrote it;
@@ -19,7 +19,7 @@ The explicit `--ledger` option adds one `ledger.toml` to the atomically publishe
 
 A feature-to-field and exclusion table prevents partial schema coverage. Runtime effort, provider and context execution, delivery, obedience and semantic completeness are outside the ledger, and so is every warning a build raises: what a warning points at is a field already, a stand-in being a substitution of kind `stand-in`. The ledger's own bytes are outside the hashes it records. Where two declarations state one value, the ledger records every origin, each further one under `also`.
 
-The serializer projects the existing capture and provenance records; it never reads rendered Markdown. It writes TOML through the `tomli-w` library in a fixed key order. Enabling the ledger preserves authored Markdown bytes. Failure uses the existing complete-or-refused publication owner. A JSON Schema ships beside the corpus's fixture schema, and the corpus holds each fixture's ledger to it.
+The serializer projects the existing capture and provenance records; it never reads rendered Markdown. It writes YAML through `ruamel-yaml`, the library the build reads frontmatter with, in a fixed key order: each string quoted, a list of scalars on one line, a list of mappings as a block, and each key holding a list of mappings in its plural. The ledger is one YAML 1.2 Core mapping under the rules frontmatter is read by, so it carries no alias, merge key, custom tag or duplicate key. Enabling the ledger preserves authored Markdown bytes. Failure uses the existing complete-or-refused publication owner. A JSON Schema ships beside the corpus's fixture schema, and the corpus holds each fixture's ledger to it.
 
 A check-mode run with the option writes the same ledger to standard output and publishes nothing.
 

@@ -1,4 +1,4 @@
-# Hand-written specimen: pf 0.36.0 does not write this file. The run's ledger, laid out as ruamel-yaml 0.18.16 writes it with each string quoted.
+# Hand-written specimen: pf 0.36.0 does not write this file.
 schema: 1
 build:
   tool: "pf"
@@ -16,18 +16,18 @@ invocation:
     links: 32768
     nesting: 64
     depth: 8
-level:
+levels:
   - name: "judgement"
     model: "gpt-6.1-sol"
     declared: "entry.md"
     preset: "default"
     line: 5
-stub:
+stubs:
   - name: "recorded"
     states: "Reads the recorded review."
     declared: "entry.md"
     line: 6
-source:
+sources:
   - path: "entry.md"
     sha256: "536c5ddf3f5d29b221024ef718df7cc5523df33e966c70520f67fe5287dfd25b"
     use: "content"
@@ -46,82 +46,63 @@ source:
   - path: "recorded-review.md"
     sha256: "a5a7b151e8dda45199ebdaa17e4b1a8642189bded71aeab8771e66a17ed5f055"
     use: "metadata"
-bundle:
+bundles:
   - file: "entry-recorded.bundle.md"
     sha256: "7efad29ccef236ff49fd54785710d9617a329337440ddea8be1fb9ac37966822"
     role: "entry"
     document: "entry.md"
-    selected:
-      - "recorded"
+    selected: ["recorded"]
     content:
       - source: "entry.md"
-        lines:
-          - 11
-          - 13
-        presets:
-          - "default"
-          - "recorded"
-    substitution:
+        lines: [11, 13]
+        presets: ["default", "recorded"]
+    substitutions:
       - key: "review.md"
         substitute: "recorded-review.md"
         kind: "stand-in"
         declared: "entry.md"
         preset: "recorded"
         line: 9
-    dispatch:
+    dispatches:
       - target: "worker.md"
         source: "entry.md"
         line: 13
         title: "?, small"
         level: "judgement"
         model: "gpt-6.1-sol"
-        choice:
+        choices:
           - alternative: "alpha"
             states: "The requested component is alpha."
             bundle: "worker-alpha+small.bundle.md"
           - alternative: "beta"
             states: "The requested component is beta."
             bundle: "worker-beta+small.bundle.md"
-    deferral:
+    deferrals:
       - target: "recorded-review.md"
         source: "entry.md"
         line: 13
-        carries:
-          - "recorded"
+        carries: ["recorded"]
         published: "[Review](../../recorded-review.md \"recorded\")"
   - file: "worker-alpha+small.bundle.md"
     sha256: "33d3c874d0d8e93b281c2cf5b76a34326d6f82fb5295f7fb50def3d5619ecb6d"
     role: "dispatched"
     document: "worker.md"
-    selected:
-      - "alpha"
-      - "small"
+    selected: ["alpha", "small"]
     level: "judgement"
     model: "gpt-6.1-sol"
     content:
       - source: "worker.md"
-        lines:
-          - 20
-          - 22
-        presets:
-          - "default"
-          - "alpha"
-          - "small"
+        lines: [20, 22]
+        presets: ["default", "alpha", "small"]
         choices:
           - alternative: "alpha"
       - source: "alpha.md"
-        lines:
-          - 4
-          - 6
-        presets:
-          - "default"
+        lines: [4, 6]
+        presets: ["default"]
       - source: "small.md"
-        lines:
-          - 4
-          - 6
-        presets:
-          - "default"
-    substitution:
+        lines: [4, 6]
+        presets: ["default"]
+    substitutions:
       - key: "component.md"
         substitute: "alpha.md"
         kind: "routing"
@@ -138,35 +119,22 @@ bundle:
     sha256: "4c0feb2da7f4c780bb87651d969ff0d3a58647a1562c21307fc67844542936d5"
     role: "dispatched"
     document: "worker.md"
-    selected:
-      - "beta"
-      - "small"
+    selected: ["beta", "small"]
     level: "judgement"
     model: "gpt-6.1-sol"
     content:
       - source: "worker.md"
-        lines:
-          - 20
-          - 22
-        presets:
-          - "default"
-          - "beta"
-          - "small"
+        lines: [20, 22]
+        presets: ["default", "beta", "small"]
         choices:
           - alternative: "beta"
       - source: "beta.md"
-        lines:
-          - 4
-          - 6
-        presets:
-          - "default"
+        lines: [4, 6]
+        presets: ["default"]
       - source: "small.md"
-        lines:
-          - 4
-          - 6
-        presets:
-          - "default"
-    substitution:
+        lines: [4, 6]
+        presets: ["default"]
+    substitutions:
       - key: "component.md"
         substitute: "beta.md"
         kind: "routing"

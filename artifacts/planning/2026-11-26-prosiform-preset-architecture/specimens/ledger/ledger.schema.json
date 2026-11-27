@@ -8,8 +8,8 @@
     "schema",
     "build",
     "invocation",
-    "source",
-    "bundle"
+    "sources",
+    "bundles"
   ],
   "additionalProperties": false,
   "properties": {
@@ -70,7 +70,7 @@
         }
       }
     },
-    "level": {
+    "levels": {
       "type": "array",
       "items": {
         "type": "object",
@@ -185,7 +185,7 @@
         }
       }
     },
-    "stub": {
+    "stubs": {
       "type": "array",
       "items": {
         "type": "object",
@@ -216,7 +216,7 @@
         }
       }
     },
-    "source": {
+    "sources": {
       "type": "array",
       "items": {
         "type": "object",
@@ -246,7 +246,7 @@
       },
       "minItems": 1
     },
-    "bundle": {
+    "bundles": {
       "type": "array",
       "items": {
         "type": "object",
@@ -370,7 +370,7 @@
               }
             }
           },
-          "substitution": {
+          "substitutions": {
             "type": "array",
             "items": {
               "type": "object",
@@ -492,7 +492,7 @@
               }
             }
           },
-          "brief": {
+          "briefs": {
             "type": "array",
             "items": {
               "type": "object",
@@ -518,7 +518,7 @@
               }
             }
           },
-          "dispatch": {
+          "dispatches": {
             "type": "array",
             "items": {
               "type": "object",
@@ -559,7 +559,7 @@
                   "pattern": "^[^/]+$",
                   "description": "A file of the run's own folder, named without a folder."
                 },
-                "choice": {
+                "choices": {
                   "type": "array",
                   "items": {
                     "type": "object",
@@ -593,7 +593,7 @@
               }
             }
           },
-          "deferral": {
+          "deferrals": {
             "type": "array",
             "items": {
               "type": "object",

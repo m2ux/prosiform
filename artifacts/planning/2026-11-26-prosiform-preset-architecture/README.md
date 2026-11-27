@@ -49,7 +49,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/choice-groups/expected/entry-picks.txt](specimens/choice-groups/expected/entry-picks.txt) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/explicit/entry.bundle.md](specimens/choice-groups/expected/explicit/entry.bundle.md) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/explicit/worker-alpha+small.bundle.md](specimens/choice-groups/expected/explicit/worker-alpha%2Bsmall.bundle.md) | Choice-group set: hand-written expected output |
-| [specimens/choice-groups/expected/ledger.toml](specimens/choice-groups/expected/ledger.toml) | Choice-group set: hand-written expected output |
+| [specimens/choice-groups/expected/ledger.yaml](specimens/choice-groups/expected/ledger.yaml) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/open-pick/entry.bundle.md](specimens/choice-groups/expected/open-pick/entry.bundle.md) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/presets.txt](specimens/choice-groups/expected/presets.txt) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/refusals.txt](specimens/choice-groups/expected/refusals.txt) | Choice-group set: hand-written expected output |
@@ -69,7 +69,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/combined/component.md](specimens/combined/component.md) | Combined set: source pf 0.36.0 accepts |
 | [specimens/combined/entry.md](specimens/combined/entry.md) | Combined set: source written in the proposed form |
 | [specimens/combined/expected/entry.bundle.md](specimens/combined/expected/entry.bundle.md) | Combined set: hand-written expected output |
-| [specimens/combined/expected/ledger.toml](specimens/combined/expected/ledger.toml) | Combined set: hand-written expected output |
+| [specimens/combined/expected/ledger.yaml](specimens/combined/expected/ledger.yaml) | Combined set: hand-written expected output |
 | [specimens/combined/expected/worker-alpha+small.bundle.md](specimens/combined/expected/worker-alpha%2Bsmall.bundle.md) | Combined set: hand-written expected output |
 | [specimens/combined/large.md](specimens/combined/large.md) | Combined set: source pf 0.36.0 accepts |
 | [specimens/combined/shared/settings.md](specimens/combined/shared/settings.md) | Combined set: source written in the proposed form |
@@ -105,7 +105,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/imports/proposed/diagnostics-0.36.0.txt](specimens/imports/proposed/diagnostics-0.36.0.txt) | Import set: what pf 0.36.0 wrote |
 | [specimens/imports/proposed/diagnostics-proposed.txt](specimens/imports/proposed/diagnostics-proposed.txt) | Import set: hand-written expected output |
 | [specimens/imports/proposed/entry.md](specimens/imports/proposed/entry.md) | Import set: source written in the proposed form |
-| [specimens/imports/proposed/ledger.toml](specimens/imports/proposed/ledger.toml) | Import set: hand-written expected output |
+| [specimens/imports/proposed/ledger.yaml](specimens/imports/proposed/ledger.yaml) | Import set: source pf 0.36.0 accepts |
 | [specimens/imports/proposed/shared/rules.md](specimens/imports/proposed/shared/rules.md) | Import set: source pf 0.36.0 accepts |
 | [specimens/imports/proposed/shared/settings.md](specimens/imports/proposed/shared/settings.md) | Import set: source written in the proposed form |
 | [specimens/imports/proposed/shared/strict-rules.md](specimens/imports/proposed/shared/strict-rules.md) | Import set: source pf 0.36.0 accepts |
@@ -122,15 +122,13 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/imports/refusals/settings.md](specimens/imports/refusals/settings.md) | Import set: source written in the proposed form |
 | [specimens/ledger/README.md](specimens/ledger/README.md) | Ledger set: what the form needs, its files and what scrutiny settled |
 | [specimens/ledger/check-mode.txt](specimens/ledger/check-mode.txt) | Ledger set: hand-written expected output |
-| [specimens/ledger/fixed.ledger.toml](specimens/ledger/fixed.ledger.toml) | Ledger set: hand-written expected output |
-| [specimens/ledger/format/ledger.tomli-w.toml](specimens/ledger/format/ledger.tomli-w.toml) | Ledger set: hand-written expected output |
-| [specimens/ledger/format/ledger.yaml](specimens/ledger/format/ledger.yaml) | Ledger set: source pf 0.36.0 accepts |
+| [specimens/ledger/fixed.ledger.yaml](specimens/ledger/fixed.ledger.yaml) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/ledger.schema.json](specimens/ledger/ledger.schema.json) | Ledger set: hand-written expected output |
 | [specimens/ledger/refusals.txt](specimens/ledger/refusals.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/run/alpha.md](specimens/ledger/run/alpha.md) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/beta.md](specimens/ledger/run/beta.md) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/bundles/entry-recorded.bundles/entry-recorded.bundle.md](specimens/ledger/run/bundles/entry-recorded.bundles/entry-recorded.bundle.md) | Ledger set: bundle pf 0.36.0 wrote |
-| [specimens/ledger/run/bundles/entry-recorded.bundles/ledger.toml](specimens/ledger/run/bundles/entry-recorded.bundles/ledger.toml) | Ledger set: hand-written expected output |
+| [specimens/ledger/run/bundles/entry-recorded.bundles/ledger.yaml](specimens/ledger/run/bundles/entry-recorded.bundles/ledger.yaml) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/bundles/entry-recorded.bundles/worker-alpha+small.bundle.md](specimens/ledger/run/bundles/entry-recorded.bundles/worker-alpha%2Bsmall.bundle.md) | Ledger set: bundle pf 0.36.0 wrote |
 | [specimens/ledger/run/bundles/entry-recorded.bundles/worker-beta+small.bundle.md](specimens/ledger/run/bundles/entry-recorded.bundles/worker-beta%2Bsmall.bundle.md) | Ledger set: bundle pf 0.36.0 wrote |
 | [specimens/ledger/run/component.md](specimens/ledger/run/component.md) | Ledger set: source pf 0.36.0 accepts |

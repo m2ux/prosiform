@@ -19,28 +19,29 @@ pf --ledger -o bundles entry.md
 | [entry.md](entry.md), [worker.md](worker.md), [shared/settings.md](shared/settings.md) | Proposed form | Imports and choice groups together |
 | [component.md](component.md), [alpha.md](alpha.md), [beta.md](beta.md), [test.md](test.md), [small.md](small.md), [large.md](large.md) | Real | Plain declaring documents |
 | [expected/entry.bundle.md](expected/entry.bundle.md), [worker-alpha+small.bundle.md](expected/worker-alpha%2Bsmall.bundle.md) | Hand-written | The bundles the run writes |
-| [expected/ledger.toml](expected/ledger.toml) | Hand-written | The ledger the run writes |
+| [expected/ledger.yaml](expected/ledger.yaml) | Hand-written | The ledger the run writes |
 
 A hand-written file says so in its first line. A hand-written bundle begins on line 3.
 
 ## What To Scrutinise
 
 - **The bundles are the control's.**  From line 3 they equal the bundles pf 0.36.0 writes for [valid-two-bindings](../valid-two-bindings/), where every setting is written in place. The three features change what an author writes and what an operator can read, and leave what an agent reads as it is.
-- **The ledger joins the three.**  Each substitution names the shared preset that declared it and the alternative that imported it; `choices` names each group and its member; `level` names the imported map.
+- **The ledger joins the three.**  Each substitution names the shared preset that declared it and the alternative that imported it; `choices` names each group and its member; `levels` names the imported map.
 - **An alternative is a receiver, never a target.**  `alpha` imports settings and keeps its `choice` and `choice-group`. A preset stating either cannot be imported.
 
 ## Design Points Settled At Scrutiny
 
 | Point | Ruling | Shown in |
 | --- | --- | --- |
-| Does the ledger record the warnings a build raised? | No: the ledger records what was built. | [ledger.toml](../ledger/run/bundles/entry-recorded.bundles/ledger.toml) |
+| Does the ledger record the warnings a build raised? | No: the ledger records what was built. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 | Which code does a verification mismatch report? | `E_LEDGER_MISMATCH`, and `E_LEDGER_NOT_FOUND` for a folder with no ledger. | [verify.txt](../ledger/verify.txt) |
 | Does a source read only for an import count toward the budgets? | Yes, as any source the run opens. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
 | Does an imported pair no link names warn in each receiving document? | No: once, where no importer in the run names its key. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
 | Do import refusals take new codes? | Existing codes, with `E_IMPORT_CYCLE` new. | [refusals/diagnostics.txt](../imports/refusals/diagnostics.txt) |
 | What does the ledger record where two declarations state one value? | Every origin, the further ones under `also`. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
 | What does a pick naming a member of a fixed group report? | Invalid usage, naming the fixed group. | [entry-picks.txt](../choice-groups/expected/entry-picks.txt), case 6 |
-| Is the preset listing text or TOML? | Text. | [presets.txt](../choice-groups/expected/presets.txt) |
+| Is the preset listing text or the ledger's notation? | Text. | [presets.txt](../choice-groups/expected/presets.txt) |
+| Which notation is the ledger written in? | YAML, each string quoted, written by the library pf already ships. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 
 A bundle's name joins its effective preset names sorted by Unicode code point, as pf 0.36.0 names it, so `"small, alpha"` writes `worker-alpha+small.bundle.md` and two groups need no new naming rule.
 
@@ -54,4 +55,4 @@ A bundle's name joins its effective preset names sorted by Unicode code point, a
 ## Checks Made On This Set
 
 - The expected bundles equal the retained control bundles from line 3.
-- The ledger parses as TOML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.
+- The ledger parses as YAML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.

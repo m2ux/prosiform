@@ -5,9 +5,9 @@ runs in `run/`, where the build ran.
 
 What verification reads
 
-  - The ledger is read first and held to its schema. One that does not parse,
-    or states a schema this build does not read, is refused before any other
-    file is opened.
+  - The ledger is read first, under the rules a source's frontmatter is read
+    by, and held to its schema. One that does not parse, or states a schema
+    this build does not read, is refused before any other file is opened.
   - A bundle is named by a file name alone, and is read from the folder being
     verified. Every bundle the folder holds is compared with the ledger's
     list, in both directions.
@@ -61,7 +61,7 @@ Exit status 1.
 5. A set published without a ledger (the control `../valid-two-bindings`)
 
 $ pf --verify bundles/entry.bundles
-E_LEDGER_NOT_FOUND: the folder 'bundles/entry.bundles' holds no ledger.toml, so nothing records what it was built from
+E_LEDGER_NOT_FOUND: the folder 'bundles/entry.bundles' holds no ledger.yaml, so nothing records what it was built from
   remedy: rebuild the bundle set with --ledger
 
 Exit status 1.

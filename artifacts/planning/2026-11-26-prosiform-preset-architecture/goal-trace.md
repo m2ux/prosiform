@@ -61,3 +61,7 @@ A Codex session reviewed the four sets read-only. Each finding was checked again
 - **Equal values had one origin.** The point is open, with three answers, in the import set.
 - **An example named a section its source lacks.** The refusal specimen says the set does not exercise that rule.
 - **An exemption from the budgets is unbounded.** The cost is stated beside that answer.
+
+## Notation Of The Ledger, 2026-11-27
+
+The run's ledger was rendered by each candidate's library and the three renderings read back to one ledger. The hand-laid TOML the sets first showed is not what `tomli-w` 1.2.0 writes: the library indents no nested table and writes one list item to a line. `ruamel-yaml` is a dependency the build already has, and every build of the contract already reads YAML for frontmatter. The user ruled for YAML, and each ledger in the four sets is re-rendered through that library.

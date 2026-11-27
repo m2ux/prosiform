@@ -22,7 +22,7 @@ Effective configuration is spread across sources, and nothing published relates,
 - **Specimens before contract.**
   Each proposed form is written as source and expected-output files, marked real or hand-written, and ruled on before its contract text exists.
 - **A build ledger.**
-  An explicit option publishes one TOML ledger beside the bundle set, naming effective selections, source origins, dispatch configuration and the invocation, with authored Markdown unchanged.
+  An explicit option publishes one YAML ledger beside the bundle set, naming effective selections, source origins, dispatch configuration and the invocation, with authored Markdown unchanged.
 - **A checkable result.**
   A second option holds a published set to its ledger, so a changed source or bundle is reported.
 - **Pure explicit imports.**

@@ -30,8 +30,8 @@ Exit status 2. The same holds for --verify beside -o, -c, --ledger or --pick.
 
 4. Verification of a ledger this build cannot read
 
-$ pf --verify bundles/entry-recorded.bundles        (ledger.toml states schema = 2)
-E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.toml' states schema 2, and this build reads schema 1
+$ pf --verify bundles/entry-recorded.bundles        (ledger.yaml states schema: 2)
+E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.yaml' states schema 2, and this build reads schema 1
   remedy: verify the set with the build that wrote it
 
 Exit status 1.

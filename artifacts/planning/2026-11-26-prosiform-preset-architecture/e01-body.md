@@ -11,7 +11,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 ## Proposal
 
 - **Explicit output selection.**
-  The proposed `--ledger` option adds one TOML ledger inside the run's bundle-set folder. Without the option, the generated Markdown is identical to the frozen baseline.
+  The proposed `--ledger` option adds one YAML ledger inside the run's bundle-set folder. Without the option, the generated Markdown is identical to the frozen baseline.
 - **Recorded build facts.** The ledger carries:
   - a schema version, the build and profile identity and the invocation;
   - source-relative paths and hashes, selected regions, effective presets and their origins;
@@ -46,7 +46,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 - [ ] **AC4.** Ledger and bundle-set publication share the existing complete-or-refused result boundary, as publication and failure tests and `make check` show.
 - [ ] **AC5.** A check-mode run with the ledger option writes the ledger to standard output and publishes nothing, as the check-mode fixtures show.
 - [ ] **AC6.** The public invocation contract and executable example describe and exercise the delivered ledger, as documentation and corpus checks show.
-- [ ] **AC7.** A published set whose source or bundle bytes differ from its `ledger.toml` is reported with the differing path, as the verification fixtures show.
+- [ ] **AC7.** A published set whose source or bundle bytes differ from its `ledger.yaml` is reported with the differing path, as the verification fixtures show.
 
 ## References
 

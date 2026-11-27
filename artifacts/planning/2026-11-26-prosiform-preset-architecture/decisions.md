@@ -14,7 +14,7 @@ The user reviewed the published plan against pf 0.36.0 and ruled on each point.
 
 - **Reference release.** pf 0.36.0 at `8cedda4cc06b0486168addc05f057161192a22a6` is the baseline. The five retained controls reproduce under it byte for byte: exit status, diagnostics and bundle hashes.
 - **Specimen stage.** A new first epic, Design Specimens, holds one specimen set for each feature, a combined set and the scrutiny ruling. The existing epics follow it as E01 to E03, and each contract row waits on the ruling.
-- **Record name and format.** The file is `ledger.toml`, written by `--ledger`: one word, TOML, validated by a JSON Schema as fixture manifests are. `tomli-w` is the one added dependency, since neither existing dependency writes TOML. "Manifest" names the corpus fixture declaration and "provenance" is a glossary term, so neither is used.
+- **Record name.** The file is named for one word, `ledger`, and written by `--ledger`. "Manifest" names the corpus fixture declaration and "provenance" is a glossary term, so neither is used. Its notation was first TOML and is YAML, as [Scrutiny Rulings](#scrutiny-rulings-2026-11-27) records.
 - **Order of code work.** The three features are built in turn, each end to end. The parallel work is the three specimen rows.
 - **Lanes.** Two capability lanes with cross-family review, as [Lanes](#lanes) states.
 - **Additions admitted.** A repeatable `--pick` at the entry; the ledger written to standard output in check mode; `--verify` holding a published set to its ledger; `--presets` listing a document's choices without bundling.
@@ -22,7 +22,7 @@ The user reviewed the published plan against pf 0.36.0 and ruled on each point.
 
 ## Scrutiny Rulings, 2026-11-27
 
-The user ruled on each design point the specimen sets showed, one at a time. The ruling on each of the four sets is pending.
+The user ruled on each design point the specimen sets showed, one at a time, and on the ledger's notation once the same ledger was rendered by each candidate's library. The ruling on each of the four sets is pending.
 
 | Point | Ruling | Declined |
 | --- | --- | --- |
@@ -33,7 +33,8 @@ The user ruled on each design point the specimen sets showed, one at a time. The
 | Import refusal codes | Existing codes, with `E_IMPORT_CYCLE` new | A code for each import refusal |
 | Two declarations stating one value | Coalesce, the ledger recording every origin under `also` | Recording the first origin alone; refusing the duplicate |
 | A pick naming a member of a fixed group | `E_INVALID_USAGE`, naming the fixed and the open group | Reporting it as an unmade pick |
-| The preset listing's format | Text | TOML in the ledger's vocabulary |
+| The preset listing's format | Text | The ledger's notation and vocabulary |
+| The ledger's notation | YAML, each string quoted, written by the `ruamel-yaml` library pf already ships; the file is `ledger.yaml` | TOML through `tomli-w`, a new dependency whose layout carries no indentation and one list item to a line |
 
 ## Lanes
 

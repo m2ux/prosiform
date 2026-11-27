@@ -39,13 +39,20 @@ Suppose `worker.md` imports `strict` and also writes the same pair itself,
 as it does today for two selected presets that agree. The ledger names the
 first declaration as it does any pair, and each further one under `also`:
 
-  [[bundle.substitution]]
-  key = "shared/rules.md"
-  substitute = "shared/strict-rules.md"
-  kind = "routing"
-  declared = "worker.md"
-  preset = "default"
-  line = 9
-  also = [{ declared = "shared/settings.md", preset = "strict", line = 8, imports = [{ document = "worker.md", preset = "default", line = 6 }] }]
+  substitutions:
+    - key: "shared/rules.md"
+      substitute: "shared/strict-rules.md"
+      kind: "routing"
+      declared: "worker.md"
+      preset: "default"
+      line: 9
+      also:
+        - declared: "shared/settings.md"
+          preset: "strict"
+          line: 8
+          imports:
+            - document: "worker.md"
+              preset: "default"
+              line: 6
 
 One declaration reached along two import chains is one origin.

@@ -33,7 +33,7 @@ prosiform:
 | [proposed/subject.md](proposed/subject.md), [shared/rules.md](proposed/shared/rules.md), [shared/strict-rules.md](proposed/shared/strict-rules.md) | Real | Plain declaring documents |
 | [proposed/diagnostics-0.36.0.txt](proposed/diagnostics-0.36.0.txt) | Real | pf 0.36.0 refusing the proposed source as an unknown field |
 | [proposed/diagnostics-proposed.txt](proposed/diagnostics-proposed.txt) | Hand-written | What the proposed form writes, its budget and warning treatment, and two declarations stating one value |
-| [proposed/ledger.toml](proposed/ledger.toml) | Hand-written | The ledger tracing each imported setting to its declaration |
+| [proposed/ledger.yaml](proposed/ledger.yaml) | Hand-written | The ledger tracing each imported setting to its declaration |
 | [inline/entry.md](inline/entry.md), [inline/worker.md](inline/worker.md) | Real | The same settings written in place, in syntax pf 0.36.0 accepts |
 | [inline/subject.md](inline/subject.md), [shared/rules.md](inline/shared/rules.md), [shared/strict-rules.md](inline/shared/strict-rules.md) | Real | The inline control's plain documents |
 | [inline/bundles/entry.bundles/entry.bundle.md](inline/bundles/entry.bundles/entry.bundle.md), [worker.bundle.md](inline/bundles/entry.bundles/worker.bundle.md) | Real | The bundles pf 0.36.0 wrote for the inline control, exit status 0, no diagnostics |
@@ -62,4 +62,4 @@ A hand-written file says so in its first line.
 
 - The inline control was built with pf 0.36.0: exit status 0, standard error empty.
 - The proposed source was put to pf 0.36.0 and its refusal retained.
-- The ledger parses as TOML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.
+- The ledger parses as YAML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.

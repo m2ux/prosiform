@@ -42,7 +42,7 @@ An alternative stating no `choice-group` belongs to its document's one unnamed g
 | [expected/entry-picks.txt](expected/entry-picks.txt) | Hand-written | The repeatable `--pick` at the entry, and a deferred link |
 | [expected/refusals.txt](expected/refusals.txt) | Hand-written | Each refusal at a dispatch |
 | [expected/presets.txt](expected/presets.txt) | Hand-written | The `--presets` listing |
-| [expected/ledger.toml](expected/ledger.toml) | Hand-written | The ledger naming each group and the alternative chosen in it |
+| [expected/ledger.yaml](expected/ledger.yaml) | Hand-written | The ledger naming each group and the alternative chosen in it |
 
 A hand-written file says so in its first line. A hand-written bundle begins on line 3.
 
@@ -72,4 +72,4 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 
 - The proposed source was put to pf 0.36.0, with and without the field, and each result retained.
 - The explicit expected bundles equal the retained control bundles from line 3.
-- The ledger parses as TOML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.
+- The ledger parses as YAML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.
