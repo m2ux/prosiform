@@ -26,7 +26,7 @@ stubs:
   - name: "recorded"
     states: "Reads the recorded review."
     declared: "entry.md"
-    line: 6
+    line: 7
 sources:
   - path: "entry.md"
     sha256: "536c5ddf3f5d29b221024ef718df7cc5523df33e966c70520f67fe5287dfd25b"
@@ -96,6 +96,7 @@ bundles:
         presets: ["default", "alpha", "small"]
         choices:
           - alternative: "alpha"
+            line: 6
       - source: "alpha.md"
         lines: [4, 6]
         presets: ["default"]
@@ -128,6 +129,7 @@ bundles:
         presets: ["default", "beta", "small"]
         choices:
           - alternative: "beta"
+            line: 10
       - source: "beta.md"
         lines: [4, 6]
         presets: ["default"]

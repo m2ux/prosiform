@@ -69,3 +69,15 @@ The run's ledger was rendered by each candidate's library and the three renderin
 ## What The Ledger Records, 2026-11-27
 
 The user questioned three things the run's ledger holds: the line range a bundle carries from a source, the line a setting or link was written on, and each bundle's file name and hash. Each was first ruled out, the hashes and names to a checksum file the standard tool reads. The ledger is an output of the build and nothing an author writes, and on that ground the user restored all three. Each ledger holds them as the sets first showed, and `--verify` holds a published set to its ledger.
+
+## Cross-Family Review Of The Accepted Forms, 2026-11-27
+
+A Codex session reviewed the decisions, the design, the plan and the four sets read-only once the sets were accepted. Each finding was checked against pf 0.36.0 before it changed a file.
+
+- **Capture the ledger states had no owner.** pf 0.36.0 keeps no position for a level, stub, alternative or brief, and one link for a dispatched bundle. The projection row declares the metadata and dispatch records and retains them.
+- **Verification had no runtime reader.** The JSON Schema validator is a development dependency. The verification row states the build's own reader, the two-way folder comparison and the refusal of a ledger naming a file twice, and declares a fixture for a missing bundle, an unlisted bundle and an unreadable ledger.
+- **Import resolution had no stated bound.** Each import identity resolves once. The resolver row states it, with the one warning an unused imported pair raises across a run.
+- **Invalid picks read as unresolved selections.** The choice-group set names `E_INVALID_USAGE` for two picks in one group and for a pick naming a fixed group, and the wiring row declares a fixture for each.
+- **A stub's origin named its preset's line.** A `line` is the line the setting's key is written on, and a chosen alternative carries the line of its `choice`.
+- **Two specimens named a wrong place.** The ledgerless case states its own working directory, and the unused-pair warning names the key as its author wrote it.
+

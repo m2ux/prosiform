@@ -74,8 +74,10 @@ bundles:
         choices:
           - group: "component"
             alternative: "alpha"
+            line: 6
           - group: "test"
             alternative: "small"
+            line: 20
       - source: "alpha.md"
         lines: [4, 6]
         presets: ["default"]

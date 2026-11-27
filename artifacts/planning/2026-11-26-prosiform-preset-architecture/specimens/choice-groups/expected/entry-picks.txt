@@ -60,7 +60,7 @@ E_INVALID_USAGE: --pick names 'beta', an alternative of the group 'component', w
   reference: [Check](direct.md "alpha, ?")
   remedy: name an alternative of 'test', the group the entry leaves open
 
-Exit status 2.
+Exit status 2. Where the title leaves several groups open, the remedy names each.
 
 7. A deferred link
 

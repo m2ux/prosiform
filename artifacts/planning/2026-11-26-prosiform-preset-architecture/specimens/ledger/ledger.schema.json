@@ -262,8 +262,8 @@
         "properties": {
           "file": {
             "type": "string",
-            "pattern": "^[^/]+$",
-            "description": "A file of the run's own folder, named without a folder."
+            "pattern": "^[^/]+\\.bundle\\.md$",
+            "description": "A bundle of the run's own folder, named without a folder."
           },
           "sha256": {
             "type": "string",
@@ -351,10 +351,16 @@
                   "items": {
                     "type": "object",
                     "required": [
-                      "alternative"
+                      "alternative",
+                      "line"
                     ],
                     "additionalProperties": false,
                     "properties": {
+                      "line": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "The line the alternative's choice is written on."
+                      },
                       "group": {
                         "type": "string",
                         "minLength": 1,
@@ -556,8 +562,8 @@
                 },
                 "bundle": {
                   "type": "string",
-                  "pattern": "^[^/]+$",
-                  "description": "A file of the run's own folder, named without a folder."
+                  "pattern": "^[^/]+\\.bundle\\.md$",
+                  "description": "A bundle of the run's own folder, named without a folder."
                 },
                 "choices": {
                   "type": "array",
@@ -584,8 +590,8 @@
                       },
                       "bundle": {
                         "type": "string",
-                        "pattern": "^[^/]+$",
-                        "description": "A file of the run's own folder, named without a folder."
+                        "pattern": "^[^/]+\\.bundle\\.md$",
+                        "description": "A bundle of the run's own folder, named without a folder."
                       }
                     }
                   }

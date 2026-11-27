@@ -28,8 +28,8 @@ Suppose `strict` also mapped `glossary.md` to `strict-glossary.md`, and
 preset may hold more than one importer needs. It warns once where no document
 importing it in the run names its key:
 
-  W_SUBST_UNUSED: the subst key 'shared/glossary.md' of prosiform.strict in 'shared/settings.md' names no link a document importing it writes, so it substitutes nothing
-    source: shared/glossary.md
+  W_SUBST_UNUSED: the subst key 'glossary.md' of prosiform.strict in 'shared/settings.md' names no link a document importing it writes, so it substitutes nothing
+    source: glossary.md
     remedy: name an identity an importing document links, or drop the pair
 
 Two declarations stating one value

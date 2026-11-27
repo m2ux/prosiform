@@ -66,6 +66,7 @@ bundles:
         presets: ["default", "alpha", "small"]
         choices:
           - alternative: "alpha"
+            line: 6
       - source: "alpha.md"
         lines: [4, 6]
         presets: ["default"]

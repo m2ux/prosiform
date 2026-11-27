@@ -77,6 +77,7 @@ E_INVALID_CONVERSION_METADATA: prosiform.alpha.choice must be a non-empty string
 Exit status 1. A mapping naming `states` and no `group` reads the same: an
 alternative with no group writes the plain string.
 
-Each refused selection reports E_ALTERNATIVE_UNRESOLVED, the code a missing or
-conflicting pick reports today, and a malformed mapping the code a malformed
-`choice` reports today. The form adds no code.
+Each refused title reports E_ALTERNATIVE_UNRESOLVED, the code a missing or
+conflicting selection reports today, and a malformed mapping the code a
+malformed `choice` reports today. An invalid `--pick` reports E_INVALID_USAGE,
+as `entry-picks.txt` shows. The form adds no code.

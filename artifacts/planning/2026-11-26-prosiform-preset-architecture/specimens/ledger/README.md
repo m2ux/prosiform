@@ -44,7 +44,7 @@ A hand-written file says so in its first line; the schema says so in its `$comme
 
 ## Each Feature And Its Field
 
-A field under `bundles` is written here from one bundle's entry.
+A field under `bundles` is written here from one bundle's entry. A `line` is the line the setting's key is written on.
 
 | What pf 0.36.0 does | Ledger field |
 | --- | --- |
@@ -56,7 +56,7 @@ A field under `bundles` is written here from one bundle's entry.
 | Places a document under a layout group | `content.group`: `name` and `depth`; absent where the document keeps a group of its own |
 | Redirects a link through a `subst` pair | `substitutions`: `key`, `substitute`, `kind` (`routing` or `stand-in`), and where it was declared: `declared`, `preset`, `line` |
 | Puts an entry stub in force | `stubs`: `name`, `states`, `declared`, `line` |
-| Picks an alternative | `content.choices`: the `alternative` in force |
+| Picks an alternative | `content.choices`: the `alternative` in force and the `line` its `choice` is written on |
 | Carries a dispatch's brief | `briefs`: `target`, `section`, `line` |
 | Dispatches a target to a bundle of its own | `dispatches`: `target`, the `source` and `line` writing the link, its `title`, and the `bundle` written for it |
 | Leaves a dispatch's pick to the dispatching agent | `dispatches.choices`: one entry for each alternative, with its choice line and bundle |

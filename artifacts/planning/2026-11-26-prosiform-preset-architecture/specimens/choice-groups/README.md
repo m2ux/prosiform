@@ -62,7 +62,7 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 - **One open group at a dispatch.**  `"alpha, ?"` publishes one line for each test, each naming its own bundle. `"?"` alone is refused with a remedy for each group. [refusals.txt](expected/refusals.txt) case 4.
 - **Several picks at the entry.**  `--pick alpha --pick small` names one member of each group. [entry-picks.txt](expected/entry-picks.txt).
 - **A deferral may leave any group open.**  The run that bundles a deferred link is an entry, so it names one pick for each. [entry-picks.txt](expected/entry-picks.txt), case 7.
-- **No new code.**  Every refused selection reports `E_ALTERNATIVE_UNRESOLVED`, naming the group, and a malformed mapping the code a malformed `choice` reports today. [refusals.txt](expected/refusals.txt) case 7.
+- **No new code.**  A missing or conflicting selection reports `E_ALTERNATIVE_UNRESOLVED`, naming the group. Two picks naming one group, and a pick naming a member of a group the title fixes, report `E_INVALID_USAGE`: [entry-picks.txt](expected/entry-picks.txt) cases 4 and 6. A malformed mapping reports the code a malformed `choice` reports today: [refusals.txt](expected/refusals.txt) case 7.
 - **The listing's layout.**  [presets.txt](expected/presets.txt).
 
 ## Settled At Scrutiny

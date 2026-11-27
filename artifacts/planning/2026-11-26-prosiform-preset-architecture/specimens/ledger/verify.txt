@@ -6,10 +6,11 @@ runs in `run/`, where the build ran.
 What verification reads
 
   - The ledger is read first, under the rules a source's frontmatter is read
-    by, and held to its schema. One that does not parse, or states a schema
-    this build does not read, is refused before any other file is opened.
+    by, and held to its schema by the build's own reader. One that does not
+    parse, states a schema this build does not read, or names a bundle or a
+    source twice, is refused before any other file is opened.
   - A bundle is named by a file name alone, and is read from the folder being
-    verified. Every bundle the folder holds is compared with the ledger's
+    verified, as a regular file. Every bundle the folder holds is compared with the ledger's
     list, in both directions.
   - A source path resolves from the working directory, as it did for the
     build, and is opened as a build opens a source: a path leaving the working
@@ -58,7 +59,7 @@ E_LEDGER_MISMATCH: the source 'beta.md' is not where the ledger records it
 
 Exit status 1.
 
-5. A set published without a ledger (the control `../valid-two-bindings`)
+5. A set published without a ledger (run in `../valid-two-bindings/`, whose set was published with no ledger option)
 
 $ pf --verify bundles/entry.bundles
 E_LEDGER_NOT_FOUND: the folder 'bundles/entry.bundles' holds no ledger.yaml, so nothing records what it was built from
@@ -74,6 +75,24 @@ E_LEDGER_MISMATCH: the bundle 'worker-gamma+small.bundle.md' is in the folder an
   remedy: rebuild the bundle set
 
 Exit status 1.
+
+7. A bundle the ledger names is gone (worker-beta+small.bundle.md removed)
+
+$ pf --verify bundles/entry-recorded.bundles
+E_LEDGER_MISMATCH: the bundle 'worker-beta+small.bundle.md' is not in the folder the ledger records it in
+  bundle: bundles/entry-recorded.bundles/worker-beta+small.bundle.md
+  recorded: 4c0feb2da7f4c780bb87651d969ff0d3a58647a1562c21307fc67844542936d5
+  remedy: rebuild the bundle set
+
+Exit status 1.
+
+8. A ledger naming one bundle twice
+
+$ pf --verify bundles/entry-recorded.bundles
+E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.yaml' names the bundle 'worker-alpha+small.bundle.md' twice
+  remedy: rebuild the bundle set
+
+Exit status 1. No source and no bundle is opened.
 
 A mismatch reports E_LEDGER_MISMATCH, for a source and a bundle alike, and a
 folder holding no ledger reports E_LEDGER_NOT_FOUND. E_SOURCE_CHANGED keeps its
