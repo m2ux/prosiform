@@ -12,6 +12,7 @@ Every later Build Ledger row builds against these clauses, and the README's desi
 
 | Artifact | Purpose |
 | --- | --- |
+| [review.md](review.md) | Validation evidence and each review finding with its disposition. |
 | [w00.md](w00.md) | Work item for W00. |
 
 ## Links
