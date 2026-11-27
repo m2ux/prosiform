@@ -38,10 +38,10 @@ Effective configuration is spread across sources, and nothing published relates,
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/890) | Design Specimens | AC5 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/868) | Build Ledger | AC1, AC3, AC4, AC6 | [E00](https://github.com/m2ux/prosiform/issues/890) | |
-| [E02](https://github.com/m2ux/prosiform/issues/869) | Preset Imports | AC1, AC2, AC3, AC4 | [E00](https://github.com/m2ux/prosiform/issues/890) | |
-| [E03](https://github.com/m2ux/prosiform/issues/870) | Local Choice Groups | AC1, AC2, AC3, AC4, AC7 | [E00](https://github.com/m2ux/prosiform/issues/890) | |
+| [E00](https://github.com/m2ux/prosiform/issues/890) | Design Specimens | AC5 | | ✓ |
+| [E01](https://github.com/m2ux/prosiform/issues/868) | Build Ledger | AC1, AC3, AC4, AC5, AC6 | [E00](https://github.com/m2ux/prosiform/issues/890) | |
+| [E02](https://github.com/m2ux/prosiform/issues/869) | Preset Imports | AC1, AC2, AC3, AC4, AC5 | [E00](https://github.com/m2ux/prosiform/issues/890) | |
+| [E03](https://github.com/m2ux/prosiform/issues/870) | Local Choice Groups | AC1, AC2, AC3, AC4, AC5, AC7 | [E00](https://github.com/m2ux/prosiform/issues/890) | |
 
 ## Acceptance Criteria
 
