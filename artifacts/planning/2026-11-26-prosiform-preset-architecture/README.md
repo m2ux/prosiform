@@ -13,7 +13,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | Artifact | What it holds |
 | --- | --- |
 | [decisions.md](decisions.md) | Rulings, the lane map, joins and conventions |
-| [design.md](design.md) | Proposed forms, the design link rule and open design points |
+| [design.md](design.md) | Proposed forms and the design link rule |
 | [draft-metadata.json](draft-metadata.json) | Identities, priorities, lanes and task counts |
 | [e00/w00.md](e00/w00.md) | Task work item and its declared files |
 | [e00/w01.md](e00/w01.md) | Task work item and its declared files |
@@ -45,7 +45,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [scope.md](scope.md) | Confirmed goal clauses and excluded work |
 | [specimen-matrix.md](specimen-matrix.md) | Executed controls, specimen sets and the deterministic matrix |
 | [specimens/baseline.json](specimens/baseline.json) | The release, revision and bundle hashes of the five controls |
-| [specimens/choice-groups/README.md](specimens/choice-groups/README.md) | Choice-group set: what the form needs, its files and its open points |
+| [specimens/choice-groups/README.md](specimens/choice-groups/README.md) | Choice-group set: what the form needs, its files and what scrutiny settled |
 | [specimens/choice-groups/expected/entry-picks.txt](specimens/choice-groups/expected/entry-picks.txt) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/explicit/entry.bundle.md](specimens/choice-groups/expected/explicit/entry.bundle.md) | Choice-group set: hand-written expected output |
 | [specimens/choice-groups/expected/explicit/worker-alpha+small.bundle.md](specimens/choice-groups/expected/explicit/worker-alpha%2Bsmall.bundle.md) | Choice-group set: hand-written expected output |
@@ -63,7 +63,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/choice-groups/proposed/small.md](specimens/choice-groups/proposed/small.md) | Choice-group set: source pf 0.36.0 accepts |
 | [specimens/choice-groups/proposed/test.md](specimens/choice-groups/proposed/test.md) | Choice-group set: source pf 0.36.0 accepts |
 | [specimens/choice-groups/proposed/worker.md](specimens/choice-groups/proposed/worker.md) | Choice-group set: source written in the proposed form |
-| [specimens/combined/README.md](specimens/combined/README.md) | Combined set: what the form needs, its files and its open points |
+| [specimens/combined/README.md](specimens/combined/README.md) | Combined set: what the form needs, its files and what scrutiny settled |
 | [specimens/combined/alpha.md](specimens/combined/alpha.md) | Combined set: source pf 0.36.0 accepts |
 | [specimens/combined/beta.md](specimens/combined/beta.md) | Combined set: source pf 0.36.0 accepts |
 | [specimens/combined/component.md](specimens/combined/component.md) | Combined set: source pf 0.36.0 accepts |
@@ -94,7 +94,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/conflicting-tests/small.md](specimens/conflicting-tests/small.md) | Generic source of this control |
 | [specimens/conflicting-tests/test.md](specimens/conflicting-tests/test.md) | Generic source of this control |
 | [specimens/conflicting-tests/worker.md](specimens/conflicting-tests/worker.md) | Generic source of this control |
-| [specimens/imports/README.md](specimens/imports/README.md) | Import set: what the form needs, its files and its open points |
+| [specimens/imports/README.md](specimens/imports/README.md) | Import set: what the form needs, its files and what scrutiny settled |
 | [specimens/imports/inline/bundles/entry.bundles/entry.bundle.md](specimens/imports/inline/bundles/entry.bundles/entry.bundle.md) | Import set: bundle pf 0.36.0 wrote |
 | [specimens/imports/inline/bundles/entry.bundles/worker.bundle.md](specimens/imports/inline/bundles/entry.bundles/worker.bundle.md) | Import set: bundle pf 0.36.0 wrote |
 | [specimens/imports/inline/entry.md](specimens/imports/inline/entry.md) | Import set: source pf 0.36.0 accepts |
@@ -120,10 +120,9 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/imports/refusals/missing-preset.md](specimens/imports/refusals/missing-preset.md) | Import set: source written in the proposed form |
 | [specimens/imports/refusals/missing-source.md](specimens/imports/refusals/missing-source.md) | Import set: source written in the proposed form |
 | [specimens/imports/refusals/settings.md](specimens/imports/refusals/settings.md) | Import set: source written in the proposed form |
-| [specimens/ledger/README.md](specimens/ledger/README.md) | Ledger set: what the form needs, its files and its open points |
+| [specimens/ledger/README.md](specimens/ledger/README.md) | Ledger set: what the form needs, its files and what scrutiny settled |
 | [specimens/ledger/check-mode.txt](specimens/ledger/check-mode.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/fixed.ledger.toml](specimens/ledger/fixed.ledger.toml) | Ledger set: hand-written expected output |
-| [specimens/ledger/ledger-with-warnings.toml](specimens/ledger/ledger-with-warnings.toml) | Ledger set: hand-written expected output |
 | [specimens/ledger/ledger.schema.json](specimens/ledger/ledger.schema.json) | Ledger set: hand-written expected output |
 | [specimens/ledger/refusals.txt](specimens/ledger/refusals.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/run/alpha.md](specimens/ledger/run/alpha.md) | Ledger set: source pf 0.36.0 accepts |

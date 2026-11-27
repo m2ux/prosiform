@@ -39,9 +39,9 @@ An alternative stating no `choice-group` belongs to its document's one unnamed g
 | [proposed/diagnostics-0.36.0.txt](proposed/diagnostics-0.36.0.txt) | Real | pf 0.36.0 on the proposed source, and on the same source with the field removed |
 | [expected/explicit/entry.bundle.md](expected/explicit/entry.bundle.md), [worker-alpha+small.bundle.md](expected/explicit/worker-alpha%2Bsmall.bundle.md) | Hand-written | The bundles for `"alpha, small"` |
 | [expected/open-pick/entry.bundle.md](expected/open-pick/entry.bundle.md) | Hand-written | The entry bundle for `"alpha, ?"`: the component fixed, the test left to the pick |
-| [expected/entry-picks.txt](expected/entry-picks.txt) | Hand-written | The repeatable `--pick` at the entry, and one open point |
+| [expected/entry-picks.txt](expected/entry-picks.txt) | Hand-written | The repeatable `--pick` at the entry, and a deferred link |
 | [expected/refusals.txt](expected/refusals.txt) | Hand-written | Each refusal at a dispatch |
-| [expected/presets.txt](expected/presets.txt) | Hand-written | The `--presets` listing, and one open point |
+| [expected/presets.txt](expected/presets.txt) | Hand-written | The `--presets` listing |
 | [expected/ledger.toml](expected/ledger.toml) | Hand-written | The ledger naming each group and the alternative chosen in it |
 
 A hand-written file says so in its first line. A hand-written bundle begins on line 3.
@@ -63,10 +63,10 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 - **No new code.**  Every refusal reports `E_ALTERNATIVE_UNRESOLVED`, naming the group.
 - **The listing's layout.**  [presets.txt](expected/presets.txt).
 
-## Open Points
+## Settled At Scrutiny
 
-- **A pick naming a member of a fixed group.**  Invalid usage, or an unmade pick: both answers are case 6 of [entry-picks.txt](expected/entry-picks.txt).
-- **The listing's format.**  Text, or TOML in the ledger's vocabulary: both answers close [presets.txt](expected/presets.txt).
+- **A pick naming a member of a fixed group.**  Invalid usage, naming the group the title fixes and the group left open.
+- **The listing's format.**  Text.
 
 ## Checks Made On This Set
 

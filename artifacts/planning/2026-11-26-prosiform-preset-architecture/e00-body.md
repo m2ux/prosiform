@@ -26,18 +26,18 @@ The requester can read every proposed form as files before any contract states i
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e00/w00.md) | Ledger specimen set | AC1 |  | | 1 | |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e00/w01.md) | Preset import specimen set | AC2 |  | | 1 | |
-| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e00/w02.md) | Choice group specimen set | AC3 |  | | 1 | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e00/w03.md) | Combined specimen set and open points | AC4 | W00, W01, W02 | | 1 | |
+| [W00](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Ledger specimen set | AC1 | | | 1 | ✓ |
+| [W01](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Preset import specimen set | AC2 | | | 1 | ✓ |
+| [W02](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Choice group specimen set | AC3 | | | 1 | ✓ |
+| [W03](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Combined specimen set and open points | AC4 | W00, W01, W02 | | 1 | ✓ |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e00/w04.md) | Scrutiny ruling folded into the design | AC5 | W03 | | 1 | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** Each proposed ledger behaviour among fields, check-mode output, verification outcome and refusal is shown as a file marked real or hand-written, as the ledger set's README inventory shows.
-- [ ] **AC2.** Each proposed import behaviour among valid reuse, refusal and the inline control its bundles must equal is shown as a file marked real or hand-written, as the import set's README inventory shows.
-- [ ] **AC3.** Each proposed choice-group behaviour among explicit selection, an open pick, refusal and the preset listing is shown as a file marked real or hand-written, as the choice-group set's README inventory shows.
-- [ ] **AC4.** The combined set shows the three features in one run and states each open design point with its candidate answers, as its README shows.
+- [x] **AC1.** Each proposed ledger behaviour among fields, check-mode output, verification outcome and refusal is shown as a file marked real or hand-written, as the ledger set's README inventory shows.
+- [x] **AC2.** Each proposed import behaviour among valid reuse, refusal and the inline control its bundles must equal is shown as a file marked real or hand-written, as the import set's README inventory shows.
+- [x] **AC3.** Each proposed choice-group behaviour among explicit selection, an open pick, refusal and the preset listing is shown as a file marked real or hand-written, as the choice-group set's README inventory shows.
+- [x] **AC4.** The combined set shows the three features in one run and states each open design point with its candidate answers, as its README shows.
 - [ ] **AC5.** Each specimen set carries the requester's accept-or-change ruling and each changed form is restated in the design, as the planning record's decisions show.
 
 ## References

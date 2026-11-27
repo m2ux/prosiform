@@ -636,39 +636,6 @@
         }
       },
       "minItems": 1
-    },
-    "warning": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "code",
-          "source"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "code": {
-            "type": "string",
-            "pattern": "^W_[A-Z_]+$"
-          },
-          "source": {
-            "type": "string",
-            "minLength": 1
-          },
-          "resolved": {
-            "type": "string",
-            "minLength": 1
-          },
-          "location": {
-            "type": "string",
-            "minLength": 1
-          },
-          "preset": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
-      }
     }
   }
 }

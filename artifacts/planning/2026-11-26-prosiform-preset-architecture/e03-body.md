@@ -19,7 +19,7 @@ One document can state independent local component and test choice groups, while
 - **Bounded picking at a dispatch.**
   A pick token may leave one relevant group open while the others are explicit; a dispatch leaving several open fails with a remedy for each, and no Cartesian pick tree is published.
 - **One pick for each open group at the entry.**
-  The entry's pick option is repeatable, each occurrence naming one member of one open group.
+  The entry's pick option is repeatable, each occurrence naming one member of one open group. A pick naming a member of a fixed group is invalid usage.
 - **Open groups at a deferral.**
   A deferred link names one alternative of each group or a pick token leaving the rest open, since the run bundling it names one pick for each.
 - **Unchanged neighbours.**
@@ -27,7 +27,7 @@ One document can state independent local component and test choice groups, while
 - **Observable configuration.**
   The ledger names local groups, chosen alternatives and their origins.
 - **A listing without a build.**
-  The proposed `--presets` option prints one document's presets, its alternatives by group with their choice lines, its stubs and its imports with origins.
+  The proposed `--presets` option prints, as text, one document's presets, its alternatives by group with their choice lines, its stubs and its imports with origins.
 
 ## Work Breakdown
 
@@ -51,11 +51,6 @@ One document can state independent local component and test choice groups, while
 - [ ] **AC7.** The public contract and executable two-axis example describe the delivered selection and pick behavior, as documentation and example checks show.
 - [ ] **AC8.** A listing of one document names its presets, its alternatives by choice group and its imports with their origins, publishing nothing, as the listing fixtures show.
 - [ ] **AC9.** A representative changed pick mechanism has a predeclared observation bounded to four fresh contexts, with remaining combinations covered by the deterministic binding matrix and unchanged paths by exact bundle equivalence, as the changed-behavior record shows.
-
-## Open Questions
-
-- What a pick naming a member of an already fixed group reports.
-- Whether the preset listing is text or TOML.
 
 ## References
 

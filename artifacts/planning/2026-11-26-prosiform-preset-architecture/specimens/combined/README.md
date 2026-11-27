@@ -29,22 +29,20 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 - **The ledger joins the three.**  Each substitution names the shared preset that declared it and the alternative that imported it; `choices` names each group and its member; `level` names the imported map.
 - **An alternative is a receiver, never a target.**  `alpha` imports settings and keeps its `choice` and `choice-group`. A preset stating either cannot be imported.
 
-## Every Open Design Point
+## Design Points Settled At Scrutiny
 
-Each point is settled by the scrutiny ruling. The first answer listed is the one the specimens show.
-
-| Point | Answers | Shown in |
+| Point | Ruling | Shown in |
 | --- | --- | --- |
-| Does the ledger record the warnings a build raised? | **A.** No: the ledger records what was built. **B.** Yes: each code with what it names. | [ledger.toml](../ledger/run/bundles/entry-recorded.bundles/ledger.toml) and [ledger-with-warnings.toml](../ledger/ledger-with-warnings.toml) |
-| Which code does a verification mismatch report? | **A.** New `E_LEDGER_MISMATCH` and `E_LEDGER_NOT_FOUND`. **B.** `E_SOURCE_CHANGED` and `E_TARGET_NOT_FOUND` where they fit. | [verify.txt](../ledger/verify.txt) |
-| Does a source read only for an import count toward the budgets? | **A.** Yes, as any source the run opens. **B.** No: it is rechecked and stands outside them. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
-| Does an imported pair no link names warn in each receiving document? | **A.** Yes. **B.** Only where no importer in the run names its key. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
-| What does a pick naming a member of a fixed group report? | **A.** Invalid usage, naming the fixed group. **B.** An unmade pick, listing the open group. | [entry-picks.txt](../choice-groups/expected/entry-picks.txt), case 6 |
-| Do import refusals take new codes? | **A.** Existing codes, with `E_IMPORT_CYCLE` new. **B.** A code for each import refusal. | [refusals/diagnostics.txt](../imports/refusals/diagnostics.txt) |
-| Is the preset listing text or TOML? | **A.** Text, laid out as a refusal lists alternatives. **B.** TOML in the ledger's vocabulary. | [presets.txt](../choice-groups/expected/presets.txt) |
-| What does the ledger record where two declarations state one value? | **A.** Every origin, the further ones under `also`. **B.** The first origin alone. **C.** Nothing: stating one value twice is refused. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
+| Does the ledger record the warnings a build raised? | No: the ledger records what was built. | [ledger.toml](../ledger/run/bundles/entry-recorded.bundles/ledger.toml) |
+| Which code does a verification mismatch report? | `E_LEDGER_MISMATCH`, and `E_LEDGER_NOT_FOUND` for a folder with no ledger. | [verify.txt](../ledger/verify.txt) |
+| Does a source read only for an import count toward the budgets? | Yes, as any source the run opens. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
+| Does an imported pair no link names warn in each receiving document? | No: once, where no importer in the run names its key. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
+| Do import refusals take new codes? | Existing codes, with `E_IMPORT_CYCLE` new. | [refusals/diagnostics.txt](../imports/refusals/diagnostics.txt) |
+| What does the ledger record where two declarations state one value? | Every origin, the further ones under `also`. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
+| What does a pick naming a member of a fixed group report? | Invalid usage, naming the fixed group. | [entry-picks.txt](../choice-groups/expected/entry-picks.txt), case 6 |
+| Is the preset listing text or TOML? | Text. | [presets.txt](../choice-groups/expected/presets.txt) |
 
-One point the plan listed is settled by what pf 0.36.0 does: a bundle's name joins its effective preset names sorted by Unicode code point, so `"small, alpha"` writes `worker-alpha+small.bundle.md` and two groups need no new naming rule.
+A bundle's name joins its effective preset names sorted by Unicode code point, as pf 0.36.0 names it, so `"small, alpha"` writes `worker-alpha+small.bundle.md` and two groups need no new naming rule.
 
 ## Behaviour pf 0.36.0 Has That The Forms Change
 

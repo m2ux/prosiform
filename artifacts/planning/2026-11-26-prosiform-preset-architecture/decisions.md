@@ -20,6 +20,21 @@ The user reviewed the published plan against pf 0.36.0 and ruled on each point.
 - **Additions admitted.** A repeatable `--pick` at the entry; the ledger written to standard output in check mode; `--verify` holding a published set to its ledger; `--presets` listing a document's choices without bundling.
 - **Gap fixes.** The ledger records the invocation; its schema ships on main beside the fixture schema.
 
+## Scrutiny Rulings, 2026-11-27
+
+The user ruled on each design point the specimen sets showed, one at a time. The ruling on each of the four sets is pending.
+
+| Point | Ruling | Declined |
+| --- | --- | --- |
+| Warnings in the ledger | Omitted: the ledger records what was built | Recording each code with what it names |
+| Verification codes | `E_LEDGER_MISMATCH` and `E_LEDGER_NOT_FOUND` | Reusing `E_SOURCE_CHANGED` and `E_TARGET_NOT_FOUND` |
+| A source read only for an import | Counts toward the file and byte budgets | Standing outside the budgets |
+| An imported pair no link names | Warns once, where no importer in the run names its key | Warning in each importing document |
+| Import refusal codes | Existing codes, with `E_IMPORT_CYCLE` new | A code for each import refusal |
+| Two declarations stating one value | Coalesce, the ledger recording every origin under `also` | Recording the first origin alone; refusing the duplicate |
+| A pick naming a member of a fixed group | `E_INVALID_USAGE`, naming the fixed and the open group | Reporting it as an unmade pick |
+| The preset listing's format | Text | TOML in the ledger's vocabulary |
+
 ## Lanes
 
 A lane marks the model class a row's delivery session needs. The index is board-wide.

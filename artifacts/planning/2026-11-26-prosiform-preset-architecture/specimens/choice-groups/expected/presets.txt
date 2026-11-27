@@ -84,10 +84,5 @@ E_TARGET_NOT_FOUND: 'notes.md' declares no prosiform mapping, so it has no prese
 
 Exit status 1.
 
-Open point: text or TOML
-
-  A. As above: text, laid out as a refusal lists alternatives today, for a
-     person or an agent choosing a title.
-  B. TOML in the ledger's vocabulary (`preset`, `choices`, `substitution`,
-     `imports`), for a program. A reader then needs a TOML reader to see a
-     document's choices.
+The listing is text, laid out as a refusal lists alternatives today, for a
+person or an agent choosing a title. A program reads a built document's ledger.

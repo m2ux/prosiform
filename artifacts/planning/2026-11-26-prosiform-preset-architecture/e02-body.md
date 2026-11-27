@@ -20,7 +20,9 @@ An entry or local preset can explicitly reuse pure settings from a named preset 
 - **Explicit origins.**
   Keys resolve from their original declaring source and substitutes keep the existing key-relative meaning. Existing selected-over-default layering remains explicit.
 - **Explicit conflicts.**
-  Equal contributions coalesce; incompatible values in one flattened preset fail with both origins. Missing sources or presets, impure targets and cycles refuse the build.
+  Equal contributions coalesce with every origin recorded; incompatible values in one flattened preset fail with both origins. Missing sources or presets, impure targets and cycles refuse the build.
+- **Ordinary accounting.**
+  A source read only for an import counts toward the budgets. An imported substitution warns as unused once, where no importing document names its key.
 
 ## Work Breakdown
 
@@ -38,13 +40,6 @@ An entry or local preset can explicitly reuse pure settings from a named preset 
 - [ ] **AC3.** Nested levels and substitutions retain lexical origins and receiving-role scope, with missing, impure, cyclic or conflicting imports refusing publication, as the origin and scope corpus and negative fixtures show.
 - [ ] **AC4.** The ledger traces imported settings to the captured declarations that contributed them, as ledger and import integration tests and `make check` show.
 - [ ] **AC5.** The documented reusable-settings example bundles to the same Markdown as its inline-settings control, as the paired example check and documentation checks show.
-
-## Open Questions
-
-- Whether a source read only for an import counts toward the file and byte budgets.
-- Whether an imported substitution no link names warns in each receiving document.
-- Which code each import refusal reports.
-- What the ledger records where two declarations state one value.
 
 ## References
 

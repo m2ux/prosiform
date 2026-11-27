@@ -53,23 +53,14 @@ E_ALTERNATIVE_UNRESOLVED: direct.md needs one alternative of its group 'componen
 
 Exit status 2. An unknown name leaves its pick unmade, as it does today.
 
-6. Open point: a pick naming a member of a group the title already fixes
+6. A pick naming a member of a group the title already fixes
 
 $ pf -o bundles '[Check](direct.md "alpha, ?")' --pick beta
+E_INVALID_USAGE: --pick names 'beta', an alternative of the group 'component', which the entry's title fixes as 'alpha'
+  reference: [Check](direct.md "alpha, ?")
+  remedy: name an alternative of 'test', the group the entry leaves open
 
-  A. Invalid usage. The title fixed the group, so the pick contradicts it:
-
-     E_INVALID_USAGE: --pick names 'beta', an alternative of the group 'component', which the entry's title fixes as 'alpha'
-       reference: [Check](direct.md "alpha, ?")
-       remedy: name an alternative of 'test', the group the entry leaves open
-
-     Exit status 2.
-
-  B. An unmade pick. The pick names nothing of the open group, so the open
-     group is reported as case 2 reports it, listing `small` and `large`.
-
-     Exit status 2. One diagnostic covers every way a pick misses, and the
-     caller is not told the name it gave belongs elsewhere.
+Exit status 2.
 
 7. A deferred link
 

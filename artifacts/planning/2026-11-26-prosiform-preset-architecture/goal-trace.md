@@ -38,7 +38,7 @@ Findings of the review against pf 0.36.0, each with its evidence and disposition
 
 ### Design
 
-- **Design points were unstated.** [design.md](design.md#open-design-points) lists them; each feature epic carries its own as open questions, and the scrutiny ruling settles them before the first contract row.
+- **Design points were unstated.** The specimen sets showed each with its candidate answers, and the scrutiny rulings settled them ahead of the first contract row.
 
 ### Structure
 
@@ -47,7 +47,7 @@ Findings of the review against pf 0.36.0, each with its evidence and disposition
 
 ## Standing
 
-No content or structural finding remains open in the drafts. Open design points are carried as each epic's open questions and are resolved by the scrutiny ruling.
+No content or structural finding remains open in the drafts, and no design point remains open: [decisions.md](decisions.md#scrutiny-rulings-2026-11-27) holds each ruling.
 
 ## Cross-Family Review Of The Specimen Sets, 2026-11-27
 

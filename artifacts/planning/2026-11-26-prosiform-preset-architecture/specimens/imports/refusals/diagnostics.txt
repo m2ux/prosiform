@@ -76,12 +76,5 @@ Exit status 2. The receiving preset does not override what it imports: a
 selected preset still layers over `default`, as it does today, and that is the
 one place a later statement holds over an earlier one.
 
-Open point: new codes or existing ones
-
-  A. As above: existing codes where their stated meaning already fits
-     (E_TARGET_NOT_FOUND, E_INVALID_CONVERSION_METADATA, E_INVALID_USAGE), and
-     one new code, E_IMPORT_CYCLE, beside the existing E_DISPATCH_CYCLE.
-  B. A code of its own for each import refusal: E_IMPORT_NOT_FOUND (cases 1
-     and 2), E_IMPORT_IMPURE (case 3), E_IMPORT_CYCLE (case 4) and
-     E_IMPORT_CONFLICT (cases 5 and 6). A caller branching on the code tells
-     an import fault from any other, at the cost of four codes for one field.
+Each refusal reports the existing code whose stated meaning covers it. The one
+new code is E_IMPORT_CYCLE, beside the existing E_DISPATCH_CYCLE.

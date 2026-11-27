@@ -75,10 +75,6 @@ E_LEDGER_MISMATCH: the bundle 'worker-gamma+small.bundle.md' is in the folder an
 
 Exit status 1.
 
-Open point: which code a mismatch reports
-
-  A. As above: one new code, E_LEDGER_MISMATCH, for a source and a bundle
-     alike, and E_LEDGER_NOT_FOUND for a set with no ledger.
-  B. The existing codes where their meaning fits: E_SOURCE_CHANGED for a
-     source (cases 2 and 4) and E_TARGET_NOT_FOUND for an absent ledger
-     (case 5), with E_LEDGER_MISMATCH for a bundle alone (cases 3 and 6).
+A mismatch reports E_LEDGER_MISMATCH, for a source and a bundle alike, and a
+folder holding no ledger reports E_LEDGER_NOT_FOUND. E_SOURCE_CHANGED keeps its
+one meaning: a source that changed during a build.

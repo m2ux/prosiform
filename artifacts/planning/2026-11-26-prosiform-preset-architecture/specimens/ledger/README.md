@@ -23,8 +23,7 @@ What the proposed `--ledger` option writes, shown for two builds pf 0.36.0 produ
 | --- | --- | --- |
 | [fixed.ledger.toml](fixed.ledger.toml) | Hand-written | The ledger for the fixed-dispatch control |
 | [run/bundles/entry-recorded.bundles/ledger.toml](run/bundles/entry-recorded.bundles/ledger.toml) | Hand-written | The ledger for the run, where the option would write it |
-| [ledger-with-warnings.toml](ledger-with-warnings.toml) | Hand-written | The run's ledger with the warnings the build raised recorded |
-| [ledger.schema.json](ledger.schema.json) | Hand-written | The schema all three ledgers validate against |
+| [ledger.schema.json](ledger.schema.json) | Hand-written | The schema both ledgers validate against |
 | [check-mode.txt](check-mode.txt) | Hand-written | What `-c --ledger` writes and where |
 | [verify.txt](verify.txt) | Hand-written | Each outcome of `--verify` |
 | [refusals.txt](refusals.txt) | Hand-written | A failing build, a failed publication and invalid usage |
@@ -60,12 +59,8 @@ A hand-written file says so in its first line; the schema says so in its `$comme
 - **The working directory.**  Paths are written from it; the directory itself is the caller's.
 - **The output folder.**  `-o` names where the run's folder went, which the folder's own location already says.
 - **Its own bytes.**  The ledger records no hash of itself.
+- **Warnings.**  They stay on standard error. What a warning points at is a field already: a stand-in is a substitution of `kind = "stand-in"`.
 - **Secrets and permissions.**  A preset holds none, so a ledger holds none.
-
-## Open Points
-
-- **Warnings.**  [ledger.toml](run/bundles/entry-recorded.bundles/ledger.toml) omits them; [ledger-with-warnings.toml](ledger-with-warnings.toml) records each code with what it names. Recording them tells a later reader what the build flagged. Omitting them keeps the ledger to what was built: a stand-in is already a substitution of `kind = "stand-in"`, and a warning raised after the folder is in place, as `W_EARLIER_SET_RETAINED` is, could not be in a ledger already written.
-- **The mismatch code.**  [verify.txt](verify.txt) states both candidates at its end.
 
 ## Checks Made On This Set
 

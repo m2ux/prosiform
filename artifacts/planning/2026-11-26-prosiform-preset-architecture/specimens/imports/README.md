@@ -32,14 +32,14 @@ prosiform:
 | [proposed/shared/settings.md](proposed/shared/settings.md) | Proposed form | The source both import from, holding two pure presets |
 | [proposed/subject.md](proposed/subject.md), [shared/rules.md](proposed/shared/rules.md), [shared/strict-rules.md](proposed/shared/strict-rules.md) | Real | Plain declaring documents |
 | [proposed/diagnostics-0.36.0.txt](proposed/diagnostics-0.36.0.txt) | Real | pf 0.36.0 refusing the proposed source as an unknown field |
-| [proposed/diagnostics-proposed.txt](proposed/diagnostics-proposed.txt) | Hand-written | What the proposed form writes, and two open points |
+| [proposed/diagnostics-proposed.txt](proposed/diagnostics-proposed.txt) | Hand-written | What the proposed form writes, its budget and warning treatment, and two declarations stating one value |
 | [proposed/ledger.toml](proposed/ledger.toml) | Hand-written | The ledger tracing each imported setting to its declaration |
 | [inline/entry.md](inline/entry.md), [inline/worker.md](inline/worker.md) | Real | The same settings written in place, in syntax pf 0.36.0 accepts |
 | [inline/subject.md](inline/subject.md), [shared/rules.md](inline/shared/rules.md), [shared/strict-rules.md](inline/shared/strict-rules.md) | Real | The inline control's plain documents |
 | [inline/bundles/entry.bundles/entry.bundle.md](inline/bundles/entry.bundles/entry.bundle.md), [worker.bundle.md](inline/bundles/entry.bundles/worker.bundle.md) | Real | The bundles pf 0.36.0 wrote for the inline control, exit status 0, no diagnostics |
 | [refusals/settings.md](refusals/settings.md) | Proposed form | The target the refusal specimens import, one preset of it impure |
 | [refusals/missing-source.md](refusals/missing-source.md), [missing-preset.md](refusals/missing-preset.md), [impure-target.md](refusals/impure-target.md), [cycle-a.md](refusals/cycle-a.md), [cycle-b.md](refusals/cycle-b.md), [imported-conflict.md](refusals/imported-conflict.md), [local-conflict.md](refusals/local-conflict.md) | Proposed form | One source for each refusal |
-| [refusals/diagnostics.txt](refusals/diagnostics.txt) | Hand-written | The diagnostic each refusal raises, and the open point on codes |
+| [refusals/diagnostics.txt](refusals/diagnostics.txt) | Hand-written | The diagnostic and code each refusal raises |
 
 A hand-written file says so in its first line.
 
@@ -51,11 +51,12 @@ A hand-written file says so in its first line.
 - **Nothing overrides.**  An import and its receiving preset stating one key differently is a refusal, not a precedence.
 - **The ledger names both ends.**  Each imported setting records the preset that declared it and, under `imports`, the preset that imported it.
 
-## Open Points
+## Settled At Scrutiny
 
-- **Budgets.**  Whether a source read only for an import counts toward `files`, `file-bytes` and `input-bytes`: both answers are in [diagnostics-proposed.txt](proposed/diagnostics-proposed.txt).
-- **Unused imported pairs.**  Whether a pair no link names warns in each receiving document: both answers are in the same file.
-- **Codes.**  Existing codes with one new one, or a code for each import refusal: both answers close [refusals/diagnostics.txt](refusals/diagnostics.txt).
+- **Budgets.**  A source read only for an import counts toward `files`, `file-bytes` and `input-bytes`.
+- **Unused imported pairs.**  A pair is silent in an importer that does not use it, and warns once where no importer in the run names its key.
+- **Codes.**  Existing codes, with `E_IMPORT_CYCLE` the one new code.
+- **Equal values.**  Two declarations stating one value coalesce, and the ledger records every origin, the further ones under `also`.
 
 ## Checks Made On This Set
 

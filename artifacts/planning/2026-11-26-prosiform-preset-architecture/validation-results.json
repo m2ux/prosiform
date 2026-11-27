@@ -20,7 +20,7 @@
       "number": 890,
       "url": "https://github.com/m2ux/prosiform/issues/890",
       "title": "[I20:E00] Design Specimens: Each Proposed Form Scrutinised as Files Before Its Contract",
-      "body_sha256": "6ed648b3fd386ebf56ec24654b6bb97df2676d71e705969b3cb75b3d13a33d57",
+      "body_sha256": "999da5394ad6334957e7cb8e95de5e6f8c1f5db5c647764744a9c9112b64af26",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -33,7 +33,7 @@
       "number": 868,
       "url": "https://github.com/m2ux/prosiform/issues/868",
       "title": "[I20:E01] Build Ledger: Each Bundle Identifies Its Effective Sources and Selections",
-      "body_sha256": "f34344842f9fa00da17b5c53a01adcebc5963ac719b0d7e6a2beb4a7cd679a0a",
+      "body_sha256": "0c946f4bfc660233d5f8741a17596a86d9cf2a0c36014feb1132bea8dbb60b2d",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -46,7 +46,7 @@
       "number": 869,
       "url": "https://github.com/m2ux/prosiform/issues/869",
       "title": "[I20:E02] Preset Imports: Pure Settings Retain Their Scope and Origins",
-      "body_sha256": "f544caec6a5ba391395476396b7ec6b22d7db0b44d89c8f363cfd0a951f20613",
+      "body_sha256": "1dab75127d998a9a9c93a2a4cfa05c2e9450e96dcb65534e781d8ca31eb07b71",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -59,7 +59,7 @@
       "number": 870,
       "url": "https://github.com/m2ux/prosiform/issues/870",
       "title": "[I20:E03] Local Choice Groups: Independent Component and Test Alternatives",
-      "body_sha256": "0ed9a2cb5975fc95ff0135569b11338021a762e0ac4de5a455023073f0b6e6e4",
+      "body_sha256": "0057fd7b4cc9fb7b9d750b167d0e86d6c1a290cc4c8bf8c9d3a7b0bbaf09368b",
       "saved_fields_match": true,
       "labels": [
         "bot:ai-assisted",
@@ -84,5 +84,13 @@
     868,
     869,
     870
-  ]
+  ],
+  "delivered": {
+    "E00": {
+      "W00": "90fb5502c2e0967c2216df208c14d00a2f6099c6",
+      "W01": "90fb5502c2e0967c2216df208c14d00a2f6099c6",
+      "W02": "90fb5502c2e0967c2216df208c14d00a2f6099c6",
+      "W03": "90fb5502c2e0967c2216df208c14d00a2f6099c6"
+    }
+  }
 }

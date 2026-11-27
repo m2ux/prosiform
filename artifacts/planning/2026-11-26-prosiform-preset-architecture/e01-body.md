@@ -18,13 +18,13 @@ An operator can request a machine-readable ledger alongside the validated bundle
   - substitutions, brief references, dispatch and deferral targets, levels and resolved model names;
   - the hash of each bundle.
 - **Stated exclusions.**
-  The ledger asserts no runtime effort, provider observation, delivery or semantic completeness.
+  The ledger asserts no runtime effort, provider observation, delivery or semantic completeness, and records no warning.
 - **Atomic publication.**
   The ledger uses the existing capture, provenance and publication paths; a failure publishes neither a partial ledger nor a mixed bundle set.
 - **Inspection without publication.**
   A check-mode run with the option writes the same ledger to standard output and publishes nothing.
 - **Verification.**
-  The proposed `--verify` option re-hashes the sources and bundles a published ledger names and reports each that differs.
+  The proposed `--verify` option re-hashes the sources and bundles a published ledger names and reports each that differs, under codes of its own.
 - **A published schema.**
   A JSON Schema for the ledger sits with the corpus, which holds each fixture's ledger to it.
 
@@ -47,11 +47,6 @@ An operator can request a machine-readable ledger alongside the validated bundle
 - [ ] **AC5.** A check-mode run with the ledger option writes the ledger to standard output and publishes nothing, as the check-mode fixtures show.
 - [ ] **AC6.** The public invocation contract and executable example describe and exercise the delivered ledger, as documentation and corpus checks show.
 - [ ] **AC7.** A published set whose source or bundle bytes differ from its `ledger.toml` is reported with the differing path, as the verification fixtures show.
-
-## Open Questions
-
-- Whether the ledger records the warnings a build raises.
-- Which code a verification mismatch reports.
 
 ## References
 
