@@ -30,7 +30,7 @@ The requester can read every proposed form as files before any contract states i
 | [W01](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Preset import specimen set | AC2 | | | 1 | ✓ |
 | [W02](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Choice group specimen set | AC3 | | | 1 | ✓ |
 | [W03](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Combined specimen set and open points | AC4 | W00, W01, W02 | | 1 | ✓ |
-| [W04](https://github.com/m2ux/prosiform/commit/02c91939cd87d150964fdf03f482f16989412971) | Scrutiny ruling folded into the design | AC5 | W03 | | 1 | ✓ |
+| [W04](https://github.com/m2ux/prosiform/commit/d4218691f299578d7bc297259347e0d4a1ed7ac6) | Scrutiny ruling folded into the design | AC5 | W03 | | 1 | ✓ |
 
 ## Acceptance Criteria
 
