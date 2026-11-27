@@ -46,7 +46,7 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 | Is the ledger itself held to a hash? | Yes: `ledger.yaml.sha256` holds the ledger's hash alone, and the ledger holds every other. | [ledger.yaml.sha256](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml.sha256) |
 | Does the schema number rise as features arrive? | No: schema 1 is whole from the ledger epic, and the later features write fields it already admits. | [ledger.schema.json](../ledger/ledger.schema.json) |
 | Does the ledger record which part of a source a bundle carries? | Yes: `lines`, the first and last source line carried. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
-| Does the ledger record the line a setting or link was written on? | Yes: `line`, on each origin and each link row. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
+| Does the ledger record the line a setting or link was written on? | No: a setting's origin is its document and preset. | [ledger README](../ledger/README.md#what-the-ledger-leaves-out) |
 | Where is an alternative's group written? | In `choice`, as `group` beside `states`. An alternative with no group keeps the plain string. | [worker.md](worker.md) |
 
 A bundle's name joins its effective preset names sorted by Unicode code point, as pf 0.36.0 names it, so `"small, alpha"` writes `worker-alpha+small.bundle.md` and two groups need no new naming rule.

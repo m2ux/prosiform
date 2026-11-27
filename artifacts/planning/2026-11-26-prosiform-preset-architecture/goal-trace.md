@@ -57,7 +57,7 @@ A Codex session reviewed the four sets read-only. Each finding was checked again
 - **A check run's hashes follow its command line.** With no `-o` a deferred link is written one folder nearer, so the entry bundle differs. The check-mode specimen names the build its ledger describes, and states that a check run makes the folder `-o` names.
 - **A deferred link's title is held to a rule today.** pf 0.36.0 refuses one naming an alternative beside the pick token. The choice-group set states the grouped form of that rule, and the design carries it.
 - **Verification had no stated reading rules.** The verification specimen states what is read, from where and in what order.
-- **A dispatch row named no source.** Each dispatch and deferral row names the source and line writing its link.
+- **A dispatch row named no source.** Each dispatch and deferral row names the source writing its link.
 - **Equal values had one origin.** The point is open, with three answers, in the import set.
 - **An example named a section its source lacks.** The refusal specimen says the set does not exercise that rule.
 - **An exemption from the budgets is unbounded.** The cost is stated beside that answer.
@@ -68,17 +68,19 @@ The run's ledger was rendered by each candidate's library and the three renderin
 
 ## What The Ledger Records, 2026-11-27
 
-The user questioned three things the run's ledger holds: the line range a bundle carries from a source, the line a setting or link was written on, and each bundle's file name and hash. Each was first ruled out, the hashes and names to a checksum file the standard tool reads. The ledger is an output of the build and nothing an author writes, and on that ground the user restored all three. Each ledger holds them as the sets first showed, and `--verify` holds a published set to its ledger. The user then added a digest of the ledger, written beside it, so a change to the ledger itself is reported.
+The user questioned three things the run's ledger holds: the line range a bundle carries from a source, the line a setting or link was written on, and each bundle's file name and hash. Each was first ruled out, the hashes and names to a checksum file the standard tool reads. The ledger is an output of the build and nothing an author writes, and on that ground the user restored all three, with `--verify` holding a published set to its ledger. The user then added a digest of the ledger, written beside it, so a change to the ledger itself is reported.
+
+The line of a setting or link was dropped again on its cost. pf 0.36.0 keeps no position for a level, stub, alternative or brief, so recording one means a change to the parser, and a setting's document and preset already name it. The line range a bundle carries stays: the provenance record already holds it.
 
 ## Cross-Family Review Of The Accepted Forms, 2026-11-27
 
 A Codex session reviewed the decisions, the design, the plan and the four sets read-only once the sets were accepted. Each finding was checked against pf 0.36.0 before it changed a file.
 
-- **Capture the ledger states had no owner.** pf 0.36.0 keeps no position for a level, stub, alternative or brief, and one link for a dispatched bundle. The projection row declares the metadata and dispatch records and retains them.
+- **Capture the ledger states had no owner.** pf 0.36.0 keeps no position for a level, stub, alternative or brief, and one link for a dispatched bundle. The user dropped the line on that cost, and the projection row declares the dispatch record and retains each linking source.
 - **Verification had no runtime reader.** The JSON Schema validator is a development dependency. The verification row states the build's own reader, the two-way folder comparison and the refusal of a ledger naming a file twice, and declares a fixture for a missing bundle, an unlisted bundle and an unreadable ledger.
 - **Import resolution had no stated bound.** Each import identity resolves once. The resolver row states it, with the one warning an unused imported pair raises across a run.
 - **Invalid picks read as unresolved selections.** The choice-group set names `E_INVALID_USAGE` for two picks in one group and for a pick naming a fixed group, and the wiring row declares a fixture for each.
-- **A stub's origin named its preset's line.** A `line` is the line the setting's key is written on, and a chosen alternative carries the line of its `choice`.
+- **A stub's origin named its preset's line.** The ledger records no line.
 - **Two specimens named a wrong place.** The ledgerless case states its own working directory, and the unused-pair warning names the key as its author wrote it.
 - **The schema had no rule across the three deliveries.** The user ruled for one schema, numbered 1 and whole from the ledger epic. The later epics write fields it already admits, and the schema file is the ledger epic's alone.
 

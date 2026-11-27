@@ -21,11 +21,9 @@ levels:
     model: "gpt-6.1-sol"
     declared: "shared/settings.md"
     preset: "models"
-    line: 5
     imports:
       - document: "entry.md"
         preset: "default"
-        line: 5
 sources:
   - path: "entry.md"
     sha256: "18293e8d78348388a0eb90ecb541627defc283949f5f7394a3a960b8ee8a589d"
@@ -55,7 +53,6 @@ bundles:
     dispatches:
       - target: "worker.md"
         source: "entry.md"
-        line: 10
         title: ""
         level: "judgement"
         model: "gpt-6.1-sol"
@@ -83,8 +80,6 @@ bundles:
         kind: "routing"
         declared: "shared/settings.md"
         preset: "strict"
-        line: 8
         imports:
           - document: "worker.md"
             preset: "default"
-            line: 6

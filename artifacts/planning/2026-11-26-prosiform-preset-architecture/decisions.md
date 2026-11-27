@@ -39,7 +39,7 @@ The user ruled on each design point the specimen sets showed, one at a time, and
 | A hash of the ledger itself | `ledger.yaml.sha256`, written with the ledger and holding its hash alone; `--verify` reads it first | A hash file listing each bundle as well, which states a bundle's hash twice; no hash file |
 | The schema across the three deliveries | One schema, numbered 1 and whole from the ledger epic; the later epics write fields it already admits | A number raised by each epic that adds a field |
 | The part of a source a bundle carries | `lines`, the first and last source line carried | Leaving it out, which the user ruled for and then withdrew |
-| The line a setting or link was written on | `line`, on each origin and on each dispatch and deferral row | Leaving it out, which the user ruled for and then withdrew |
+| The line a setting or link was written on | Not recorded: a setting's origin is its document and preset, and a link is named by its source, target and title | `line` on each origin and link row, which the user restored and then dropped on its cost: pf 0.36.0 keeps no position for a level, stub, alternative or brief |
 | Where an alternative's group is written | In `choice`, a mapping of `group` and `states`; an alternative with no group keeps the plain string | A `choice-group` field beside `choice`; a mapping for every alternative |
 
 ## Lanes

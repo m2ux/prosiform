@@ -46,7 +46,7 @@ A hand-written file says so in its first line; the schema says so in its `$comme
 
 ## Each Feature And Its Field
 
-A field under `bundles` is written here from one bundle's entry. A `line` is the line the setting's key is written on.
+A field under `bundles` is written here from one bundle's entry.
 
 | What pf 0.36.0 does | Ledger field |
 | --- | --- |
@@ -56,13 +56,13 @@ A field under `bundles` is written here from one bundle's entry. A `line` is the
 | Selects a region of a source for a bundle | `content`: `source` and `lines`, the first and last source line carried |
 | Puts `default` and named presets in force | `content.presets`, in layering order; `selected`, the names the reaching reference gave |
 | Places a document under a layout group | `content.group`: `name` and `depth`; absent where the document keeps a group of its own |
-| Redirects a link through a `subst` pair | `substitutions`: `key`, `substitute`, `kind` (`routing` or `stand-in`), and where it was declared: `declared`, `preset`, `line` |
-| Puts an entry stub in force | `stubs`: `name`, `states`, `declared`, `line` |
-| Picks an alternative | `content.choices`: the `alternative` in force and the `line` its `choice` is written on |
-| Carries a dispatch's brief | `briefs`: `target`, `section`, `line` |
-| Dispatches a target to a bundle of its own | `dispatches`: `target`, the `source` and `line` writing the link, its `title`, and the `bundle` written for it |
+| Redirects a link through a `subst` pair | `substitutions`: `key`, `substitute`, `kind` (`routing` or `stand-in`), and where it was declared: `declared` and `preset` |
+| Puts an entry stub in force | `stubs`: `name`, `states`, `declared` |
+| Picks an alternative | `content.choices`: the `alternative` in force |
+| Carries a dispatch's brief | `briefs`: `target`, `section` |
+| Dispatches a target to a bundle of its own | `dispatches`: `target`, the `source` writing the link, its `title`, and the `bundle` written for it |
 | Leaves a dispatch's pick to the dispatching agent | `dispatches.choices`: one entry for each alternative, with its choice line and bundle |
-| Defers a link for a later run | `deferrals`: `target`, the `source` and `line` writing the link, the names it `carries`, and the link as `published` |
+| Defers a link for a later run | `deferrals`: `target`, the `source` writing the link, the names it `carries`, and the link as `published` |
 | Maps a level to a model | `levels`: `name`, `model` and where the map was declared; `level` and `model` on a dispatched bundle |
 | Writes each bundle | `file` and `sha256` |
 
@@ -72,12 +72,13 @@ A field under `bundles` is written here from one bundle's entry. A `line` is the
 - **The working directory.**  Paths are written from it; the directory itself is the caller's.
 - **The output folder.**  `-o` names where the run's folder went, which the folder's own location already says.
 - **Its own bytes.**  The ledger records no hash of itself. `ledger.yaml.sha256` beside it holds that one hash, and the ledger holds every other.
+- **Line numbers.**  A setting's origin is its document and preset, which name it uniquely. A dispatch or deferral is named by its source, target and title.
 - **Warnings.**  They stay on standard error. What a warning points at is a field already: a stand-in is a substitution whose `kind` is `stand-in`.
 - **Secrets and permissions.**  A preset holds none, so a ledger holds none.
 
 ## A Row For Each Link
 
-Each authored dispatch and deferral link has a row naming the source and line that wrote it, so two links reaching one bundle are two rows. The ledger's projection therefore needs each link's coordinates, where the bundler's own record of a dispatched bundle keeps one.
+Each dispatch and deferral has a row naming the source writing the link, its target and its title, so links two sources write to one bundle are two rows. The ledger's projection therefore needs the source of each link, where the bundler's own record of a dispatched bundle keeps one.
 
 ## Checks Made On This Set
 

@@ -103,8 +103,8 @@ Exit status 1. No source and no bundle is opened.
 
 $ pf --verify bundles/entry-recorded.bundles
 E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.yaml' differs from the digest written with it
-  recorded: 8833fa56166dc627f019ae76faed3002f9f35e46796e26260394fa50f74a159a
-  found: 546aac54dd0ab96abb2b392ff3270d20237bfa9061aede4dcb9594b9891dfbba
+  recorded: 23dc5d742c0b77b6b179b18db88fb6d55df27b17e51908b8c9d8fba60bdb8522
+  found: a3ca5c847ebfec5156047baccdf610533d9e54da1f9816ca418e886750fa0571
   remedy: rebuild the bundle set
 
 Exit status 1. No source and no bundle is opened: a ledger that differs from

@@ -21,11 +21,9 @@ levels:
     model: "gpt-6.1-sol"
     declared: "shared/settings.md"
     preset: "models"
-    line: 5
     imports:
       - document: "entry.md"
         preset: "default"
-        line: 5
 sources:
   - path: "entry.md"
     sha256: "594ab43e141772deb832134fb87160f4825c2a7966c4553e1fde887009e48111"
@@ -55,7 +53,6 @@ bundles:
     dispatches:
       - target: "worker.md"
         source: "entry.md"
-        line: 10
         title: "alpha, small"
         level: "judgement"
         model: "gpt-6.1-sol"
@@ -74,10 +71,8 @@ bundles:
         choices:
           - group: "component"
             alternative: "alpha"
-            line: 6
           - group: "test"
             alternative: "small"
-            line: 20
       - source: "alpha.md"
         lines: [4, 6]
         presets: ["default"]
@@ -90,18 +85,14 @@ bundles:
         kind: "routing"
         declared: "shared/settings.md"
         preset: "alpha-component"
-        line: 8
         imports:
           - document: "worker.md"
             preset: "alpha"
-            line: 10
       - key: "test.md"
         substitute: "small.md"
         kind: "routing"
         declared: "shared/settings.md"
         preset: "small-test"
-        line: 14
         imports:
           - document: "worker.md"
             preset: "small"
-            line: 24

@@ -78,8 +78,7 @@
           "name",
           "model",
           "declared",
-          "preset",
-          "line"
+          "preset"
         ],
         "additionalProperties": false,
         "properties": {
@@ -99,18 +98,13 @@
             "type": "string",
             "minLength": 1
           },
-          "line": {
-            "type": "integer",
-            "minimum": 1
-          },
           "imports": {
             "type": "array",
             "items": {
               "type": "object",
               "required": [
                 "document",
-                "preset",
-                "line"
+                "preset"
               ],
               "additionalProperties": false,
               "properties": {
@@ -121,10 +115,6 @@
                 "preset": {
                   "type": "string",
                   "minLength": 1
-                },
-                "line": {
-                  "type": "integer",
-                  "minimum": 1
                 }
               }
             }
@@ -136,8 +126,7 @@
               "type": "object",
               "required": [
                 "declared",
-                "preset",
-                "line"
+                "preset"
               ],
               "additionalProperties": false,
               "properties": {
@@ -149,18 +138,13 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "line": {
-                  "type": "integer",
-                  "minimum": 1
-                },
                 "imports": {
                   "type": "array",
                   "items": {
                     "type": "object",
                     "required": [
                       "document",
-                      "preset",
-                      "line"
+                      "preset"
                     ],
                     "additionalProperties": false,
                     "properties": {
@@ -171,10 +155,6 @@
                       "preset": {
                         "type": "string",
                         "minLength": 1
-                      },
-                      "line": {
-                        "type": "integer",
-                        "minimum": 1
                       }
                     }
                   }
@@ -192,8 +172,7 @@
         "required": [
           "name",
           "states",
-          "declared",
-          "line"
+          "declared"
         ],
         "additionalProperties": false,
         "properties": {
@@ -208,10 +187,6 @@
           "declared": {
             "type": "string",
             "minLength": 1
-          },
-          "line": {
-            "type": "integer",
-            "minimum": 1
           }
         }
       }
@@ -351,16 +326,10 @@
                   "items": {
                     "type": "object",
                     "required": [
-                      "alternative",
-                      "line"
+                      "alternative"
                     ],
                     "additionalProperties": false,
                     "properties": {
-                      "line": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "description": "The line the alternative's choice is written on."
-                      },
                       "group": {
                         "type": "string",
                         "minLength": 1,
@@ -385,8 +354,7 @@
                 "substitute",
                 "kind",
                 "declared",
-                "preset",
-                "line"
+                "preset"
               ],
               "additionalProperties": false,
               "properties": {
@@ -412,18 +380,13 @@
                   "type": "string",
                   "minLength": 1
                 },
-                "line": {
-                  "type": "integer",
-                  "minimum": 1
-                },
                 "imports": {
                   "type": "array",
                   "items": {
                     "type": "object",
                     "required": [
                       "document",
-                      "preset",
-                      "line"
+                      "preset"
                     ],
                     "additionalProperties": false,
                     "properties": {
@@ -434,10 +397,6 @@
                       "preset": {
                         "type": "string",
                         "minLength": 1
-                      },
-                      "line": {
-                        "type": "integer",
-                        "minimum": 1
                       }
                     }
                   }
@@ -449,8 +408,7 @@
                     "type": "object",
                     "required": [
                       "declared",
-                      "preset",
-                      "line"
+                      "preset"
                     ],
                     "additionalProperties": false,
                     "properties": {
@@ -462,18 +420,13 @@
                         "type": "string",
                         "minLength": 1
                       },
-                      "line": {
-                        "type": "integer",
-                        "minimum": 1
-                      },
                       "imports": {
                         "type": "array",
                         "items": {
                           "type": "object",
                           "required": [
                             "document",
-                            "preset",
-                            "line"
+                            "preset"
                           ],
                           "additionalProperties": false,
                           "properties": {
@@ -484,10 +437,6 @@
                             "preset": {
                               "type": "string",
                               "minLength": 1
-                            },
-                            "line": {
-                              "type": "integer",
-                              "minimum": 1
                             }
                           }
                         }
@@ -504,8 +453,7 @@
               "type": "object",
               "required": [
                 "target",
-                "section",
-                "line"
+                "section"
               ],
               "additionalProperties": false,
               "properties": {
@@ -516,10 +464,6 @@
                 "section": {
                   "type": "string",
                   "minLength": 1
-                },
-                "line": {
-                  "type": "integer",
-                  "minimum": 1
                 }
               }
             }
@@ -531,7 +475,6 @@
               "required": [
                 "target",
                 "source",
-                "line",
                 "title"
               ],
               "additionalProperties": false,
@@ -544,10 +487,6 @@
                   "type": "string",
                   "minLength": 1,
                   "description": "The source writing the link."
-                },
-                "line": {
-                  "type": "integer",
-                  "minimum": 1
                 },
                 "title": {
                   "type": "string"
@@ -606,7 +545,6 @@
               "required": [
                 "target",
                 "source",
-                "line",
                 "carries",
                 "published"
               ],
@@ -620,10 +558,6 @@
                   "type": "string",
                   "minLength": 1,
                   "description": "The source writing the link."
-                },
-                "line": {
-                  "type": "integer",
-                  "minimum": 1
                 },
                 "carries": {
                   "type": "array",

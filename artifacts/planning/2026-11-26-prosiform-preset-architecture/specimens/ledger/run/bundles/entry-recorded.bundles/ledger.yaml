@@ -21,12 +21,10 @@ levels:
     model: "gpt-6.1-sol"
     declared: "entry.md"
     preset: "default"
-    line: 5
 stubs:
   - name: "recorded"
     states: "Reads the recorded review."
     declared: "entry.md"
-    line: 7
 sources:
   - path: "entry.md"
     sha256: "536c5ddf3f5d29b221024ef718df7cc5523df33e966c70520f67fe5287dfd25b"
@@ -62,11 +60,9 @@ bundles:
         kind: "stand-in"
         declared: "entry.md"
         preset: "recorded"
-        line: 9
     dispatches:
       - target: "worker.md"
         source: "entry.md"
-        line: 13
         title: "?, small"
         level: "judgement"
         model: "gpt-6.1-sol"
@@ -80,7 +76,6 @@ bundles:
     deferrals:
       - target: "recorded-review.md"
         source: "entry.md"
-        line: 13
         carries: ["recorded"]
         published: "[Review](../../recorded-review.md \"recorded\")"
   - file: "worker-alpha+small.bundle.md"
@@ -96,7 +91,6 @@ bundles:
         presets: ["default", "alpha", "small"]
         choices:
           - alternative: "alpha"
-            line: 6
       - source: "alpha.md"
         lines: [4, 6]
         presets: ["default"]
@@ -109,13 +103,11 @@ bundles:
         kind: "routing"
         declared: "worker.md"
         preset: "alpha"
-        line: 8
       - key: "test.md"
         substitute: "small.md"
         kind: "routing"
         declared: "worker.md"
         preset: "small"
-        line: 15
   - file: "worker-beta+small.bundle.md"
     sha256: "4c0feb2da7f4c780bb87651d969ff0d3a58647a1562c21307fc67844542936d5"
     role: "dispatched"
@@ -129,7 +121,6 @@ bundles:
         presets: ["default", "beta", "small"]
         choices:
           - alternative: "beta"
-            line: 10
       - source: "beta.md"
         lines: [4, 6]
         presets: ["default"]
@@ -142,10 +133,8 @@ bundles:
         kind: "routing"
         declared: "worker.md"
         preset: "beta"
-        line: 12
       - key: "test.md"
         substitute: "small.md"
         kind: "routing"
         declared: "worker.md"
         preset: "small"
-        line: 15
