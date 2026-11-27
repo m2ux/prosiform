@@ -1,0 +1,93 @@
+Hand-written specimen: pf 0.36.0 offers no --presets option.
+
+The listing names one document and prints what it declares. It reads the
+document's frontmatter, and the sources its imports name, and nothing else.
+Run in `../proposed/`:
+
+$ pf --presets worker.md
+worker.md
+
+default
+  level  judgement
+
+component  one in force wherever the bundled content depends on it
+  alpha  The requested component is alpha.
+         component.md -> alpha.md
+  beta   The requested component is beta.
+         component.md -> beta.md
+
+test  one in force wherever the bundled content depends on it
+  small  The test is small.
+         test.md -> small.md
+  large  The test is large.
+         test.md -> large.md
+
+Standard error is empty. Exit status 0. No folder is made and nothing is
+published.
+
+A document stating a stub and an ordinary preset lists each under its role.
+Run in `../../ledger/run/`, whose worker states `small` and `large` as
+ordinary presets and whose entry states a stub:
+
+$ pf --presets entry.md
+entry.md
+
+default
+  levels  judgement -> gpt-6.1-sol
+
+stubs  selected by the run's entry title
+  recorded  Reads the recorded review.
+            review.md -> recorded-review.md
+
+$ pf --presets worker.md
+worker.md
+
+default
+  level  judgement
+
+alternatives  one in force wherever the bundled content depends on it
+  alpha  The requested component is alpha.
+         component.md -> alpha.md
+  beta   The requested component is beta.
+         component.md -> beta.md
+
+presets  each selected by name, any number together
+  small  test.md -> small.md
+  large  test.md -> large.md
+
+An imported setting names where it was declared. Run in `../../combined/`:
+
+$ pf --presets worker.md
+worker.md
+
+default
+  level  judgement
+
+component  one in force wherever the bundled content depends on it
+  alpha  The requested component is alpha.
+         component.md -> alpha.md  (shared/settings.md, alpha-component)
+  ...
+
+Refusals
+
+$ pf --presets component.md        (declares `prosiform: {}`)
+component.md
+
+default
+
+Exit status 0: a declaring document always has `default`.
+
+$ pf --presets notes.md            (an illustrative document carrying no prosiform mapping; this set holds none)
+E_TARGET_NOT_FOUND: 'notes.md' declares no prosiform mapping, so it has no presets to list
+  reference: notes.md
+  remedy: name a document that declares prosiform
+
+Exit status 1.
+
+Open point: text or TOML
+
+  A. As above: text, laid out as a refusal lists alternatives today, for a
+     person or an agent choosing a title.
+  B. TOML in the ledger's vocabulary (`preset`, `choices`, `substitution`,
+     `imports`), for a program. A reader then needs a TOML reader to see a
+     document's choices.

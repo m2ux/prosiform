@@ -1,0 +1,110 @@
+# Hand-written specimen: pf 0.36.0 does not write this file.
+schema = 1
+
+[build]
+tool = "pf"
+version = "0.36.0"
+profile = "prosiform-markdown"
+
+[invocation]
+entry = "entry.md"
+picks = []
+
+[invocation.budgets]
+files = 256
+file-bytes = 1048576
+input-bytes = 16777216
+output-bytes = 262144
+targets = 4096
+links = 32768
+nesting = 64
+depth = 8
+
+[[level]]
+name = "judgement"
+model = "gpt-6.1-sol"
+declared = "entry.md"
+preset = "default"
+line = 5
+
+[[source]]
+path = "entry.md"
+sha256 = "b0eb861833c268dd2bff4bb06b07c45fc9637a9e2b29cad00ead722208b9361a"
+use = "content"
+
+[[source]]
+path = "worker.md"
+sha256 = "1dcb07943b785da9a87a3f36870ab625527af2638c73e7d1a8230ea2293c8dbf"
+use = "content"
+
+[[source]]
+path = "alpha.md"
+sha256 = "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de"
+use = "content"
+
+[[source]]
+path = "small.md"
+sha256 = "8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6"
+use = "content"
+
+[[bundle]]
+file = "entry.bundle.md"
+sha256 = "609a17884dedfc5d077890f0846885ce486739da9878d9492cb36695baef8a5b"
+role = "entry"
+document = "entry.md"
+selected = []
+
+  [[bundle.content]]
+  source = "entry.md"
+  lines = [7, 9]
+  presets = ["default"]
+
+  [[bundle.dispatch]]
+  target = "worker.md"
+  source = "entry.md"
+  line = 9
+  title = "alpha, small"
+  level = "judgement"
+  model = "gpt-6.1-sol"
+  bundle = "worker-alpha+small.bundle.md"
+
+[[bundle]]
+file = "worker-alpha+small.bundle.md"
+sha256 = "33d3c874d0d8e93b281c2cf5b76a34326d6f82fb5295f7fb50def3d5619ecb6d"
+role = "dispatched"
+document = "worker.md"
+selected = ["alpha", "small"]
+level = "judgement"
+model = "gpt-6.1-sol"
+
+  [[bundle.content]]
+  source = "worker.md"
+  lines = [26, 28]
+  presets = ["default", "alpha", "small"]
+  choices = [{ group = "component", alternative = "alpha" }, { group = "test", alternative = "small" }]
+
+  [[bundle.content]]
+  source = "alpha.md"
+  lines = [4, 6]
+  presets = ["default"]
+
+  [[bundle.content]]
+  source = "small.md"
+  lines = [4, 6]
+  presets = ["default"]
+
+  [[bundle.substitution]]
+  key = "component.md"
+  substitute = "alpha.md"
+  kind = "routing"
+  declared = "worker.md"
+  preset = "alpha"
+  line = 9
+
+  [[bundle.substitution]]
+  key = "test.md"
+  substitute = "small.md"
+  kind = "routing"
+  declared = "worker.md"
+  preset = "small"
+  line = 19

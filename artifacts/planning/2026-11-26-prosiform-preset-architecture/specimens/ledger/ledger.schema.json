@@ -1,0 +1,674 @@
+{
+  "$comment": "Hand-written specimen: pf 0.36.0 ships no ledger schema.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prosiform build ledger",
+  "description": "What one build read, selected and wrote. Every path is written from the invocation working directory, and a bundle's file from the run's own folder.",
+  "type": "object",
+  "required": [
+    "schema",
+    "build",
+    "invocation",
+    "source",
+    "bundle"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": 1,
+      "description": "The ledger's schema version."
+    },
+    "build": {
+      "type": "object",
+      "required": [
+        "tool",
+        "version",
+        "profile"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tool": {
+          "const": "pf"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "required": [
+        "entry",
+        "picks",
+        "budgets"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The entry reference as the caller wrote it."
+        },
+        "picks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "budgets": {
+          "type": "object",
+          "description": "Each budget in force, a default among them.",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "level": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "model",
+          "declared",
+          "preset",
+          "line"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "declared": {
+            "type": "string",
+            "minLength": 1
+          },
+          "preset": {
+            "type": "string",
+            "minLength": 1
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "imports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "document",
+                "preset",
+                "line"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "document": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "preset": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "also": {
+            "type": "array",
+            "description": "Each further declaration stating the same value, where equal values coalesce.",
+            "items": {
+              "type": "object",
+              "required": [
+                "declared",
+                "preset",
+                "line"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "declared": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "preset": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "imports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "document",
+                      "preset",
+                      "line"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "document": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "preset": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "line": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "stub": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "states",
+          "declared",
+          "line"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "states": {
+            "type": "string",
+            "minLength": 1
+          },
+          "declared": {
+            "type": "string",
+            "minLength": 1
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "use"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "use": {
+            "enum": [
+              "content",
+              "metadata"
+            ],
+            "description": "content where a bundle carries its bytes, metadata where the run read it and no bundle carries its bytes."
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "bundle": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "file",
+          "sha256",
+          "role",
+          "document",
+          "selected",
+          "content"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "pattern": "^[^/]+$",
+            "description": "A file of the run's own folder, named without a folder."
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "role": {
+            "enum": [
+              "entry",
+              "dispatched"
+            ]
+          },
+          "document": {
+            "type": "string",
+            "minLength": 1
+          },
+          "selected": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "The named presets the reference reaching the document selected, in declaration order."
+          },
+          "level": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "source",
+                "lines",
+                "presets"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "lines": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "description": "First and last line of the source the bundle carries."
+                },
+                "presets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "minItems": 1
+                },
+                "group": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "depth"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "depth": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                },
+                "choices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "alternative"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "group": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "The choice group. An alternative of the document's unnamed group states none."
+                      },
+                      "alternative": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "substitution": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "key",
+                "substitute",
+                "kind",
+                "declared",
+                "preset",
+                "line"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "substitute": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "kind": {
+                  "enum": [
+                    "routing",
+                    "stand-in"
+                  ]
+                },
+                "declared": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "preset": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "imports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "document",
+                      "preset",
+                      "line"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "document": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "preset": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "line": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
+                    }
+                  }
+                },
+                "also": {
+                  "type": "array",
+                  "description": "Each further declaration stating the same value, where equal values coalesce.",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "declared",
+                      "preset",
+                      "line"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "declared": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "preset": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "line": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "imports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "document",
+                            "preset",
+                            "line"
+                          ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "document": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "preset": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "line": {
+                              "type": "integer",
+                              "minimum": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "brief": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "target",
+                "section",
+                "line"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "section": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          "dispatch": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "target",
+                "source",
+                "line",
+                "title"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The source writing the link."
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "title": {
+                  "type": "string"
+                },
+                "level": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "model": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "bundle": {
+                  "type": "string",
+                  "pattern": "^[^/]+$",
+                  "description": "A file of the run's own folder, named without a folder."
+                },
+                "choice": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "alternative",
+                      "states",
+                      "bundle"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "group": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "alternative": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "states": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "bundle": {
+                        "type": "string",
+                        "pattern": "^[^/]+$",
+                        "description": "A file of the run's own folder, named without a folder."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "deferral": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "target",
+                "source",
+                "line",
+                "carries",
+                "published"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The source writing the link."
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "carries": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "published": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "warning": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "source"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^W_[A-Z_]+$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "resolved": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "preset": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

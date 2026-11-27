@@ -1,0 +1,6 @@
+$ pf -o bundles entry.md
+E_INVALID_CONVERSION_METADATA: unknown field prosiform.default.imports
+  reference: entry.md
+  chain: entry.md
+  location: entry.md:4:5
+exit status 1

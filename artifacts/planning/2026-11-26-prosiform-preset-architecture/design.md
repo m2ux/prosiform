@@ -11,6 +11,7 @@ Each feature has a specimen set under `specimens/`: sources written in the propo
 The explicit `--ledger` option adds one `ledger.toml` to the atomically published bundle-set folder. Its versioned schema records:
 
 - the build and profile identity, and the invocation: the entry reference, each pick and each budget in force;
+- one row for each authored dispatch and deferral link, naming the source and line that wrote it;
 - source-relative paths and hashes, and selected regions;
 - ordered default and named preset contributions, layout groups, substitution keys and targets with lexical origins, and entry-stub roles;
 - alternatives and picks, brief selections, dispatch and deferral targets;
@@ -22,7 +23,7 @@ The serializer projects the existing capture and provenance records; it never re
 
 A check-mode run with the option writes the same ledger to standard output and publishes nothing.
 
-The explicit `--verify` option names a published folder, re-hashes each source and bundle its ledger names and reports each differing path. A set with no ledger is refused.
+The explicit `--verify` option names a published folder, re-hashes each source and bundle its ledger names and reports each differing path. A set with no ledger is refused. The ledger is held to its schema before any other file is opened; a bundle is named by a file name alone and compared with the folder's own contents in both directions; a source resolves from the working directory under the build's own access rules.
 
 ## Pure Imports
 
@@ -36,7 +37,7 @@ A substitution key retains the source directory that declared it; the substitute
 
 `choice-group` names a choice alternative's local exclusive axis. Where the field is absent, the alternative belongs to the document's one unnamed group under the same resolver. The existing layout `group` is separate. Preset names remain complete document-local names; group membership creates no global registry and no tag namespace.
 
-Every group affecting selected content or an entry map has one member selected. Ordinary presets remain additive; optional stubs retain their role. A dispatch may leave one relevant group to a pick token with the others explicit, and is refused with a remedy for each group where several are open; no Cartesian pick tree is published. At the entry `--pick` is repeatable, each occurrence naming one member of one open group. Briefs remain independent of unpicked alternatives, and dispatch and deferral carry every fixed and chosen binding.
+Every group affecting selected content or an entry map has one member selected. Ordinary presets remain additive; optional stubs retain their role. A dispatch may leave one relevant group to a pick token with the others explicit, and is refused with a remedy for each group where several are open; no Cartesian pick tree is published. At the entry `--pick` is repeatable, each occurrence naming one member of one open group. A deferred link names exactly one alternative of each group, or carries the pick token, which leaves open every group the link names no alternative of; the run bundling it names one pick for each. Briefs remain independent of unpicked alternatives, and dispatch and deferral carry every fixed and chosen binding.
 
 The public synthetic source uses alpha and beta components and small and large tests. The 0.36.0 release combines a component alternative with an ordinary test preset, and bundles without a test where none is named.
 
@@ -56,9 +57,12 @@ The specimen sets show each point's candidate answers; the scrutiny ruling settl
 - Which code a verification mismatch reports.
 - Whether a source read only for an import counts toward the file and byte budgets.
 - Whether an imported substitution no link names warns in each receiving document.
-- How a bundle's derived name orders the members of two groups.
+- Whether the preset listing is text or TOML.
 - What a pick naming a member of an already fixed group reports.
-- Whether each new refusal takes a new code or an existing one.
+- Whether each import refusal takes a new code or an existing one.
+- What the ledger records where two declarations state one value.
+
+A bundle's name joins its effective preset names sorted by Unicode code point, as the 0.36.0 release names it, so two groups need no naming rule.
 
 ## Authored And Runtime Boundaries
 

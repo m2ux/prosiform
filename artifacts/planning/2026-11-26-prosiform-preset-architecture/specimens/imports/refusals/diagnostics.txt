@@ -1,0 +1,87 @@
+Hand-written specimen: pf 0.36.0 refuses every file here as it refuses
+`../proposed/entry.md`, with an unknown field. Each diagnostic below is the one
+the proposed form raises. Each command runs in this folder.
+
+1. An import naming no document
+
+$ pf missing-source.md
+E_TARGET_NOT_FOUND: prosiform.default.imports names 'absent.md', and no such document declares prosiform
+  reference: absent.md
+  chain: missing-source.md
+  location: missing-source.md:5:9
+  remedy: name a document that declares the preset, or drop the import
+
+Exit status 1.
+
+2. An import naming a preset its document does not declare
+
+$ pf missing-preset.md
+E_TARGET_NOT_FOUND: prosiform.default.imports names the preset 'nonesuch' of 'settings.md', which declares models, strict, lenient and routed
+  reference: settings.md
+  chain: missing-preset.md
+  location: missing-preset.md:5:9
+  remedy: name one preset the document declares, written as that document writes it
+
+Exit status 1. A name is matched as a link title's is: trimmed and compared
+without case, so `Strict` names `strict`.
+
+3. An import naming a preset that holds more than settings
+
+$ pf impure-target.md
+E_INVALID_CONVERSION_METADATA: prosiform.default.imports names the preset 'routed' of 'settings.md', which states group, and an imported preset holds levels, subst and imports alone
+  reference: settings.md
+  chain: impure-target.md
+  location: impure-target.md:5:9
+  related: settings.md:13:5: prosiform.routed.group
+  remedy: import a preset holding settings alone, or move the group to the importing preset
+
+Exit status 1. `group`, `choice`, `choice-group`, `stub`, `brief` and `level`
+each make a preset impure.
+
+4. Two presets importing each other
+
+$ pf cycle-a.md
+E_IMPORT_CYCLE: prosiform.first of 'cycle-a.md' imports itself through 'cycle-b.md'
+  chain: cycle-a.md first -> cycle-b.md second -> cycle-a.md first
+  location: cycle-a.md:9:9
+  related: cycle-b.md:5:9: prosiform.second.imports names 'cycle-a.md' first
+  remedy: drop one import of the cycle
+
+Exit status 1.
+
+5. Two imports stating one key differently
+
+$ pf imported-conflict.md
+E_INVALID_USAGE: prosiform.strict.subst and prosiform.lenient.subst of 'settings.md', both imported by prosiform.default of 'imported-conflict.md', map 'rules.md' to 'strict-rules.md' and 'lenient-rules.md'
+  reference: imported-conflict.md
+  chain: imported-conflict.md
+  remedy: import one preset mapping the reference, or map it in one of them alone
+  location: settings.md:8:9
+  related: settings.md:11:9: prosiform.lenient.subst maps 'rules.md' to 'lenient-rules.md'
+
+Exit status 2. Two imports stating one key to one substitute coalesce, and the
+build proceeds.
+
+6. An import and its receiving preset stating one key differently
+
+$ pf local-conflict.md
+E_INVALID_USAGE: prosiform.strict.subst of 'settings.md', imported by prosiform.default of 'local-conflict.md', and prosiform.default.subst map 'rules.md' to 'strict-rules.md' and 'own-rules.md'
+  reference: local-conflict.md
+  chain: local-conflict.md
+  remedy: map the reference in the importing preset or in the imported one, not both
+  location: local-conflict.md:8:9
+  related: settings.md:8:9: prosiform.strict.subst maps 'rules.md' to 'strict-rules.md'
+
+Exit status 2. The receiving preset does not override what it imports: a
+selected preset still layers over `default`, as it does today, and that is the
+one place a later statement holds over an earlier one.
+
+Open point: new codes or existing ones
+
+  A. As above: existing codes where their stated meaning already fits
+     (E_TARGET_NOT_FOUND, E_INVALID_CONVERSION_METADATA, E_INVALID_USAGE), and
+     one new code, E_IMPORT_CYCLE, beside the existing E_DISPATCH_CYCLE.
+  B. A code of its own for each import refusal: E_IMPORT_NOT_FOUND (cases 1
+     and 2), E_IMPORT_IMPURE (case 3), E_IMPORT_CYCLE (case 4) and
+     E_IMPORT_CONFLICT (cases 5 and 6). A caller branching on the code tells
+     an import fault from any other, at the cost of four codes for one field.

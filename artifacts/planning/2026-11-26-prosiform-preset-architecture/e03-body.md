@@ -20,6 +20,8 @@ One document can state independent local component and test choice groups, while
   A pick token may leave one relevant group open while the others are explicit; a dispatch leaving several open fails with a remedy for each, and no Cartesian pick tree is published.
 - **One pick for each open group at the entry.**
   The entry's pick option is repeatable, each occurrence naming one member of one open group.
+- **Open groups at a deferral.**
+  A deferred link names one alternative of each group or a pick token leaving the rest open, since the run bundling it names one pick for each.
 - **Unchanged neighbours.**
   Existing brief-independence, deferral and dispatch rules remain in force.
 - **Observable configuration.**
@@ -52,9 +54,8 @@ One document can state independent local component and test choice groups, while
 
 ## Open Questions
 
-- How a bundle's derived name orders the members of two groups.
 - What a pick naming a member of an already fixed group reports.
-- Which code each group refusal reports.
+- Whether the preset listing is text or TOML.
 
 ## References
 

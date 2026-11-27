@@ -1,0 +1,98 @@
+Hand-written specimen: pf 0.36.0 takes one --pick, and refuses the source's choice-group field.
+
+At the entry the caller knows every answer, so --pick is repeatable: each
+occurrence names one member of one group the entry's title leaves open. Each
+command runs in `../proposed/`, on `direct.md`, which states the two groups and
+no level, so it can be entered directly.
+
+1. One pick for each open group
+
+$ pf -o bundles '[Check](direct.md "?")' --pick alpha --pick small
+
+Standard error is empty. Exit status 0. The run writes
+`bundles/direct-alpha+small.bundles/direct-alpha+small.bundle.md`. The name
+joins its members sorted by Unicode code point, whatever order the picks came
+in, as pf 0.36.0 names a bundle today.
+
+2. One group left open at the entry
+
+$ pf -o bundles '[Check](direct.md "?")' --pick alpha
+E_ALTERNATIVE_UNRESOLVED: direct.md needs one alternative of its group 'test' in force:
+  small  The test is small.
+  large  The test is large.
+  source: direct.md
+  remedy: rerun with a further --pick naming the alternative of 'test' that fits your task
+
+Exit status 2. pf 0.36.0 builds this command on the ungrouped source and
+bundles the test slot unselected, as `../proposed/diagnostics-0.36.0.txt`
+records.
+
+3. One group fixed in the title, the other picked
+
+$ pf -o bundles '[Check](direct.md "alpha, ?")' --pick small
+
+Exit status 0. The same bundle as case 1.
+
+4. Two picks naming one group
+
+$ pf -o bundles '[Check](direct.md "?")' --pick alpha --pick beta
+E_INVALID_USAGE: --pick names 'alpha' and 'beta', both alternatives of the group 'component' of 'direct.md'
+  reference: [Check](direct.md "?")
+  remedy: name one alternative of each group the entry leaves open
+
+Exit status 2.
+
+5. A pick naming no alternative of the document
+
+$ pf -o bundles '[Check](direct.md "?")' --pick gamma --pick small
+E_ALTERNATIVE_UNRESOLVED: direct.md needs one alternative of its group 'component' in force:
+  alpha  The requested component is alpha.
+  beta   The requested component is beta.
+  source: direct.md
+  remedy: rerun with a further --pick naming the alternative of 'component' that fits your task
+
+Exit status 2. An unknown name leaves its pick unmade, as it does today.
+
+6. Open point: a pick naming a member of a group the title already fixes
+
+$ pf -o bundles '[Check](direct.md "alpha, ?")' --pick beta
+
+  A. Invalid usage. The title fixed the group, so the pick contradicts it:
+
+     E_INVALID_USAGE: --pick names 'beta', an alternative of the group 'component', which the entry's title fixes as 'alpha'
+       reference: [Check](direct.md "alpha, ?")
+       remedy: name an alternative of 'test', the group the entry leaves open
+
+     Exit status 2.
+
+  B. An unmade pick. The pick names nothing of the open group, so the open
+     group is reported as case 2 reports it, listing `small` and `large`.
+
+     Exit status 2. One diagnostic covers every way a pick misses, and the
+     caller is not told the name it gave belongs elsewhere.
+
+7. A deferred link
+
+A deferred link is bundled by a later run, whose entry it becomes. That entry
+names one pick for each open group, so a deferral may fix some groups and
+leave any number open:
+
+  [¬ Check](direct.md "alpha, ?")    publishes  [Check](../../direct.md "alpha, ?")
+  [¬ Check](direct.md "?")           publishes  [Check](../../direct.md "?")
+  [¬ Check](direct.md "alpha")       is refused by the deferring run:
+
+  E_UNSUPPORTED_CONSTRUCT: the deferred link 'direct.md' names no alternative of the group 'test'; direct.md declares 'small', 'large' in it, and the link must name exactly one alternative of each group or carry '?' for the groups it leaves open
+
+The later run bundles the first with `--pick small`, and the second with
+`--pick alpha --pick small`.
+
+pf 0.36.0 refuses the first today, on the same source with its choice-group
+lines removed:
+
+  E_UNSUPPORTED_CONSTRUCT: the deferred link 'direct.md' names 'alpha' beside the pick token '?'; direct.md declares the alternatives 'alpha', 'beta', and the link must name exactly one of them or carry '?' alone
+
+pf 0.36.0 holds a deferred link to naming exactly one alternative, or the pick
+token alone. The form holds it to naming exactly one alternative of each
+group, or the pick token, which leaves open every group the link names no
+alternative of. A dispatch still leaves at most one group open, since its pick
+is made by the dispatching agent from one published list.

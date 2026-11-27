@@ -16,14 +16,14 @@ All warnings and refusals remain in the retained diagnostics; a successful build
 
 ## Proposed-Form Specimen Sets
 
-Each set is delivered by a row of the first epic, and lists its own files as real or hand-written.
+Each set's README lists its files as real, written in the proposed form, or hand-written.
 
 | Set | Shows |
 | --- | --- |
-| `specimens/ledger` | The ledger for two real builds, its schema, check-mode output, verification outcomes and refusal |
-| `specimens/imports` | A preset importing levels and substitutions, the inline control its bundles must equal, and each refusal |
-| `specimens/choice-groups` | Two local groups on one document, explicit and open picks, each refusal and the preset listing |
-| `specimens/combined` | The three features in one run, and every open design point with its candidate answers |
+| [Ledger](specimens/ledger/README.md) | The ledger for two real builds, its schema, check-mode output, verification outcomes and refusal |
+| [Preset imports](specimens/imports/README.md) | A preset importing levels and substitutions, the inline control its bundles must equal, and each refusal |
+| [Choice groups](specimens/choice-groups/README.md) | Two local groups on one document, explicit and open picks, each refusal and the preset listing |
+| [Combined](specimens/combined/README.md) | The three features in one run, and every open design point with its candidate answers |
 
 ## Deterministic Matrix
 

@@ -1,0 +1,29 @@
+The proposed source, as written:
+
+$ pf -o bundles entry.md
+E_INVALID_CONVERSION_METADATA: unknown field prosiform.alpha.choice-group
+  reference: worker.md
+  chain: entry.md → worker.md
+  location: worker.md:7:5
+exit status 1
+
+The same source with each choice-group line removed, so its four alternatives form the one set pf 0.36.0 knows:
+
+$ pf -o bundles entry.md
+E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:
+  alpha  The requested component is alpha.
+  beta   The requested component is beta.
+  small  The test is small.
+  large  The test is large.
+  source: worker.md
+  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them
+exit status 2
+
+$ pf -o bundles '[Check](direct.md "?")' --pick alpha
+exit status 0
+
+$ find bundles -type f
+bundles/direct-alpha.bundles/direct-alpha.bundle.md
+
+$ grep -c "Test Slot" bundles/direct-alpha.bundles/direct-alpha.bundle.md
+1

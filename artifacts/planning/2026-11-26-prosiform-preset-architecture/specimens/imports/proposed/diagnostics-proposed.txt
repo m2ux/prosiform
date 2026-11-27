@@ -1,0 +1,67 @@
+Hand-written specimen: pf 0.36.0 refuses this source, as `diagnostics-0.36.0.txt` records.
+
+What the proposed form writes for it:
+
+$ pf -o bundles entry.md
+
+Standard error is empty. Exit status 0. The run's folder holds
+`entry.bundle.md` and `worker.bundle.md`, each byte for byte the file
+`../inline/bundles/entry.bundles/` holds: an import changes where a setting is
+written, never what the build writes.
+
+`shared/settings.md` is read for its presets alone. No link names it, so no
+bundle carries its heading or its sentence, and its `models` and `strict`
+presets count as selected.
+
+Open point: a source read only for an import, and the budgets
+
+  A. Counted. `shared/settings.md` is one of the run's `files`, and its bytes
+     count toward `file-bytes` and `input-bytes`, as any source the run opens.
+     It is rechecked before publication, so one that changed fails the run
+     with E_SOURCE_CHANGED. One rule covers every file the run reads.
+  B. Rechecked, not counted. It is hashed and rechecked, and stands outside
+     the budgets, since no bundle carries it. A settings source can then
+     grow without failing a build it contributes no content to, and a chain
+     of imports can open any number of sources with no budget bounding it.
+
+Open point: an imported pair no link names
+
+Suppose `strict` also mapped `glossary.md` to `strict-glossary.md`, and
+`worker.md` links no glossary.
+
+  A. Each receiving document warns, as a pair it wrote itself does today:
+
+     W_SUBST_UNUSED: the subst key 'shared/glossary.md' of prosiform.strict in 'shared/settings.md', imported by prosiform.default in 'worker.md', names no link its document writes, so it substitutes nothing
+       source: shared/glossary.md
+       remedy: name an identity the importing document links, or import a preset holding the pairs it uses
+
+     A shared preset then has to be split until each importer uses every pair.
+
+  B. The pair is silent in a receiving document that does not use it, and
+     warns once where no document importing it in the run names its key. A
+     shared preset can hold more than one importer needs.
+
+Open point: two declarations stating one value
+
+Suppose `worker.md` imports `strict` and also writes the same pair itself,
+`shared/rules.md` to `strict-rules.md`. The two agree, so the build proceeds.
+
+  A. Every origin is recorded. The ledger names the first declaration as it
+     does any pair, and each further one under `also`:
+
+       [[bundle.substitution]]
+       key = "shared/rules.md"
+       substitute = "shared/strict-rules.md"
+       kind = "routing"
+       declared = "worker.md"
+       preset = "default"
+       line = 9
+       also = [{ declared = "shared/settings.md", preset = "strict", line = 8, imports = [{ document = "worker.md", preset = "default", line = 6 }] }]
+
+  B. The first origin alone is recorded. The ledger stays one origin to a
+     value, and a reader cannot see that the import states it too.
+  C. Stating one value twice is refused as a duplicate, as two `subst` keys
+     normalising to one identity within one preset are today. No value has
+     two origins, and an importer cannot restate what it imports.
+
+One declaration reached along two import chains is one origin in every case.

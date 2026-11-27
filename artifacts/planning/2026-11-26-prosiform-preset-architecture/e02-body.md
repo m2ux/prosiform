@@ -44,6 +44,7 @@ An entry or local preset can explicitly reuse pure settings from a named preset 
 - Whether a source read only for an import counts toward the file and byte budgets.
 - Whether an imported substitution no link names warns in each receiving document.
 - Which code each import refusal reports.
+- What the ledger records where two declarations state one value.
 
 ## References
 

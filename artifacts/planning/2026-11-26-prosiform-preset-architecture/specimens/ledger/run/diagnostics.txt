@@ -1,0 +1,7 @@
+W_SUBST_USED: the reference 'review.md' is redirected to the substitute 'recorded-review.md', where it would have resolved to 'review.md'
+  resolved: recorded-review.md
+  source: review.md
+  location: entry.md:13:1
+W_PRESET_UNUSED: the preset 'large' of 'worker.md' is selected by no reference the run bundled, so it governs nothing
+  source: worker.md
+  remedy: name the preset in the reaching link's title, or drop the preset

@@ -1,0 +1,69 @@
+Hand-written specimen: pf 0.36.0 refuses the source's choice-group field.
+
+Each case states the title `../proposed/entry.md` gives its dispatch of
+`worker.md`, and what the build then writes to standard error.
+
+1. No member of the component group: "small"
+
+E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative of its group 'component' in force:
+  alpha  The requested component is alpha.
+  beta   The requested component is beta.
+  source: worker.md
+  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them
+
+Exit status 2. pf 0.36.0 refuses the same title today, on the control
+`../../missing-component`.
+
+2. No member of the test group: "alpha"
+
+E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative of its group 'test' in force:
+  small  The test is small.
+  large  The test is large.
+  source: worker.md
+  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them
+
+Exit status 2. This is the behaviour the form changes: pf 0.36.0 builds this
+title on the control `../../missing-test-axis`, exit status 0, with the test
+slot unselected.
+
+3. Two members of one group: "alpha, beta, small"
+
+E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative of its group 'component' in force, and the link names two:
+  alpha  The requested component is alpha.
+  beta   The requested component is beta.
+  source: worker.md
+  remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them
+
+Exit status 2.
+
+4. A dispatch leaving both groups open: "?"
+
+E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative of each of its groups 'component' and 'test' in force, and a dispatch leaves one group to the pick:
+  component
+    alpha  The requested component is alpha.
+    beta   The requested component is beta.
+  test
+    small  The test is small.
+    large  The test is large.
+  source: worker.md
+  remedy: name an alternative of 'component' beside the pick token to leave 'test' to the pick, or one of 'test' to leave 'component'
+
+Exit status 2. The dispatching agent picks within one group. Two open groups
+would publish one bundle for each pair of members, and no such set is written.
+
+5. A group no selected link depends on
+
+A document whose selected content names no key of a group needs no member of
+it, as pf 0.36.0 needs no alternative for content none of them changes. The
+proposed worker has one section, which names both slots, so this set does not
+exercise the rule: a second section writing neither routed link, composed by
+`[↳ Hand-off](worker.md#hand-off)`, would bundle with no alternative named.
+
+6. An alternative naming no group
+
+A document whose alternatives state no `choice-group` behaves as it does under
+pf 0.36.0: they form its one unnamed group, and its diagnostics read as today's,
+with no group named.
+
+Every refusal reports E_ALTERNATIVE_UNRESOLVED, the code a missing or
+conflicting pick reports today. The form adds no code.

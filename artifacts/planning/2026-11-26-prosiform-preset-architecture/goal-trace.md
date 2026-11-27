@@ -38,7 +38,7 @@ Findings of the review against pf 0.36.0, each with its evidence and disposition
 
 ### Design
 
-- **Seven points were unstated.** [design.md](design.md#open-design-points) lists them; each feature epic carries its own as open questions, and the scrutiny ruling settles them before the first contract row.
+- **Design points were unstated.** [design.md](design.md#open-design-points) lists them; each feature epic carries its own as open questions, and the scrutiny ruling settles them before the first contract row.
 
 ### Structure
 
@@ -48,3 +48,16 @@ Findings of the review against pf 0.36.0, each with its evidence and disposition
 ## Standing
 
 No content or structural finding remains open in the drafts. Open design points are carried as each epic's open questions and are resolved by the scrutiny ruling.
+
+## Cross-Family Review Of The Specimen Sets, 2026-11-27
+
+A Codex session reviewed the four sets read-only. Each finding was checked against pf 0.36.0 before it changed a file.
+
+- **Bundle names sort by code point.** The sets stated declaration order, from a probe whose two orders agree. `docs/bundles.md` at 0.36.0 states the code-point sort, and a document declaring `zeta` ahead of `alpha` writes `doc-alpha+zeta`. The sets and the design state the released rule.
+- **A check run's hashes follow its command line.** With no `-o` a deferred link is written one folder nearer, so the entry bundle differs. The check-mode specimen names the build its ledger describes, and states that a check run makes the folder `-o` names.
+- **A deferred link's title is held to a rule today.** pf 0.36.0 refuses one naming an alternative beside the pick token. The choice-group set states the grouped form of that rule, and the design carries it.
+- **Verification had no stated reading rules.** The verification specimen states what is read, from where and in what order.
+- **A dispatch row named no source.** Each dispatch and deferral row names the source and line writing its link.
+- **Equal values had one origin.** The point is open, with three answers, in the import set.
+- **An example named a section its source lacks.** The refusal specimen says the set does not exercise that rule.
+- **An exemption from the budgets is unbounded.** The cost is stated beside that answer.

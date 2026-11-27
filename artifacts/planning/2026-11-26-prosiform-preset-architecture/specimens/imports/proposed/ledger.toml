@@ -1,0 +1,108 @@
+# Hand-written specimen: pf 0.36.0 does not write this file.
+schema = 1
+
+[build]
+tool = "pf"
+version = "0.36.0"
+profile = "prosiform-markdown"
+
+[invocation]
+entry = "entry.md"
+picks = []
+
+[invocation.budgets]
+files = 256
+file-bytes = 1048576
+input-bytes = 16777216
+output-bytes = 262144
+targets = 4096
+links = 32768
+nesting = 64
+depth = 8
+
+[[level]]
+name = "judgement"
+model = "gpt-6.1-sol"
+declared = "shared/settings.md"
+preset = "models"
+line = 5
+imports = [{ document = "entry.md", preset = "default", line = 5 }]
+
+[[source]]
+path = "entry.md"
+sha256 = "18293e8d78348388a0eb90ecb541627defc283949f5f7394a3a960b8ee8a589d"
+use = "content"
+
+[[source]]
+path = "worker.md"
+sha256 = "8e0473deebc168b9a175258ec89e129d3924c015dda0dc289dbda97bd654338b"
+use = "content"
+
+[[source]]
+path = "subject.md"
+sha256 = "852d3e781d338da7074e7493a935565caea309250d75b1de5d972a23f1d97d61"
+use = "content"
+
+[[source]]
+path = "shared/strict-rules.md"
+sha256 = "db1c32e8427220261ae4c31c6ff50450b1a8ccd8ec576d56b4c8c57c9a4d71e7"
+use = "content"
+
+[[source]]
+path = "shared/settings.md"
+sha256 = "b6e21a037d68214bb986eb43d9632f654391eed8225a42c6b8506ba1a0f86620"
+use = "metadata"
+
+[[bundle]]
+file = "entry.bundle.md"
+sha256 = "0a0fe4afd0adc185da44dc809de2c6384dc247a988c7268276a92c75549744d6"
+role = "entry"
+document = "entry.md"
+selected = []
+
+  [[bundle.content]]
+  source = "entry.md"
+  lines = [8, 10]
+  presets = ["default"]
+
+  [[bundle.dispatch]]
+  target = "worker.md"
+  source = "entry.md"
+  line = 10
+  title = ""
+  level = "judgement"
+  model = "gpt-6.1-sol"
+  bundle = "worker.bundle.md"
+
+[[bundle]]
+file = "worker.bundle.md"
+sha256 = "22be3e89dc8c5865cd050b845c47d596cd228454a94276c135662c71da41bc19"
+role = "dispatched"
+document = "worker.md"
+selected = []
+level = "judgement"
+model = "gpt-6.1-sol"
+
+  [[bundle.content]]
+  source = "worker.md"
+  lines = [9, 11]
+  presets = ["default"]
+
+  [[bundle.content]]
+  source = "subject.md"
+  lines = [4, 6]
+  presets = ["default"]
+
+  [[bundle.content]]
+  source = "shared/strict-rules.md"
+  lines = [4, 6]
+  presets = ["default"]
+
+  [[bundle.substitution]]
+  key = "shared/rules.md"
+  substitute = "shared/strict-rules.md"
+  kind = "routing"
+  declared = "shared/settings.md"
+  preset = "strict"
+  line = 8
+  imports = [{ document = "worker.md", preset = "default", line = 6 }]
