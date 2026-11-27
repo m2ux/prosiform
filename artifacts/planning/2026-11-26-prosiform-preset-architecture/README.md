@@ -41,6 +41,8 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [e03-body.md](e03-body.md) | Local-choice scope and six tasks |
 | [goal-trace.md](goal-trace.md) | Goal coverage and the findings of each review |
 | [initiative-body.md](initiative-body.md) | Initiative criteria and epic links |
+| [ledger-contract.md](ledger-contract.md) | Each 0.36.0 feature and schema field mapped to a ledger field or an exclusion, and the frozen controls |
+| [ledger-matrix.md](ledger-matrix.md) | Each ledger matrix case and the fixture that carries it |
 | [publication.json](publication.json) | Published identities, priorities and lanes |
 | [scope.md](scope.md) | Confirmed goal clauses and excluded work |
 | [specimen-matrix.md](specimen-matrix.md) | Executed controls, specimen sets and the deterministic matrix |
