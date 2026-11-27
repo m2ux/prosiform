@@ -20,14 +20,15 @@ Each set's README lists its files as real, written in the proposed form, or hand
 
 | Set | Shows |
 | --- | --- |
-| [Ledger](specimens/ledger/README.md) | The ledger for two real builds, its schema, check-mode output, verification outcomes and refusal |
+| [Ledger](specimens/ledger/README.md) | The ledger for two real builds, its schema and check-mode output, and the checksum file with what the standard tool reports for it |
 | [Preset imports](specimens/imports/README.md) | A preset importing levels and substitutions, the inline control its bundles must equal, and each refusal |
 | [Choice groups](specimens/choice-groups/README.md) | Two local groups on one document, explicit and open picks, each refusal and the preset listing |
 | [Combined](specimens/combined/README.md) | The three features in one run, and every open design point with its candidate answers |
 
 ## Deterministic Matrix
 
-- **Ledger.** Selected and unselected output; default and named ordering; whole and fragment selection; layout; source hashes; ordinary and stub substitutions; briefs; dispatch, deferral and pick targets; levels and models; the invocation; check-mode output; serialization and publication refusal; unchanged Markdown bytes; verification of an unchanged, a source-changed, a bundle-changed and a ledgerless set.
+- **Ledger.** Selected and unselected output; default and named ordering; whole and fragment selection; layout; ordinary and stub substitutions; briefs; dispatch, deferral and pick targets; levels and models; the invocation; check-mode output, the same whatever the output folder; serialization and publication refusal; unchanged Markdown bytes.
+- **Checksums.** Each file of the run's folder and each source read; a fixed dispatch and an open pick; a failing run; the standard tool over an unchanged, a source-changed and a bundle-changed set.
 - **Imports.** Exact complete names with case and whitespace normalization; missing and impure targets; an explicit target with no implicit default or body; direct and nested equal and conflicting values; an imported and local conflict; cycles; changed and symbolic-link sources; declaring-key and key-relative target origins; ordinary, entry-map and entry-stub reach through dispatch and deferral; ledger origin accounting.
 - **Groups.** Every explicit two-axis combination; each missing axis; two values in one axis; irrelevant groups; the unnamed single axis; additive presets and optional stubs; one open axis at a dispatch with the other fixed; several open at a dispatch; one pick for each open group at the entry; brief independence; output identity; dispatch and deferral preservation; ledger group entries; the preset listing.
 

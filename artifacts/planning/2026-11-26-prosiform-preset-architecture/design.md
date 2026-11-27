@@ -8,22 +8,24 @@ Each feature has a specimen set under `specimens/`: sources written in the propo
 
 ## Ledger
 
-The explicit `--ledger` option adds one `ledger.yaml` to the atomically published bundle-set folder. Its versioned schema records:
+The explicit `--ledger` option adds one `ledger.yaml` to the atomically published bundle-set folder. It holds the effective configuration and nothing else. Its versioned schema records:
 
 - the build and profile identity, and the invocation: the entry reference, each pick and each budget in force;
-- one row for each authored dispatch and deferral link, naming the source and line that wrote it;
-- source-relative paths and hashes, and selected regions;
-- ordered default and named preset contributions, layout groups, substitution keys and targets with lexical origins, and entry-stub roles;
-- alternatives and picks, brief selections, dispatch and deferral targets;
-- stage capability levels, resolved model names and the hash of each bundle.
+- each bundle by its role, its document and the presets its reaching reference selected;
+- the sources each bundle carries, with the default and named presets in force for each, its layout group and the alternatives chosen;
+- substitution keys and targets with the document and preset declaring each, and entry-stub roles;
+- brief selections, and one row for each dispatch and deferral, naming the source writing the link, its target and its title;
+- stage capability levels and resolved model names.
 
-A feature-to-field and exclusion table prevents partial schema coverage. Runtime effort, provider and context execution, delivery, obedience and semantic completeness are outside the ledger, and so is every warning a build raises: what a warning points at is a field already, a stand-in being a substitution of kind `stand-in`. The ledger's own bytes are outside the hashes it records. Where two declarations state one value, the ledger records every origin, each further one under `also`.
+A feature-to-field and exclusion table prevents partial schema coverage. The ledger holds no hash, no file name, no line number, no line range and no published link, so it follows from the sources and the options and reads the same wherever the bundles go. Runtime effort, provider and context execution, delivery, obedience and semantic completeness are outside it, and so is every warning a build raises: what a warning points at is a field already, a stand-in being a substitution of kind `stand-in`. Where two declarations state one value, the ledger records every origin, each further one under `also`.
 
 The serializer projects the existing capture and provenance records; it never reads rendered Markdown. It writes YAML through `ruamel-yaml`, the library the build reads frontmatter with, in a fixed key order: each string quoted, a list of scalars on one line, a list of mappings as a block, and each key holding a list of mappings in its plural. The ledger is one YAML 1.2 Core mapping under the rules frontmatter is read by, so it carries no alias, merge key, custom tag or duplicate key. Enabling the ledger preserves authored Markdown bytes. Failure uses the existing complete-or-refused publication owner. A JSON Schema ships beside the corpus's fixture schema, and the corpus holds each fixture's ledger to it.
 
 A check-mode run with the option writes the same ledger to standard output and publishes nothing.
 
-The explicit `--verify` option names a published folder, re-hashes each source and bundle its ledger names and reports each differing path with `E_LEDGER_MISMATCH`. A set with no ledger is refused with `E_LEDGER_NOT_FOUND`. The ledger is held to its schema before any other file is opened; a bundle is named by a file name alone and compared with the folder's own contents in both directions; a source resolves from the working directory under the build's own access rules.
+## Checksums
+
+The explicit `--sums` option adds one `SHA256SUMS` to the same published folder, in the format `sha256sum` writes. It lists each other file of the folder, then each source the run read, a source written from the folder as a deferred link is. `sha256sum -c`, run in the folder, holds a published set to it. The bundler has no verifying mode, and the option adds no code. A check-mode run writes no checksum.
 
 ## Pure Imports
 
@@ -47,7 +49,7 @@ The explicit `--presets` option names one document and prints its ordinary prese
 
 ## Contract Revisions And The Design Link
 
-The repository's conformance check reads the contract at the revision the README's design link names, and holds the codes that revision declares to the codes the build lists, in both directions. Each feature's clauses therefore reach the contract in feature order, and the change that admits a form moves the design link to the revision stating it. Verification and listing are each stated in the contract by the work that delivers them.
+The repository's conformance check reads the contract at the revision the README's design link names, and holds the codes that revision declares to the codes the build lists, in both directions. Each feature's clauses therefore reach the contract in feature order, and the change that admits a form moves the design link to the revision stating it. The checksum file and the listing are each stated in the contract by the work that delivers them.
 
 ## Naming
 

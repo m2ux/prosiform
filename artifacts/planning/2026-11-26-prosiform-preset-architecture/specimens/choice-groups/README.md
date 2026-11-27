@@ -72,4 +72,4 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 
 - The proposed source was put to pf 0.36.0, with and without the field, and each result retained.
 - The explicit expected bundles equal the retained control bundles from line 3.
-- The ledger parses as YAML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.
+- The ledger parses as YAML and validates against the [ledger schema](../ledger/ledger.schema.json).

@@ -1,37 +1,24 @@
-Hand-written specimen: pf 0.36.0 offers no --ledger and no --verify option.
+Hand-written specimen: pf 0.36.0 offers no --ledger and no --sums option.
 
-1. A build that fails publishes no ledger
+1. A build that fails publishes neither
 
-$ pf --ledger -o bundles entry.md        (run in `../missing-component/`)
+$ pf --ledger --sums -o bundles entry.md        (run in `../missing-component/`)
 E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:
   alpha  The requested component is alpha.
   beta   The requested component is beta.
   source: worker.md
   remedy: name the alternative that fits your task in the title or tooltip of each link reaching it, a link entry's among them
 
-Exit status 2. No folder is made: neither a bundle nor a ledger is written. The
-diagnostic is the one pf 0.36.0 writes for that source today.
+Exit status 2. No folder is made: no bundle, no ledger and no checksum file is
+written. The diagnostic is the one pf 0.36.0 writes for that source today.
 
-2. A ledger that cannot be written fails the whole publication
+2. A file that cannot be written fails the whole publication
 
-$ pf --ledger -o bundles '[Run](entry.md "recorded")'        (the run's folder cannot be written)
+$ pf --ledger --sums -o bundles '[Run](entry.md "recorded")'        (the run's folder cannot be written)
 E_PUBLICATION_FAILED: <the message pf 0.36.0 writes when a run's folder cannot be published; not transcribed here>
 
-Exit status 3. The bundles and the ledger are swapped in together or not at all,
-so no folder holds bundles without the ledger the caller asked for.
+Exit status 3. The bundles, the ledger and the checksum file are swapped in
+together or not at all, so no folder holds bundles without the files the
+caller asked for.
 
-3. Verification takes a folder and nothing else
-
-$ pf --verify bundles/entry-recorded.bundles entry.md
-E_INVALID_USAGE: --verify names one published folder, and an entry reference was given beside it
-  remedy: run pf -h for usage
-
-Exit status 2. The same holds for --verify beside -o, -c, --ledger or --pick.
-
-4. Verification of a ledger this build cannot read
-
-$ pf --verify bundles/entry-recorded.bundles        (ledger.yaml states schema: 2)
-E_LEDGER_MISMATCH: the ledger 'bundles/entry-recorded.bundles/ledger.yaml' states schema 2, and this build reads schema 1
-  remedy: verify the set with the build that wrote it
-
-Exit status 1.
+Neither option adds a code: each refusal above is one pf 0.36.0 reports today.

@@ -1,0 +1,11 @@
+# Specimen: written with sha256sum over the real files beside it. pf 0.36.0 does not write this file.
+7efad29ccef236ff49fd54785710d9617a329337440ddea8be1fb9ac37966822  entry-recorded.bundle.md
+e2d54b82de80688f278d09610162a49239da31474b1feb3ac1b17953159e3bac  ledger.yaml
+33d3c874d0d8e93b281c2cf5b76a34326d6f82fb5295f7fb50def3d5619ecb6d  worker-alpha+small.bundle.md
+4c0feb2da7f4c780bb87651d969ff0d3a58647a1562c21307fc67844542936d5  worker-beta+small.bundle.md
+aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de  ../../alpha.md
+f56cb332bd3e9c2390e7fab6be5bea964b71d68a34e093a4a4d63cfa2fcf18a3  ../../beta.md
+536c5ddf3f5d29b221024ef718df7cc5523df33e966c70520f67fe5287dfd25b  ../../entry.md
+a5a7b151e8dda45199ebdaa17e4b1a8642189bded71aeab8771e66a17ed5f055  ../../recorded-review.md
+8c5d28d134bd365bb9c5c325b3d2e706b34d7f68f1f1679f3be0f1845f8e25f6  ../../small.md
+717d3abc23f57da755374ec9927b7dde3594f92ec91e5875525618b505b85113  ../../worker.md

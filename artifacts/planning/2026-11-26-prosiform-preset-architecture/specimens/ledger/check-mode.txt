@@ -3,26 +3,26 @@ Hand-written specimen: pf 0.36.0 offers no --ledger option.
 A check-mode run with the ledger option writes the ledger to standard output
 and publishes nothing. Run in `run/`:
 
-$ pf -c --ledger -o bundles '[Run](entry.md "recorded")'
+$ pf -c --ledger '[Run](entry.md "recorded")'
 
 Standard output: the bytes of `run/bundles/entry-recorded.bundles/ledger.yaml`,
-from its `schema: 1` line to its last line. The bundle hashes are those of the
-bundles the run validated and did not write.
+from its `schema: 1` line to its last line.
 
 Standard error: the two warnings the build raises today, as `run/diagnostics.txt`
 holds them.
 
-Exit status 0. No bundle and no ledger is written. The folder `-o` names is
-made where it is absent and left empty, as a check run makes it today.
+Exit status 0. No bundle and no ledger is written.
 
-$ pf -c --ledger '[Run](entry.md "recorded")'
+$ pf -c --ledger -o bundles '[Run](entry.md "recorded")'
 
-The ledger of the build this command would publish, which is another build:
-with no -o the run's folder sits in the working directory, a deferred link is
-written from the bundle's own folder, and the entry bundle carries
-`../recorded-review.md` where the build above carries `../../recorded-review.md`.
-The entry bundle's `sha256` and its deferral's `published` differ accordingly.
-A ledger read in check mode describes the build of the same command line.
+The same ledger, byte for byte. The ledger holds no hash, no file name and no
+published link, so it follows from the sources and the options and not from
+where the bundles would go. The folder `-o` names is made where it is absent
+and left empty, as a check run makes it today.
+
+$ pf -c --ledger --sums '[Run](entry.md "recorded")'
+
+The same ledger, and no checksum: a check run writes no file to take one of.
 
 $ pf -c --ledger entry.md        (run in `../missing-component/`)
 

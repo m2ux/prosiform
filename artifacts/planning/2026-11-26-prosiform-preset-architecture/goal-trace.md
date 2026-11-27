@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- |
 | Scrutinise every proposed form as files before its contract | AC5 | E00 | E00 AC1–AC5 | [scope.md](scope.md) clause 1 |
 | Inspect the exact effective configuration behind a build, unpublished too | AC1, AC3 | E01, E02, E03 | E01 AC1–AC5; E02 AC4; E03 AC4 | [scope.md](scope.md) clause 2 |
-| Hold a published set to its record | AC6 | E01 | E01 AC7 | [scope.md](scope.md) clause 2 |
+| Hold a published set to its checksums | AC6 | E01 | E01 AC7 | [scope.md](scope.md) clause 2 |
 | Reuse narrowly scoped level and substitution settings | AC2, AC3 | E02 | E02 AC1–AC3 | [scope.md](scope.md) clause 3 |
 | Select independent local component and test alternatives | AC2, AC3 | E03 | E03 AC1–AC6 | [scope.md](scope.md) clause 4 |
 | List a document's choices without bundling it | AC7 | E03 | E03 AC8 | [scope.md](scope.md) clause 4 |
@@ -57,7 +57,7 @@ A Codex session reviewed the four sets read-only. Each finding was checked again
 - **A check run's hashes follow its command line.** With no `-o` a deferred link is written one folder nearer, so the entry bundle differs. The check-mode specimen names the build its ledger describes, and states that a check run makes the folder `-o` names.
 - **A deferred link's title is held to a rule today.** pf 0.36.0 refuses one naming an alternative beside the pick token. The choice-group set states the grouped form of that rule, and the design carries it.
 - **Verification had no stated reading rules.** The verification specimen states what is read, from where and in what order.
-- **A dispatch row named no source.** Each dispatch and deferral row names the source and line writing its link.
+- **A dispatch row named no source.** Each dispatch and deferral row names the source writing its link.
 - **Equal values had one origin.** The point is open, with three answers, in the import set.
 - **An example named a section its source lacks.** The refusal specimen says the set does not exercise that rule.
 - **An exemption from the budgets is unbounded.** The cost is stated beside that answer.
@@ -65,3 +65,7 @@ A Codex session reviewed the four sets read-only. Each finding was checked again
 ## Notation Of The Ledger, 2026-11-27
 
 The run's ledger was rendered by each candidate's library and the three renderings read back to one ledger. The hand-laid TOML the sets first showed is not what `tomli-w` 1.2.0 writes: the library indents no nested table and writes one list item to a line. `ruamel-yaml` is a dependency the build already has, and every build of the contract already reads YAML for frontmatter. The user ruled for YAML, and each ledger in the four sets is re-rendered through that library.
+
+## Configuration Apart From Integrity, 2026-11-27
+
+The user asked why the ledger held bundle file names, and proposed that hashes and file names belong in a transient build artifact. The ledger mixed two jobs: configuration an operator reads, and integrity facts only verification uses. The ledger holds configuration alone; `--sums` writes `SHA256SUMS` in the standard format; `sha256sum -c` holds a set to it. The `--verify` mode, its two codes and its reading rules leave the plan. The ledger also holds no line number and no line range, on two earlier rulings the same day.
