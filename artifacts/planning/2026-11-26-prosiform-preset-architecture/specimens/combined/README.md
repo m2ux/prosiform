@@ -5,7 +5,7 @@ The three proposed features in one run: an entry importing its level map, a stag
 ## The Run
 
 ```text
-pf --ledger --sums -o bundles entry.md
+pf --ledger -o bundles entry.md
 ```
 
 - [entry.md](entry.md) imports `models` from [shared/settings.md](shared/settings.md) and dispatches the stage with `"alpha, small"`.
@@ -33,8 +33,8 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 
 | Point | Ruling | Shown in |
 | --- | --- | --- |
-| Does the ledger record the warnings a build raised? | No: the ledger records the configuration that was built. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
-| Where do hashes and file names live? | In `SHA256SUMS`, a checksum file apart from the ledger, checked by `sha256sum -c`. pf has no verifying mode. | [SHA256SUMS](../ledger/run/bundles/entry-recorded.bundles/SHA256SUMS), [checksums.txt](../ledger/checksums.txt) |
+| Does the ledger record the warnings a build raised? | No: the ledger records what was built. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
+| Which code does a verification mismatch report? | `E_LEDGER_MISMATCH`, and `E_LEDGER_NOT_FOUND` for a folder with no ledger. | [verify.txt](../ledger/verify.txt) |
 | Does a source read only for an import count toward the budgets? | Yes, as any source the run opens. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
 | Does an imported pair no link names warn in each receiving document? | No: once, where no importer in the run names its key. | [diagnostics-proposed.txt](../imports/proposed/diagnostics-proposed.txt) |
 | Do import refusals take new codes? | Existing codes, with `E_IMPORT_CYCLE` new. | [refusals/diagnostics.txt](../imports/refusals/diagnostics.txt) |
@@ -42,8 +42,9 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 | What does a pick naming a member of a fixed group report? | Invalid usage, naming the fixed group. | [entry-picks.txt](../choice-groups/expected/entry-picks.txt), case 6 |
 | Is the preset listing text or the ledger's notation? | Text. | [presets.txt](../choice-groups/expected/presets.txt) |
 | Which notation is the ledger written in? | YAML, each string quoted, written by the library pf already ships. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
-| Does the ledger record which part of a source a bundle carries? | No: it names each source carried. | [ledger README](../ledger/README.md#what-the-ledger-leaves-out) |
-| Does the ledger record the line a setting or link was written on? | No: a setting's origin is its document and preset. | [ledger README](../ledger/README.md#what-the-ledger-leaves-out) |
+| Where do hashes and file names live? | In the ledger, which `--verify` holds a published set to. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml), [verify.txt](../ledger/verify.txt) |
+| Does the ledger record which part of a source a bundle carries? | Yes: `lines`, the first and last source line carried. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
+| Does the ledger record the line a setting or link was written on? | Yes: `line`, on each origin and each link row. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 
 A bundle's name joins its effective preset names sorted by Unicode code point, as pf 0.36.0 names it, so `"small, alpha"` writes `worker-alpha+small.bundle.md` and two groups need no new naming rule.
 
@@ -52,10 +53,9 @@ A bundle's name joins its effective preset names sorted by Unicode code point, a
 - **A title naming a component and no test is refused.**  It bundles today with the test slot unselected.
 - **A deferred link may name an alternative beside the pick token.**  It is refused today; with groups it fixes one group and leaves the others to the later run's picks.
 - **`--pick` is repeatable.**  It is given once today.
-- **A check run writes to standard output.**  With the ledger option; a check run's standard output is empty today.
-- **A run writes more than bundles.**  With either option; a run's folder holds bundles alone today.
+- **A check run writes to standard output.**  With the ledger option alone; a check run's standard output is empty today.
 
 ## Checks Made On This Set
 
 - The expected bundles equal the retained control bundles from line 3.
-- The ledger parses as YAML and validates against the [ledger schema](../ledger/ledger.schema.json).
+- The ledger parses as YAML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.

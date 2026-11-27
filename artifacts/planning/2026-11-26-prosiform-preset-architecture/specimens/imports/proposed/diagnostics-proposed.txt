@@ -45,11 +45,14 @@ first declaration as it does any pair, and each further one under `also`:
       kind: "routing"
       declared: "worker.md"
       preset: "default"
+      line: 9
       also:
         - declared: "shared/settings.md"
           preset: "strict"
+          line: 8
           imports:
             - document: "worker.md"
               preset: "default"
+              line: 6
 
 One declaration reached along two import chains is one origin.

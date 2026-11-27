@@ -49,7 +49,7 @@ A hand-written file says so in its first line.
 - **The level map is imported by the entry.**  The entry alone supplies the run's level map today, and that holds: `models` reaches the run because the entry imports it.
 - **The receiving preset keeps its role.**  The worker's `default` still states `level` itself. An imported preset stating `level` would be impure.
 - **Nothing overrides.**  An import and its receiving preset stating one key differently is a refusal, not a precedence.
-- **The ledger names both ends.**  Each imported setting records the preset that declared it and, under `imports`, the preset that imported it. The settings source appears nowhere else in the ledger: no bundle carries it.
+- **The ledger names both ends.**  Each imported setting records the preset that declared it and, under `imports`, the preset that imported it.
 
 ## Settled At Scrutiny
 
@@ -62,4 +62,4 @@ A hand-written file says so in its first line.
 
 - The inline control was built with pf 0.36.0: exit status 0, standard error empty.
 - The proposed source was put to pf 0.36.0 and its refusal retained.
-- The ledger parses as YAML and validates against the [ledger schema](../ledger/ledger.schema.json).
+- The ledger parses as YAML, validates against the [ledger schema](../ledger/ledger.schema.json), and each source hash equals the file it names.

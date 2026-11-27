@@ -17,7 +17,7 @@ The user reviewed the published plan against pf 0.36.0 and ruled on each point.
 - **Record name.** The file is named for one word, `ledger`, and written by `--ledger`. "Manifest" names the corpus fixture declaration and "provenance" is a glossary term, so neither is used. Its notation was first TOML and is YAML, as [Scrutiny Rulings](#scrutiny-rulings-2026-11-27) records.
 - **Order of code work.** The three features are built in turn, each end to end. The parallel work is the three specimen rows.
 - **Lanes.** Two capability lanes with cross-family review, as [Lanes](#lanes) states.
-- **Additions admitted.** A repeatable `--pick` at the entry; the ledger written to standard output in check mode; a published set held to a record of its bytes, first as a `--verify` mode and now as the `--sums` checksum file [Scrutiny Rulings](#scrutiny-rulings-2026-11-27) records; `--presets` listing a document's choices without bundling.
+- **Additions admitted.** A repeatable `--pick` at the entry; the ledger written to standard output in check mode; `--verify` holding a published set to its ledger; `--presets` listing a document's choices without bundling.
 - **Gap fixes.** The ledger records the invocation; its schema ships on main beside the fixture schema.
 
 ## Scrutiny Rulings, 2026-11-27
@@ -27,16 +27,17 @@ The user ruled on each design point the specimen sets showed, one at a time, and
 | Point | Ruling | Declined |
 | --- | --- | --- |
 | Warnings in the ledger | Omitted: the ledger records what was built | Recording each code with what it names |
-| Where hashes and file names live | In `SHA256SUMS`, written by `--sums` beside the bundles and checked by `sha256sum -c`; the ledger holds configuration alone and pf has no verifying mode | In the ledger, checked by a `--verify` mode under two new codes, which the user first ruled for |
+| Verification codes | `E_LEDGER_MISMATCH` and `E_LEDGER_NOT_FOUND` | Reusing `E_SOURCE_CHANGED` and `E_TARGET_NOT_FOUND` |
 | A source read only for an import | Counts toward the file and byte budgets | Standing outside the budgets |
 | An imported pair no link names | Warns once, where no importer in the run names its key | Warning in each importing document |
 | Import refusal codes | Existing codes, with `E_IMPORT_CYCLE` new | A code for each import refusal |
 | Two declarations stating one value | Coalesce, the ledger recording every origin under `also` | Recording the first origin alone; refusing the duplicate |
 | A pick naming a member of a fixed group | `E_INVALID_USAGE`, naming the fixed and the open group | Reporting it as an unmade pick |
 | The preset listing's format | Text | The ledger's notation and vocabulary |
-| The part of a source a bundle carries | Not recorded: the ledger names each source carried and its hash | A named line range; section names |
-| The line a setting or link was written on | Not recorded: a setting's origin is its document and preset, and a link is named by its source, target and title | The line on settings alone; the line everywhere |
 | The ledger's notation | YAML, each string quoted, written by the `ruamel-yaml` library pf already ships; the file is `ledger.yaml` | TOML through `tomli-w`, a new dependency whose layout carries no indentation and one list item to a line |
+| Where hashes and file names live | In the ledger, an output of the build: each source's and each bundle's hash and each bundle's file name, which `--verify` holds a published set to | A `SHA256SUMS` file apart, written by a `--sums` option and checked by `sha256sum -c`, which the user ruled for and then withdrew |
+| The part of a source a bundle carries | `lines`, the first and last source line carried | Leaving it out, which the user ruled for and then withdrew |
+| The line a setting or link was written on | `line`, on each origin and on each dispatch and deferral row | Leaving it out, which the user ruled for and then withdrew |
 
 ## Lanes
 

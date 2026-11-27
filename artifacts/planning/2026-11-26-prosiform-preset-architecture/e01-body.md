@@ -1,10 +1,10 @@
 ## Overview
 
-An operator can request a machine-readable ledger alongside the validated bundle set, read it without publishing, and hold a published set to checksums written beside it. The ledger identifies what the bundler selected and why; agent execution and transport receipts remain separate evidence.
+An operator can request a machine-readable ledger alongside the validated bundle set, read it without publishing, and hold a published set to it. The ledger identifies what the bundler selected and why; agent execution and transport receipts remain separate evidence.
 
 ## Problem
 
-- Effective sources, presets, substitutions and dispatch configuration are recorded internally or reconstructed by callers, with no published result contract.
+- Effective source hashes, selected regions, presets, substitutions and dispatch configuration are recorded internally or reconstructed by callers, with no published result contract.
 - A structured ledger must share the bundle set's atomic publication and refusal boundary.
 - A published set carries nothing a later reader can hold its sources and bundles to.
 
@@ -14,19 +14,17 @@ An operator can request a machine-readable ledger alongside the validated bundle
   The proposed `--ledger` option adds one YAML ledger inside the run's bundle-set folder. Without the option, the generated Markdown is identical to the frozen baseline.
 - **Recorded build facts.** The ledger carries:
   - a schema version, the build and profile identity and the invocation;
-  - each bundle's document and selected presets, the sources it carries and the presets in force for each;
-  - substitutions with the document and preset declaring each, brief references, dispatch and deferral targets;
-  - levels and resolved model names.
-- **Configuration alone.**
-  The ledger holds no hash, file name or line number, so it follows from the sources and the options wherever the bundles go.
+  - source-relative paths and hashes, selected regions, effective presets and their origins;
+  - substitutions, brief references, dispatch and deferral targets, levels and resolved model names;
+  - the hash of each bundle.
 - **Stated exclusions.**
   The ledger asserts no runtime effort, provider observation, delivery or semantic completeness, and records no warning.
 - **Atomic publication.**
   The ledger uses the existing capture, provenance and publication paths; a failure publishes neither a partial ledger nor a mixed bundle set.
 - **Inspection without publication.**
   A check-mode run with the option writes the same ledger to standard output and publishes nothing.
-- **Checksums apart.**
-  The proposed `--sums` option writes, beside the bundles, a checksum file in the standard tool's format, listing each file written and each source read.
+- **Verification.**
+  The proposed `--verify` option re-hashes the sources and bundles a published ledger names and reports each that differs, under codes of its own.
 - **A published schema.**
   A JSON Schema for the ledger sits with the corpus, which holds each fixture's ledger to it.
 
@@ -38,7 +36,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w01.md) | Ledger projection and serialization | AC2 | W00 | | 2 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w02.md) | CLI publication and check mode | AC3, AC4, AC5 | W01 | | 1 | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w03.md) | Public ledger contract and example | AC6 | W02 | | 2 | |
-| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w04.md) | Checksum file of a published set | AC7 | W03 | | 2 | |
+| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e01/w04.md) | Ledger verification of a published set | AC7 | W03 | | 2 | |
 
 ## Acceptance Criteria
 
@@ -48,7 +46,7 @@ An operator can request a machine-readable ledger alongside the validated bundle
 - [ ] **AC4.** Ledger and bundle-set publication share the existing complete-or-refused result boundary, as publication and failure tests and `make check` show.
 - [ ] **AC5.** A check-mode run with the ledger option writes the ledger to standard output and publishes nothing, as the check-mode fixtures show.
 - [ ] **AC6.** The public invocation contract and executable example describe and exercise the delivered ledger, as documentation and corpus checks show.
-- [ ] **AC7.** A published set's `SHA256SUMS` passes the standard checksum tool unchanged and fails it for a changed source or bundle, as the checksum fixtures show.
+- [ ] **AC7.** A published set whose source or bundle bytes differ from its `ledger.yaml` is reported with the differing path, as the verification fixtures show.
 
 ## References
 

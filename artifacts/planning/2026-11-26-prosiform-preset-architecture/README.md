@@ -122,13 +122,11 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/imports/refusals/settings.md](specimens/imports/refusals/settings.md) | Import set: source written in the proposed form |
 | [specimens/ledger/README.md](specimens/ledger/README.md) | Ledger set: what the form needs, its files and what scrutiny settled |
 | [specimens/ledger/check-mode.txt](specimens/ledger/check-mode.txt) | Ledger set: hand-written expected output |
-| [specimens/ledger/checksums.txt](specimens/ledger/checksums.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/fixed.ledger.yaml](specimens/ledger/fixed.ledger.yaml) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/ledger.schema.json](specimens/ledger/ledger.schema.json) | Ledger set: hand-written expected output |
 | [specimens/ledger/refusals.txt](specimens/ledger/refusals.txt) | Ledger set: hand-written expected output |
 | [specimens/ledger/run/alpha.md](specimens/ledger/run/alpha.md) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/beta.md](specimens/ledger/run/beta.md) | Ledger set: source pf 0.36.0 accepts |
-| [specimens/ledger/run/bundles/entry-recorded.bundles/SHA256SUMS](specimens/ledger/run/bundles/entry-recorded.bundles/SHA256SUMS) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/bundles/entry-recorded.bundles/entry-recorded.bundle.md](specimens/ledger/run/bundles/entry-recorded.bundles/entry-recorded.bundle.md) | Ledger set: bundle pf 0.36.0 wrote |
 | [specimens/ledger/run/bundles/entry-recorded.bundles/ledger.yaml](specimens/ledger/run/bundles/entry-recorded.bundles/ledger.yaml) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/bundles/entry-recorded.bundles/worker-alpha+small.bundle.md](specimens/ledger/run/bundles/entry-recorded.bundles/worker-alpha%2Bsmall.bundle.md) | Ledger set: bundle pf 0.36.0 wrote |
@@ -142,6 +140,7 @@ The fixed 0.36.0 source and bundle baseline, generic valid and refused controls,
 | [specimens/ledger/run/small.md](specimens/ledger/run/small.md) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/test.md](specimens/ledger/run/test.md) | Ledger set: source pf 0.36.0 accepts |
 | [specimens/ledger/run/worker.md](specimens/ledger/run/worker.md) | Ledger set: source pf 0.36.0 accepts |
+| [specimens/ledger/verify.txt](specimens/ledger/verify.txt) | Ledger set: hand-written expected output |
 | [specimens/missing-component/alpha.md](specimens/missing-component/alpha.md) | Generic source of this control |
 | [specimens/missing-component/beta.md](specimens/missing-component/beta.md) | Generic source of this control |
 | [specimens/missing-component/component.md](specimens/missing-component/component.md) | Generic source of this control |
