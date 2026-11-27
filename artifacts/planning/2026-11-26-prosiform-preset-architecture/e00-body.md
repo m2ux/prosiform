@@ -30,7 +30,7 @@ The requester can read every proposed form as files before any contract states i
 | [W01](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Preset import specimen set | AC2 | | | 1 | ✓ |
 | [W02](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Choice group specimen set | AC3 | | | 1 | ✓ |
 | [W03](https://github.com/m2ux/prosiform/commit/90fb5502c2e0967c2216df208c14d00a2f6099c6) | Combined specimen set and open points | AC4 | W00, W01, W02 | | 1 | ✓ |
-| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-26-prosiform-preset-architecture/e00/w04.md) | Scrutiny ruling folded into the design | AC5 | W03 | | 1 | |
+| [W04](https://github.com/m2ux/prosiform/commit/02c91939cd87d150964fdf03f482f16989412971) | Scrutiny ruling folded into the design | AC5 | W03 | | 1 | ✓ |
 
 ## Acceptance Criteria
 
@@ -38,7 +38,7 @@ The requester can read every proposed form as files before any contract states i
 - [x] **AC2.** Each proposed import behaviour among valid reuse, refusal and the inline control its bundles must equal is shown as a file marked real or hand-written, as the import set's README inventory shows.
 - [x] **AC3.** Each proposed choice-group behaviour among explicit selection, an open pick, refusal and the preset listing is shown as a file marked real or hand-written, as the choice-group set's README inventory shows.
 - [x] **AC4.** The combined set shows the three features in one run and states each open design point with its candidate answers, as its README shows.
-- [ ] **AC5.** Each specimen set carries the requester's accept-or-change ruling and each changed form is restated in the design, as the planning record's decisions show.
+- [x] **AC5.** Each specimen set carries the requester's accept-or-change ruling and each changed form is restated in the design, as the planning record's decisions show.
 
 ## References
 
