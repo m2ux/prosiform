@@ -27,7 +27,7 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 
 - **The bundles are the control's.**  From line 3 they equal the bundles pf 0.36.0 writes for [valid-two-bindings](../valid-two-bindings/), where every setting is written in place. The three features change what an author writes and what an operator can read, and leave what an agent reads as it is.
 - **The ledger joins the three.**  Each substitution names the shared preset that declared it and the alternative that imported it; `choices` names each group and its member; `levels` names the imported map.
-- **An alternative is a receiver, never a target.**  `alpha` imports settings and keeps its `choice` and `choice-group`. A preset stating either cannot be imported.
+- **An alternative is a receiver, never a target.**  `alpha` imports settings and keeps its `choice`, with the group it names. A preset stating a `choice` cannot be imported.
 
 ## Design Points Settled At Scrutiny
 
@@ -45,6 +45,7 @@ A hand-written file says so in its first line. A hand-written bundle begins on l
 | Where do hashes and file names live? | In the ledger, which `--verify` holds a published set to. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml), [verify.txt](../ledger/verify.txt) |
 | Does the ledger record which part of a source a bundle carries? | Yes: `lines`, the first and last source line carried. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
 | Does the ledger record the line a setting or link was written on? | Yes: `line`, on each origin and each link row. | [ledger.yaml](../ledger/run/bundles/entry-recorded.bundles/ledger.yaml) |
+| Where is an alternative's group written? | In `choice`, as `group` beside `states`. An alternative with no group keeps the plain string. | [worker.md](worker.md) |
 
 A bundle's name joins its effective preset names sorted by Unicode code point, as pf 0.36.0 names it, so `"small, alpha"` writes `worker-alpha+small.bundle.md` and two groups need no new naming rule.
 

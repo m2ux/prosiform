@@ -1,13 +1,13 @@
 The proposed source, as written:
 
 $ pf -o bundles entry.md
-E_INVALID_CONVERSION_METADATA: unknown field prosiform.alpha.choice-group
+E_INVALID_CONVERSION_METADATA: prosiform.alpha.choice must be a non-empty string holding no line break, since it is printed beside its alternative as one row
   reference: worker.md
   chain: entry.md → worker.md
-  location: worker.md:7:5
+  location: worker.md:7:7
 exit status 1
 
-The same source with each choice-group line removed, so its four alternatives form the one set pf 0.36.0 knows:
+The same source with each `choice` written as its line alone, so its four alternatives form the one set pf 0.36.0 knows:
 
 $ pf -o bundles entry.md
 E_ALTERNATIVE_UNRESOLVED: worker.md needs one alternative in force:

@@ -31,7 +31,7 @@ sources:
     sha256: "594ab43e141772deb832134fb87160f4825c2a7966c4553e1fde887009e48111"
     use: "content"
   - path: "worker.md"
-    sha256: "5f62ab3a78294b6d8e804ed5e2d5c7a237120b7ed7d423c22d0ac5c4c87d570c"
+    sha256: "f63042a5d71b99eb2e59d8b1ab76bbb1a80705addb79e18e368485de3354f2c4"
     use: "content"
   - path: "alpha.md"
     sha256: "aa5c64a9beaa6e8737a234f7a85eb6c3a451ad8ff357e72dca3b21a0507739de"
@@ -69,7 +69,7 @@ bundles:
     model: "gpt-6.1-sol"
     content:
       - source: "worker.md"
-        lines: [30, 32]
+        lines: [34, 36]
         presets: ["default", "alpha", "small"]
         choices:
           - group: "component"
@@ -92,7 +92,7 @@ bundles:
         imports:
           - document: "worker.md"
             preset: "alpha"
-            line: 9
+            line: 10
       - key: "test.md"
         substitute: "small.md"
         kind: "routing"
@@ -102,4 +102,4 @@ bundles:
         imports:
           - document: "worker.md"
             preset: "small"
-            line: 21
+            line: 24

@@ -1,4 +1,4 @@
-Hand-written specimen: pf 0.36.0 refuses the source's choice-group field.
+Hand-written specimen: pf 0.36.0 refuses the source's `choice` mapping.
 
 Each case states the title `../proposed/entry.md` gives its dispatch of
 `worker.md`, and what the build then writes to standard error.
@@ -61,9 +61,22 @@ exercise the rule: a second section writing neither routed link, composed by
 
 6. An alternative naming no group
 
-A document whose alternatives state no `choice-group` behaves as it does under
-pf 0.36.0: they form its one unnamed group, and its diagnostics read as today's,
-with no group named.
+A document whose alternatives each hold a plain string as `choice` behaves as
+it does under pf 0.36.0: they form its one unnamed group, and its diagnostics
+read as today's, with no group named.
 
-Every refusal reports E_ALTERNATIVE_UNRESOLVED, the code a missing or
-conflicting pick reports today. The form adds no code.
+7. A `choice` mapping lacking a key, or holding another
+
+Suppose `alpha` stated `group` and no `states`:
+
+E_INVALID_CONVERSION_METADATA: prosiform.alpha.choice must be a non-empty string holding no line break, or a mapping of `group` and `states`, each such a string
+  reference: worker.md
+  chain: entry.md → worker.md
+  location: worker.md:7:7
+
+Exit status 1. A mapping naming `states` and no `group` reads the same: an
+alternative with no group writes the plain string.
+
+Each refused selection reports E_ALTERNATIVE_UNRESOLVED, the code a missing or
+conflicting pick reports today, and a malformed mapping the code a malformed
+`choice` reports today. The form adds no code.

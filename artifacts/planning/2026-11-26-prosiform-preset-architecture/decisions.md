@@ -5,7 +5,7 @@
 - I20 is feature planning on board 18 under `theme:python`. No proposal is required.
 - Existing doc-only patterns remain with I12; the frozen Rust contract target stays independent. No other issue is amended by this plan.
 - Imports reference a path and one exact normalized preset name. Only that metadata declaration is selected; no implicit default and no body. Only levels, subst and pure imports are admitted; imported and local conflicts fail within a flattened preset. Selected-over-default layering stays distinct.
-- `choice-group` names a local axis; where it is absent the alternative belongs to the document's single unnamed group in the same resolution model.
+- The `group` of a `choice` mapping names a local axis; an alternative whose `choice` is a plain string belongs to the document's single unnamed group in the same resolution model.
 - The agent checkpoint is representative mechanism evidence, at most four fresh contexts, never a full combination sweep or a general performance or quality proof. It uses declared thin adapters over existing public harness owners and needs a separate release.
 
 ## Review Rulings, 2026-11-27
@@ -38,6 +38,7 @@ The user ruled on each design point the specimen sets showed, one at a time, and
 | Where hashes and file names live | In the ledger, an output of the build: each source's and each bundle's hash and each bundle's file name, which `--verify` holds a published set to | A `SHA256SUMS` file apart, written by a `--sums` option and checked by `sha256sum -c`, which the user ruled for and then withdrew |
 | The part of a source a bundle carries | `lines`, the first and last source line carried | Leaving it out, which the user ruled for and then withdrew |
 | The line a setting or link was written on | `line`, on each origin and on each dispatch and deferral row | Leaving it out, which the user ruled for and then withdrew |
+| Where an alternative's group is written | In `choice`, a mapping of `group` and `states`; an alternative with no group keeps the plain string | A `choice-group` field beside `choice`; a mapping for every alternative |
 
 ## Lanes
 

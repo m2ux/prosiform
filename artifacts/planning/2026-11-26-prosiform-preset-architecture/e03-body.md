@@ -11,9 +11,9 @@ One document can state independent local component and test choice groups, while
 ## Proposal
 
 - **Local group identity.**
-  The proposed choice-group field names an alternative's local exclusive axis. An alternative without a name belongs to that document's single unnamed group, under one group model.
+  An alternative's `choice` may be a mapping whose `group` names its local exclusive axis and whose `states` holds its choice line. An alternative whose `choice` is a plain string belongs to that document's single unnamed group, under one group model.
 - **A separate layout group.**
-  The existing group field keeps its layout meaning.
+  The group field of a preset keeps its layout meaning.
 - **Independent cardinality.**
   Every group affecting selected content or the entry map has one alternative in force. Ordinary presets are additive and entry stubs remain optional.
 - **Bounded picking at a dispatch.**

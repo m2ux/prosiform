@@ -1,4 +1,4 @@
-Hand-written specimen: pf 0.36.0 takes one --pick, and refuses the source's choice-group field.
+Hand-written specimen: pf 0.36.0 takes one --pick, and refuses the source's `choice` mapping.
 
 At the entry the caller knows every answer, so --pick is repeatable: each
 occurrence names one member of one group the entry's title leaves open. Each
@@ -77,8 +77,8 @@ leave any number open:
 The later run bundles the first with `--pick small`, and the second with
 `--pick alpha --pick small`.
 
-pf 0.36.0 refuses the first today, on the same source with its choice-group
-lines removed:
+pf 0.36.0 refuses the first today, on the same source with each `choice` a
+plain string:
 
   E_UNSUPPORTED_CONSTRUCT: the deferred link 'direct.md' names 'alpha' beside the pick token '?'; direct.md declares the alternatives 'alpha', 'beta', and the link must name exactly one of them or carry '?' alone
 

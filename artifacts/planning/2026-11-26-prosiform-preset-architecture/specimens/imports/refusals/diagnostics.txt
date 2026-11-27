@@ -35,7 +35,7 @@ E_INVALID_CONVERSION_METADATA: prosiform.default.imports names the preset 'route
   related: settings.md:13:5: prosiform.routed.group
   remedy: import a preset holding settings alone, or move the group to the importing preset
 
-Exit status 1. `group`, `choice`, `choice-group`, `stub`, `brief` and `level`
+Exit status 1. `group`, `choice`, `stub`, `brief` and `level`
 each make a preset impure.
 
 4. Two presets importing each other

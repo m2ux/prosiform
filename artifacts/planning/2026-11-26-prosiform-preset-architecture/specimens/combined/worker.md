@@ -3,26 +3,30 @@ prosiform:
   default:
     level: judgement
   alpha:
-    choice: The requested component is alpha.
-    choice-group: component
+    choice:
+      group: component
+      states: The requested component is alpha.
     imports:
       - path: shared/settings.md
         preset: alpha-component
   beta:
-    choice: The requested component is beta.
-    choice-group: component
+    choice:
+      group: component
+      states: The requested component is beta.
     imports:
       - path: shared/settings.md
         preset: beta-component
   small:
-    choice: The test is small.
-    choice-group: test
+    choice:
+      group: test
+      states: The test is small.
     imports:
       - path: shared/settings.md
         preset: small-test
   large:
-    choice: The test is large.
-    choice-group: test
+    choice:
+      group: test
+      states: The test is large.
     imports:
       - path: shared/settings.md
         preset: large-test
