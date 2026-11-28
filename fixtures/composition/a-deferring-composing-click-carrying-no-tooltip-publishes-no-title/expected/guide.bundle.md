@@ -8,7 +8,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ```mermaid
 flowchart LR
-    Plan[¬↳ Plan]
+    Plan[Plan]
     click Plan "#plan"
 ```
 

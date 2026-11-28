@@ -54,6 +54,7 @@ Design rule: *Recognition*. Fixtures:
 
 - [a-reference-style-directive-is-a-directive](../fixtures/composition/a-reference-style-directive-is-a-directive)
 - [a-composition-mark-with-no-space-after-it-opens-an-ordinary-link](../fixtures/composition/a-composition-mark-with-no-space-after-it-opens-an-ordinary-link)
+- [local-diagram-labels-follow-their-published-destinations](../fixtures/composition/local-diagram-labels-follow-their-published-destinations)
 - [a-mark-in-code-or-unresolved-brackets-is-text](../fixtures/composition/a-mark-in-code-or-unresolved-brackets-is-text)
 
 ## Operator marks
