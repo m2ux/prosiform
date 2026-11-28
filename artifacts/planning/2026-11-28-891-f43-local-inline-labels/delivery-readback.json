@@ -1,24 +1,30 @@
 {
   "pull_request": "https://github.com/m2ux/prosiform/pull/892",
-  "state": "open",
+  "state": "closed",
   "draft": false,
   "head": "bb0c444c781816d777911f40d14945d737ac05d1",
   "base_ref": "main",
   "base": "8cedda4cc06b0486168addc05f057161192a22a6",
-  "merge_commit": null,
+  "merge_commit": "cbcfd090ae48b4df6e62edd5913aada151c1cd2a",
   "release_tags_published": false,
   "issue": {
     "url": "https://github.com/m2ux/prosiform/issues/891",
-    "state": "open",
+    "state": "closed",
     "checked_criteria": 4
   },
   "board": {
     "number": 18,
     "item": 321256077,
-    "status": "In Review"
+    "status": "Done"
   },
   "ci": {
     "conclusion": "success",
     "url": "https://github.com/m2ux/prosiform/actions/runs/46130504782/job/140934360964"
+  },
+  "installed": {
+    "command": "/home/mike1/.local/bin/pf",
+    "version": "pf 0.37.0 (prosiform-markdown)",
+    "source": "git+ssh://git@github.com/m2ux/prosiform.git@cbcfd090ae48b4df6e62edd5913aada151c1cd2a#subdirectory=src",
+    "smoke": "Public mixed inline/metadata/deferred/dispatch specimen compiles successfully; local inline labels are plain and actual dispatch retains its mark."
   }
 }

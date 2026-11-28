@@ -33,6 +33,6 @@ Target: `main`
 
 ## Delivery
 
-- [PR #892](https://github.com/m2ux/prosiform/pull/892) is ready for review at bb0c444c781816d777911f40d14945d737ac05d1, targeting main.
+- [PR #892](https://github.com/m2ux/prosiform/pull/892) merged into main at cbcfd090ae48b4df6e62edd5913aada151c1cd2a.
 - [Verification and version choice](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/verification.md): complete compiler checks pass; 0.37.0 is declared.
-- [Exact-head review](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/agent-review.json) records no findings. Merge and tagged release remain outstanding.
+- [Exact-head review](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/agent-review.json) records no findings. The merged build is installed locally as pf 0.37.0; release tags are not published.
