@@ -1,0 +1,24 @@
+{
+  "pull_request": "https://github.com/m2ux/prosiform/pull/892",
+  "state": "open",
+  "draft": false,
+  "head": "bb0c444c781816d777911f40d14945d737ac05d1",
+  "base_ref": "main",
+  "base": "8cedda4cc06b0486168addc05f057161192a22a6",
+  "merge_commit": null,
+  "release_tags_published": false,
+  "issue": {
+    "url": "https://github.com/m2ux/prosiform/issues/891",
+    "state": "open",
+    "checked_criteria": 4
+  },
+  "board": {
+    "number": 18,
+    "item": 321256077,
+    "status": "In Review"
+  },
+  "ci": {
+    "conclusion": "success",
+    "url": "https://github.com/m2ux/prosiform/actions/runs/46130504782/job/140934360964"
+  }
+}

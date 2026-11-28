@@ -26,6 +26,7 @@ Emission and candidate validation cover the same publication shape. Synthetic fi
 | [Version validation](version-validation.log) | Installed wheel and lockfile report 0.37.0 |
 | [Verification](verification.md) | Scope, attempts, version choice and final check results |
 | [Agent review](agent-review.json) | Exact-head review with no findings |
+| [Delivery readback](delivery-readback.json) | Ready PR, green CI, four checked criteria and In Review board status |
 | [Sandbox attempt](sandbox-attempt.log) | Network-isolated wheel installation cannot resolve hatchling; 2101 tests pass before setup errors |
 
 ## Links
@@ -36,3 +37,5 @@ Emission and candidate validation cover the same publication shape. Synthetic fi
 | Pull request | [#892](https://github.com/m2ux/prosiform/pull/892) |
 
 Branch f43-local-inline-labels targets main at 8cedda4cc06b0486168addc05f057161192a22a6. Required compiler checks pass at bb0c444c781816d777911f40d14945d737ac05d1; its exact-head review records no findings. The package declares 0.37.0; merge and release tags remain outstanding. The classifier's full suites and native trials remain held.
+
+PR #892 is ready for review with green CI. Issue #891 remains open, all four criteria are checked, and Python board 18 records In Review. Merge and release tags are outstanding.

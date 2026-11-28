@@ -22,11 +22,17 @@ Target: `main`
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** Mermaid inline nodes targeting included local sections publish plain labels and valid anchors, including metadata labels and click offsets, verified by focused source regressions and generic corpus fixtures.
-- [ ] **AC2.** Candidate validation accepts the correctly published local labels and rejects incorrect label changes, while real worker-bundle dispatch labels retain their operators, verified by candidate and dispatch regressions.
-- [ ] **AC3.** The change has a current exact-head review and passes the repository's required compiler checks, with results linked from its delivering pull request.
-- [ ] **AC4.** The package and lockfile declare 0.37.0, its installed command reports that version, and a previous-tag corpus comparison records the version choice, verified by lock, installation and corpus checks.
+- [x] **AC1.** Mermaid inline nodes targeting included local sections publish plain labels and valid anchors, including metadata labels and click offsets, verified by focused source regressions and generic corpus fixtures.
+- [x] **AC2.** Candidate validation accepts the correctly published local labels and rejects incorrect label changes, while real worker-bundle dispatch labels retain their operators, verified by candidate and dispatch regressions.
+- [x] **AC3.** The change has a current exact-head review and passes the repository's required compiler checks, with results linked from its delivering pull request.
+- [x] **AC4.** The package and lockfile declare 0.37.0, its installed command reports that version, and a previous-tag corpus comparison records the version choice, verified by lock, installation and corpus checks.
 
 ## References
 
 - **R1.** [Prosiform composition](https://github.com/m2ux/prosiform/blob/main/docs/composition.md) — Inline composition and publication semantics.
+
+## Delivery
+
+- [PR #892](https://github.com/m2ux/prosiform/pull/892) is ready for review at bb0c444c781816d777911f40d14945d737ac05d1, targeting main.
+- [Verification and version choice](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/verification.md): complete compiler checks pass; 0.37.0 is declared.
+- [Exact-head review](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/agent-review.json) records no findings. Merge and tagged release remain outstanding.
