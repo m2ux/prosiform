@@ -1,0 +1,20 @@
+[
+  {
+    "variant": "before",
+    "executable": "/home/mike1/.local/bin/pf",
+    "returncode": 0,
+    "bundles": {
+      "before/guide.bundles/guide.bundle.md": "0e278c4e02a71695b8e5a8d4eacea8a9a2912c939b7d58512622bfba1efd8ad2",
+      "before/guide.bundles/worker.bundle.md": "e28547a417009b1821c3d38d376192699e1e4b27c4f744828de0df456f548a48"
+    }
+  },
+  {
+    "variant": "after",
+    "executable": "/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src/.venv/bin/pf",
+    "returncode": 0,
+    "bundles": {
+      "after/guide.bundles/guide.bundle.md": "7bc4471faa2a45d8e1fca4ea58afc8889e5199310bb1a862ba103c1b76e42e64",
+      "after/guide.bundles/worker.bundle.md": "e28547a417009b1821c3d38d376192699e1e4b27c4f744828de0df456f548a48"
+    }
+  }
+]

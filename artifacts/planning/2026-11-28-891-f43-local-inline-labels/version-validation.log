@@ -1,0 +1,12 @@
+cd src && uv lock --check
+Resolved 24 packages in 0.87ms
+python3 checks/smoke.py
+ok   wheel        prosiform-0.37.0-py3-none-any.whl
+ok   installed    /tmp/pf-smoke-zfet1wah/environment
+ok   resolved     pf — /tmp/pf-smoke-zfet1wah/environment/bin/pf, outside the repository
+ok   version      pf 0.37.0 (prosiform-markdown)
+ok   bundled      guide.md from /tmp/pf-smoke-zfet1wah/sources, run from /tmp/pf-smoke-zfet1wah/elsewhere
+ok   glossary     glossary.md, shipped
+
+smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
+pf 0.37.0 (prosiform-markdown)

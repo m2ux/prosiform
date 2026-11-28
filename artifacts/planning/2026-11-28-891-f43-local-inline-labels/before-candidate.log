@@ -1,0 +1,64 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+________ test_a_composing_click_pointing_at_its_contribution_validates _________
+
+    def test_a_composing_click_pointing_at_its_contribution_validates() -> None:
+        one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
+        one.validate()
+>       assert "Detail([Detail])" in one.bundled
+E       assert 'Detail([Detail])' in '# Guide\n\n## First step\n\n```mermaid\nflowchart LR\n    Read([Read]) --> Detail([↳ Detail])\n    click Detail "#not...n\n#### Note\n\nThe detail the note holds.\n\n# Note\n\nThe note says so.\n\n## Detail\n\nThe detail the note holds.\n'
+E        +  where '# Guide\n\n## First step\n\n```mermaid\nflowchart LR\n    Read([Read]) --> Detail([↳ Detail])\n    click Detail "#not...n\n#### Note\n\nThe detail the note holds.\n\n# Note\n\nThe note says so.\n\n## Detail\n\nThe detail the note holds.\n' = Built(bundled='# Guide\n\n## First step\n\n```mermaid\nflowchart LR\n    Read([Read]) --> Detail([↳ Detail])\n    clic...content='', markup='', info='', meta={}, block=True, hidden=False)]}, composing={(): {('guide.md', 7, 0, 18): 'note'}}).bundled
+
+src/tests/test_candidate.py:525: AssertionError
+_ test_a_composing_click_with_an_incorrect_published_label_fails[\u21b3 Detail] _
+
+label = '↳ Detail'
+
+    @pytest.mark.parametrize("label", ["↳ Detail", "Other detail"])
+    def test_a_composing_click_with_an_incorrect_published_label_fails(label: str) -> None:
+        one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
+        one.bundled = one.bundled.replace("Detail([Detail])", f"Detail([{label}])")
+>       assert refused(one).invariant == REFERENCE_PRESERVATION
+               ^^^^^^^^^^^^
+
+src/tests/test_candidate.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+one = Built(bundled='# Guide\n\n## First step\n\n```mermaid\nflowchart LR\n    Read([Read]) --> Detail([↳ Detail])\n    clic...content='', markup='', info='', meta={}, block=True, hidden=False)]}, composing={(): {('guide.md', 7, 0, 18): 'note'}})
+
+    def refused(one: Built) -> Invalid:
+        """The refusal the validation pass raises over this candidate."""
+>       with pytest.raises(Invalid) as raised:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE Invalid
+
+src/tests/test_candidate.py:173: Failed
+_ test_a_composing_click_with_an_incorrect_published_label_fails[Other detail] _
+
+label = 'Other detail'
+
+    @pytest.mark.parametrize("label", ["↳ Detail", "Other detail"])
+    def test_a_composing_click_with_an_incorrect_published_label_fails(label: str) -> None:
+        one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
+        one.bundled = one.bundled.replace("Detail([Detail])", f"Detail([{label}])")
+>       assert refused(one).invariant == REFERENCE_PRESERVATION
+               ^^^^^^^^^^^^
+
+src/tests/test_candidate.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+one = Built(bundled='# Guide\n\n## First step\n\n```mermaid\nflowchart LR\n    Read([Read]) --> Detail([↳ Detail])\n    clic...content='', markup='', info='', meta={}, block=True, hidden=False)]}, composing={(): {('guide.md', 7, 0, 18): 'note'}})
+
+    def refused(one: Built) -> Invalid:
+        """The refusal the validation pass raises over this candidate."""
+>       with pytest.raises(Invalid) as raised:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE Invalid
+
+src/tests/test_candidate.py:173: Failed
+=========================== short test summary info ============================
+FAILED src/tests/test_candidate.py::test_a_composing_click_pointing_at_its_contribution_validates
+FAILED src/tests/test_candidate.py::test_a_composing_click_with_an_incorrect_published_label_fails[\u21b3 Detail]
+FAILED src/tests/test_candidate.py::test_a_composing_click_with_an_incorrect_published_label_fails[Other detail]
+3 failed, 1 passed, 73 deselected in 0.17s
+sbx: exit 1; writable: /tmp /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels (name more with SBX_EXTRA_ROOTS=dir1:dir2)

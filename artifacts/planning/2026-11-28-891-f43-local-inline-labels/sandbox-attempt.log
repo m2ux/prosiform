@@ -1,0 +1,733 @@
+cd src && uv lock --check
+Resolved 24 packages in 8ms
+uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
+All checks passed!
+uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
+522 files already formatted
+uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
+Success: no issues found in 112 source files
+python3 checks/reachability.py
+ok   prosiform.candidate.Use.__eq__: Python calls a method by that name
+ok   prosiform.candidate.Use.__hash__: Python calls a method by that name
+ok   prosiform.candidate.Use.__repr__: Python calls a method by that name
+ok   prosiform.cli.Parser.error: argparse's ArgumentParser calls it on an argument it cannot parse
+ok   prosiform.cli.BudgetEntries.__call__: Python calls a method by that name
+ok   prosiform.cli.Once.__call__: Python calls a method by that name
+ok   prosiform.cli.main: the console script pf declared in pyproject.toml
+ok   prosiform.closure.Substitution.__post_init__: Python calls a method by that name
+ok   prosiform.metadata._MarkedScanner.scan_flow_scalar_non_spaces: ruamel.yaml's Scanner calls it while scanning a quoted scalar
+ok   prosiform.profile.Watched.skipToken: markdown-it's inline parser calls it while skipping a token
+
+reachability check: 565 definition(s), each reached
+cd src && uv run --frozen pytest
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+..EEEEEEEEEEEEE......................................................... [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+..........................                                               [100%]
+==================================== ERRORS ====================================
+________ ERROR at setup of test_three_skill_links_are_independent_runs _________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_ ERROR at setup of test_a_declaring_link_above_the_invocation_directory_is_bundled _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+______ ERROR at setup of test_section_selection_keeps_the_entry_settings _______
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_ ERROR at setup of test_a_named_folder_and_the_working_directory_carry_one_bundle _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+___________ ERROR at setup of test_repeated_target_is_included_once ____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+___________ ERROR at setup of test_a_shared_source_is_captured_once ____________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+___________ ERROR at setup of test_rewritten_destinations_are_stable ___________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_______ ERROR at setup of test_depth_conflict_preserves_existing_output ________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_________ ERROR at setup of test_invalid_metadata_publishes_nothing[2] _________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_______ ERROR at setup of test_invalid_metadata_publishes_nothing[True] ________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_________ ERROR at setup of test_invalid_metadata_publishes_nothing[0] _________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+_________ ERROR at setup of test_invalid_metadata_publishes_nothing[7] _________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+___________ ERROR at setup of test_inventory_links_each_retained_run ___________
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7faac5572fd0>, _basetemp=PosixPath('/tmp/pytest-of-mike/pytest-185'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope="session")
+    def installation(tmp_path_factory: pytest.TempPathFactory) -> Installation:
+        """The installed wheel and the artifact directory for this session."""
+        workspace = Path(tempfile.mkdtemp(prefix="pf-bootstrap-install-"))
+>       executable, env, wheel = install_command(workspace)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_linked_bootstrap.py:487: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_linked_bootstrap.py:110: in install_command
+    run_uv("build", "--wheel", "--project", str(PROJECT), "--out-dir", str(dist))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arguments = ('build', '--wheel', '--project', '/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src', '--out-dir', '/tmp/pf-bootstrap-install-9eozy6zd/dist')
+
+    def run_uv(*arguments: str) -> subprocess.CompletedProcess[str]:
+        """One uv invocation using the caller's cache and link mode."""
+        env = os.environ.copy()
+        env["UV_LINK_MODE"] = "copy"
+        result = subprocess.run(
+            ["uv", *arguments],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env=env,
+        )
+        if result.returncode != 0:
+>           pytest.fail(
+                f"uv {' '.join(arguments)} exited {result.returncode}\n{result.stderr}"
+            )
+E           Failed: uv build --wheel --project /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src --out-dir /tmp/pf-bootstrap-install-9eozy6zd/dist exited 2
+E           Building wheel...
+E           WARN Retry attempt #0. Sleeping 1.488789677s before the next attempt
+E           WARN Retry attempt #1. Sleeping 2.240113205s before the next attempt
+E           WARN Retry attempt #2. Sleeping 7.430580797s before the next attempt
+E           error: Failed to build `/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels/src`
+E             cause: Failed to resolve requirements from `build-system.requires`
+E             cause: No solution found when resolving: `hatchling`
+E             cause: Request failed after 3 retries in 11.2s
+E             cause: Failed to fetch: https://pypi.org/simple/hatchling/
+E             cause: error sending request for url (https://pypi.org/simple/hatchling/)
+E             cause: client error (Connect)
+E             cause: dns error
+E             cause: failed to lookup address information: Temporary failure in name resolution
+
+tests/test_linked_bootstrap.py:95: Failed
+=========================== short test summary info ============================
+ERROR tests/test_linked_bootstrap.py::test_three_skill_links_are_independent_runs
+ERROR tests/test_linked_bootstrap.py::test_a_declaring_link_above_the_invocation_directory_is_bundled
+ERROR tests/test_linked_bootstrap.py::test_section_selection_keeps_the_entry_settings
+ERROR tests/test_linked_bootstrap.py::test_a_named_folder_and_the_working_directory_carry_one_bundle
+ERROR tests/test_linked_bootstrap.py::test_repeated_target_is_included_once
+ERROR tests/test_linked_bootstrap.py::test_a_shared_source_is_captured_once
+ERROR tests/test_linked_bootstrap.py::test_rewritten_destinations_are_stable
+ERROR tests/test_linked_bootstrap.py::test_depth_conflict_preserves_existing_output
+ERROR tests/test_linked_bootstrap.py::test_invalid_metadata_publishes_nothing[2]
+ERROR tests/test_linked_bootstrap.py::test_invalid_metadata_publishes_nothing[True]
+ERROR tests/test_linked_bootstrap.py::test_invalid_metadata_publishes_nothing[0]
+ERROR tests/test_linked_bootstrap.py::test_invalid_metadata_publishes_nothing[7]
+ERROR tests/test_linked_bootstrap.py::test_inventory_links_each_retained_run
+2101 passed, 13 errors in 16.99s
+make: *** [Makefile:115: test] Error 1
+sbx: exit 2; writable: /tmp /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels (name more with SBX_EXTRA_ROOTS=dir1:dir2)

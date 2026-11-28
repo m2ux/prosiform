@@ -1,0 +1,24 @@
+composition/a-click-on-a-node-whose-text-opens-with-the-composition-mark-composes: fail
+composition/a-deferring-composing-click-carrying-no-tooltip-publishes-no-title: fail
+composition/local-diagram-labels-follow-their-published-destinations: fail
+dispatch/a-click-on-a-node-whose-text-opens-with-the-dispatch-mark-dispatches: pass
+composition/a-click-on-a-node-whose-text-opens-with-the-composition-mark-composes: output moved
+  expected.bundles: guide.bundle.md: the bytes differ
+    212 bytes expected, 216 produced
+    first difference at byte 146, expected line 11 column 10
+    expected b'd\nflowchart LR\n    Plan[Plan]\n    click Plan "#p'
+    produced b'd\nflowchart LR\n    Plan[\xe2\x86\xb3 Plan]\n    click Plan'
+composition/a-deferring-composing-click-carrying-no-tooltip-publishes-no-title: output moved
+  expected.bundles: guide.bundle.md: the bytes differ
+    232 bytes expected, 238 produced
+    first difference at byte 146, expected line 11 column 10
+    expected b'd\nflowchart LR\n    Plan[Plan]\n    click Plan "#p'
+    produced b'd\nflowchart LR\n    Plan[\xc2\xac\xe2\x86\xb3 Plan]\n    click Pl'
+composition/local-diagram-labels-follow-their-published-destinations: output moved
+  expected.bundles: guide.bundle.md: the bytes differ
+    712 bytes expected, 726 produced
+    first difference at byte 147, expected line 11 column 11
+    expected b'\nflowchart LR\n    Read["Read Phase"]; click Read'
+    produced b'\nflowchart LR\n    Read["\xe2\x86\xb3 Read Phase"]; click '
+corpus check: 4 fixture(s), 1 pass, 3 fail, 0 awaited, 0 unexpected pass
+sbx: exit 1; writable: /tmp /home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform/f43-local-inline-labels (name more with SBX_EXTRA_ROOTS=dir1:dir2)

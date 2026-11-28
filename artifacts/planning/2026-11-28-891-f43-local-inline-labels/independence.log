@@ -1,0 +1,7 @@
+uv run --project src --frozen python checks/independence.py
+ok   vocabulary  2937 term(s) from artifacts/planning/2026-10-17-prosiform-v1/design.md, docs/glossary.md and 54 declared name(s)
+ok   refused     8 build word form(s) and 8 avoided term(s)
+ok   corpus      711 fixture(s) and their identities
+ok   report      the conformance report as it renders
+
+independence check: every shaped term of every fixture declaration and every report entry is one the contract names, none is a build word a section stating no behaviour marks, and no identity or description states an avoided term

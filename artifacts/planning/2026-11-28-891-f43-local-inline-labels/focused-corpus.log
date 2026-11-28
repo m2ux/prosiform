@@ -1,0 +1,5 @@
+composition/a-click-on-a-node-whose-text-opens-with-the-composition-mark-composes: pass
+composition/a-deferring-composing-click-carrying-no-tooltip-publishes-no-title: pass
+composition/local-diagram-labels-follow-their-published-destinations: pass
+dispatch/a-click-on-a-node-whose-text-opens-with-the-dispatch-mark-dispatches: pass
+corpus check: 4 fixture(s), 4 pass, 0 fail, 0 awaited, 0 unexpected pass

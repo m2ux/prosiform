@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/892",
+    "head": "bb0c444c781816d777911f40d14945d737ac05d1",
+    "base": "8cedda4cc06b0486168addc05f057161192a22a6",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/agent-review.json",
+    "reviewer": "Codex /root",
+    "reviewed_at": "2026-11-28T09:28:06.861453+00:00",
+    "scope": "Complete main-to-head diff, changed fixture inputs/expected outputs/manifests and shipped documentation. Inspected bundle.rewrite and diagram_labels, closure.published_text/directive/filed/unmarked, candidate.withdrawn/references/preserved/code/intended, source.Click/element_texts/label_span and same-line click offsets. Local inline and deferred wrappers consume their operators; actual file dispatch and unrecognised literals retain their spelling. Unicode anchor spelling remains in diagram form. Metadata-only version declaration is its own commit. No excluded observations or speculative feature work; classifier native reliability and performance are outside this compiler unit.",
+    "criteria": "AC1: three inline corpus cases and full corpus establish local plain labels, metadata and same-line offsets. AC2: candidate corruption checks reject retained/changed labels; existing dispatch and parallel corpus cases pass. AC3: complete required make check exits 0 on the recorded head; no review findings. AC4: pyproject/lock declare 0.37.0 and installed wheel reports it; previous tagged corpus has 708 passes and exactly the two expected corrected-label output differences.",
+    "validation": "{\"command\": \"PROSIFORM_BUILD=<hotfix>/src/.venv/bin/pf make check\", \"exit\": 0, \"source_tests\": 2114, \"check_harness_tests\": 1266, \"corpus_passed\": 711, \"compiler_version\": \"0.37.0\", \"log\": \"https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/make-check.log\", \"sha256\": \"82913506b10c2b300cb91cf09c12e36fd7ffe5118dab35ea7e058c0722de932a\", \"previous_corpus\": {\"version\": \"0.36.0\", \"commit\": \"8cedda4cc06b0486168addc05f057161192a22a6\", \"fixtures\": 710, \"passed\": 708, \"output_differences\": 2, \"log\": \"https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-28-891-f43-local-inline-labels/previous-corpus.log\"}}",
+    "findings": []
+  }
+]
