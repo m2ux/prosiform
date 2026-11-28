@@ -41,6 +41,7 @@ from prosiform.closure import (
     bundled,
     carried_names,
     deferred_title,
+    directive,
     dispatched,
     filed,
     parallel,
@@ -432,9 +433,14 @@ def withdrawn(one: Use, destination: str) -> Use:
 
     Its kind and title are carried into the result.
     """
-    if one.kind == CLICK:
+    if one.kind == CLICK and filed(destination):
         return Use(one.kind, one.text, one.title, destination)
-    return Use(one.kind, unmarked(one.text), one.title, normalizeLink(destination))
+    return Use(
+        one.kind,
+        unmarked(one.text),
+        one.title,
+        destination if one.kind == CLICK else normalizeLink(destination),
+    )
 
 
 def carrying(
@@ -1162,6 +1168,9 @@ def preserved(
         if fence.type != FENCE:
             continue
         for click in clicks(fence):
+            if directive(click.opening):
+                local.setdefault(id(fence), set()).add(click.node)
+                continue
             if not dispatched(click.opening):
                 continue
             expected = intended(

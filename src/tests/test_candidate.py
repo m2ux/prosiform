@@ -525,6 +525,13 @@ def test_a_composing_click_pointing_at_its_contribution_validates() -> None:
     assert 'click Detail "#note"\n' in one.bundled
 
 
+@pytest.mark.parametrize("label", ["↳ Detail", "Other detail"])
+def test_a_composing_click_with_an_incorrect_published_label_fails(label: str) -> None:
+    one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
+    one.bundled = one.bundled.replace("Detail([Detail])", f"Detail([{label}])")
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
 def test_a_composing_click_pointing_at_its_target_section_fails() -> None:
     one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
     one.bundled = one.bundled.replace('"#note"\n', '"#detail"\n')

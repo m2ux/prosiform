@@ -1,0 +1,17 @@
+description = "Inline diagram labels publish without consumed operators for ordinary, quoted and metadata nodes, with a click on the label's line. A deferred composition publishes a plain local label and retains its directive inside the contribution. A file dispatch retains its operator and literal unrecognised text is preserved."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Section composition — Recognition",
+  "Section composition — Deferred composition",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/worker.bundle.md"]
+diagnostics = []

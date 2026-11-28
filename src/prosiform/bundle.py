@@ -580,7 +580,7 @@ def rewrite(
                 if given is not None:
                     prepared.append((click, given))
                     if (
-                        dispatched(click.opening)
+                        (dispatched(click.opening) or directive(click.opening))
                         and isinstance(given, str)
                         and not filed(given)
                     ):
@@ -608,22 +608,24 @@ def rewrite(
 def diagram_labels(
     fence: Token, local: Collection[str]
 ) -> tuple[list[str], dict[int, list[tuple[int, str, str]]]]:
-    """Unmark diagram labels whose nodes navigate to local dispatch sections.
+    """Publish diagram labels whose nodes navigate to local generated sections.
 
     Labels come from `source.element_texts`; `source.Click` owns diagram-use
     interpretation. `source.label_span` supplies each edit's original offset
-    and spelling, and `closure.unmarked` supplies its text. Metadata label
-    values use a quoted JSON scalar,
-    which YAML reads as the same string. Other source bytes and content
+    and spelling, and `closure.published_text` supplies its local text. Metadata
+    label values use a quoted JSON scalar, which YAML reads as the same string.
+    Other source bytes and content
     line counts are preserved, so click offsets shift by edits before them.
     """
     held = lines(fence.content)
     edits: dict[int, list[tuple[int, str, str]]] = {}
     for line, label in element_texts(fence.content, diagram_type(fence.content)):
-        if label.node not in local or not dispatched(label.text):
+        if label.node not in local:
+            continue
+        text = published_text(label.text, file=False)
+        if text == label.text:
             continue
         offset, original = label_span(label)
-        text = unmarked(label.text)
         replacement = json.dumps(text, ensure_ascii=False) if label.scalar else text
         edits.setdefault(line, []).append((offset, original, replacement))
     for line, changes in edits.items():

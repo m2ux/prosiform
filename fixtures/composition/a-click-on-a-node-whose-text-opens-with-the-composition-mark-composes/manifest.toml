@@ -1,4 +1,4 @@
-description = "A Mermaid click on a node whose text opens with the composition mark composes the section it names beneath the section holding the diagram, as a link whose text opens with the mark does; the click's destination is rewritten to the contribution's group and the node text is carried as written."
+description = "A Mermaid click on a node whose text opens with the composition mark composes the section it names beneath the section holding the diagram. The click names the local contribution and its node label carries the text after the consumed operator."
 
 clauses = [
   "Link classification and resource handling — Examples",
